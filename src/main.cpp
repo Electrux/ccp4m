@@ -20,7 +20,7 @@ int Exit( int err_code )
 int main( int argc, char ** argv )
 {
 	std::string logfile = DT::GetCurrDateTime() + ".log";
-	FS::CreateFile( logfile );
+	FS::CreateFileIfNotExists( logfile );
 	if( !Global::InitLogger( logfile ) ) {
 		Display( "{br}Failed to initialize logging engine!{0}" );
 		return 1;

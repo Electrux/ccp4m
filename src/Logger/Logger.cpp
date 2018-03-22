@@ -17,7 +17,7 @@ std::string Logger::ReplaceSpecifierByInformation( const std::string & specifier
 		return this->timemgr.GetFormattedDateTime( & logmsg.time );
 
 	if( specifier == "s" )
-		return this->sections.empty() ? "default" : this->sections;
+		return logmsg.sections.empty() ? "[ Default ]" : logmsg.sections;
 
 	if( specifier == "l" )
 		return logmsg.data;
@@ -175,7 +175,7 @@ void Logger::AddLogStrings( const LogLevels & loglevel, const std::vector< std::
 	auto currtime = std::time( NULL );
 	std::lock_guard< std::mutex > mtx_guard( mtx );
 	for( auto logstr : logstrs )
-		logstrings.push_back( { logstr, currtime } );
+		logstrings.push_back( { logstr, currtime, this->sections } );
 }
 
 void Logger::AddLogString( const LogLevels & loglevel, const std::string & logstr )
@@ -185,7 +185,7 @@ void Logger::AddLogString( const LogLevels & loglevel, const std::string & logst
 	// Time before lock guard since we can't be sure how long lock guard will take to aquire mutex.
 	auto currtime = std::time( NULL );
 	std::lock_guard< std::mutex > mtx_guard( mtx );
-	logstrings.push_back( { logstr, currtime } );
+	logstrings.push_back( { logstr, currtime, this->sections } );
 }
 
 bool Logger::BeginLogging()

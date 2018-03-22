@@ -10,6 +10,8 @@ namespace FS
 	bool CreateDir( const std::string & dir );
 
 	bool CreateFile( const std::string & loc, const std::string & contents = "" );
+
+	bool CreateFileIfNotExists( const std::string & loc, const std::string & contents = "" );
 }
 
 #endif // FS_FUNCS_HPP

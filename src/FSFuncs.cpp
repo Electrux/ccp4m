@@ -63,3 +63,26 @@ bool FS::CreateFile( const std::string & loc, const std::string & contents )
 
 	return true;
 }
+
+bool FS::CreateFileIfNotExists( const std::string & loc, const std::string & contents )
+{
+	auto last_slash = loc.rfind( '/' );
+	if( last_slash != std::string::npos ) {
+		std::string dir = loc.substr( 0, last_slash );
+		if( !LocExists( dir ) && !CreateDir( dir ) )
+			return false;
+	}
+
+	std::fstream file;
+	file.open( loc, std::ios::out | std::ios::app );
+
+	if( !file )
+		return false;
+
+	if( !contents.empty() )
+		file << contents;
+
+	file.close();
+
+	return true;
+}

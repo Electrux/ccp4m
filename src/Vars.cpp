@@ -53,6 +53,10 @@ void Vars::Initialize()
 
 	v->AddVar( "CCP4M_DIR", Env::CCP4M_DIR );
 	v->AddVar( "CCP4M_CONFIG_FILE", Env::CCP4M_CONFIG_FILE );
+
+	Global::logger.AddLogSection( "Vars" );
+	Global::logger.AddLogString( LogLevels::ALL, "Vars initialized successfully" );
+	Global::logger.RemoveLastLogSection();
 }
 
 // To avoid using static replace function which will cause a lot of overhead if the function is called many times.

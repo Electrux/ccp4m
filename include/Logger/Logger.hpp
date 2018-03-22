@@ -16,6 +16,7 @@ class Logger
 	{
 		std::string data;
 		std::time_t time;
+		std::string sections;
 	};
 
 	std::mutex mtx;
