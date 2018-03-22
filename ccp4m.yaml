@@ -1,0 +1,19 @@
+name: 'CCP4M'
+version: '0.1'
+lang: 'c++'
+std: '14'
+type: 'bin'
+compile_flags: '-O2'
+build_date: '2018-03-09T21:25:25+05:30'
+
+libs:
+-
+  name: 'yaml-cpp'
+  version: '0.6'
+  lib_flags: '-lyaml-cpp'
+
+builds:
+-
+  name: 'ccp4m'
+  main_src: 'src/main.cpp'
+  other_src: 'src/*'
