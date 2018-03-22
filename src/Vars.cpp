@@ -1,5 +1,6 @@
 #include <string>
 #include <map>
+#include <iostream>
 
 #include "../include/GlobalData.hpp"
 #include "../include/Colors.hpp"
@@ -67,7 +68,7 @@ int Vars::ReplaceVars( std::string & str, bool colors )
 
 			while( it != str.end() && * it != '}' ) {
 				var += * it;
-				++it;
+				it = str.erase( it );
 			}
 
 			// Remove the ending brace
@@ -86,7 +87,7 @@ int Vars::ReplaceVars( std::string & str, bool colors )
 				continue;
 
 			it = str.insert( it, val.begin(), val.end() );
-			it += val.size();
+			it += val.size() - 1;
 			ctr += val.size();
 		}
 		else {

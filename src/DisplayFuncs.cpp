@@ -22,7 +22,7 @@ void Display( std::string data )
 
 	Vars::ReplaceVars( data );
 
-	for( auto it = data.begin() + 1; it != data.end() - 1; ++it )
+	for( auto it = data.begin(); it != data.end(); ++it )
 		LAST_LINE_SIZE = ( * it == '\n' ) ? 0 : LAST_LINE_SIZE + 1;
 
 	std::cout << data;

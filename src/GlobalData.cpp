@@ -8,7 +8,7 @@
 #include "../include/GlobalData.hpp"
 
 const std::string Global::ERR_STR = "__ERR__";
-const std::string Global::FILE_TIME_FORMAT = "%ds%.%MS%.%D%.%YS%-%HH%:%MM%:%SS%";
+const std::string Global::FILE_TIME_FORMAT = "%ds%.%MS%.%D%.%YS%";
 
 Logger Global::logger;
 

@@ -41,7 +41,7 @@ bool FS::CreateDir( const std::string & dir )
 	return !LocExists( fdir ) ? mkdir( fdir.c_str(), 0755 ) == 0 : true;
 }
 
-bool FS::CreateFile( const std::string & loc, const std::string & contents = "" )
+bool FS::CreateFile( const std::string & loc, const std::string & contents )
 {
 	auto last_slash = loc.rfind( '/' );
 	if( last_slash != std::string::npos ) {
