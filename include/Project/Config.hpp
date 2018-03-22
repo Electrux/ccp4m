@@ -53,6 +53,8 @@ public:
 
 	ProjectData & GetData();
 
+	bool GetDefaultAuthor();
+
 	bool GenerateDefaultConfig();
 
 	bool LoadFile( const std::string & file );

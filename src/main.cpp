@@ -8,6 +8,7 @@
 #include "../include/Helps.hpp"
 #include "../include/ProjectManager.hpp"
 #include "../include/Core.hpp"
+#include "../include/Vars.hpp"
 #include "../include/Project/Config.hpp"
 
 int Exit( int err_code )
@@ -30,10 +31,12 @@ int main( int argc, char ** argv )
 	if( !Core::Init() )
 		return Exit( 1 );
 
+	Vars::Initialize();
+
 	int err_code = 0;
 
 	ProjectConfig conf;
-	conf.LoadFile( "yaml_test.yaml" );
+	conf.LoadFile( "ccp4m.yaml" );
 	conf.DisplayAll();
 
 	if( args.size() < 2 ) {

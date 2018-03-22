@@ -4,6 +4,7 @@
 
 #include "../include/GlobalData.hpp"
 #include "../include/Colors.hpp"
+#include "../include/Environment.hpp"
 
 #include "../include/Vars.hpp"
 
@@ -48,13 +49,16 @@ void Vars::DeleteSingleton()
 
 void Vars::Initialize()
 {
-	// For future
+	auto v = GetSingleton();
+
+	v->AddVar( "CCP4M_DIR", Env::CCP4M_DIR );
+	v->AddVar( "CCP4M_CONFIG_FILE", Env::CCP4M_CONFIG_FILE );
 }
 
-int Vars::ReplaceVars( std::string & str, bool colors )
+// To avoid using static replace function which will cause a lot of overhead if the function is called many times.
+int Vars::Replace( std::string & str, bool colors )
 {
 	int ctr = 0;
-	auto v = GetSingleton();
 
 	for( auto it = str.begin(); it != str.end(); ++it ) {
 		if( * it == '{' ) {
@@ -79,6 +83,9 @@ int Vars::ReplaceVars( std::string & str, bool colors )
 
 			if( colors && COLORS.find( var ) != COLORS.end() )
 				val = COLORS[ var ];
+			
+			if( val.empty() )
+				val = Env::GetEnvVar( var );
 
 			if( val.empty() )
 				val = v->GetVar( var );
@@ -96,4 +103,24 @@ int Vars::ReplaceVars( std::string & str, bool colors )
 	}
 
 	return ctr;
+}
+
+std::string Vars::Replace( std::string && str )
+{
+	this->Replace( str );
+	return str;
+}
+
+std::vector< std::string > Vars::Replace( std::vector< std::string > && vec )
+{
+	for( auto & str : vec )
+		this->Replace( str );
+
+	return vec;
+}
+
+int Vars::ReplaceVars( std::string & str, bool colors )
+{
+	auto v = GetSingleton();
+	return v->Replace( str, colors );
 }

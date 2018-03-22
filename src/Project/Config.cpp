@@ -6,25 +6,74 @@
 #include "../../include/DisplayFuncs.hpp"
 #include "../../include/FSFuncs.hpp"
 #include "../../include/Environment.hpp"
+#include "../../include/Vars.hpp"
 
 #include "../../include/Project/Config.hpp"
+
+// Helper function to avoid crash for YAML-CPP
+template< typename T > std::string GetString( T & t, const std::string & v )
+{
+	if( t[ v ] )
+		return t[ v ].template as< std::string >();
+
+	return "";
+}
+template< typename T > std::string GetString( T & t, const std::string & v, const std::string & v2 )
+{
+	if( t[ v ] && t[ v ][ v2 ] )
+		return t[ v ][ v2 ].template as< std::string >();
+
+	return "";
+}
+template< typename T > std::vector< std::string > GetStringVector( T & t, const std::string & v )
+{
+	std::vector< std::string > res;
+	if( t[ v ] ) {
+		for( auto val : t[ v ] ) {
+			res.push_back( val.template as< std::string >() );
+		}
+	}
+
+	return res;
+}
+template< typename T > std::vector< std::string > GetStringVector( T & t, const std::string & v, const std::string & v2 )
+{
+	std::vector< std::string > res;
+	if( t[ v ] && t[ v ][ v2 ] ) {
+		for( auto val : t[ v ][ v2 ] ) {
+			res.push_back( val.template as< std::string >() );
+		}
+	}
+
+	return res;
+}
 
 void AddLibrary( const Library & lib );
 void AddBuild( const Build & build );
 
 ProjectData & GetData();
 
-bool ProjectConfig::GenerateDefaultConfig()
+bool ProjectConfig::GetDefaultAuthor()
 {
 	YAML::Node conf = YAML::LoadFile( Env::CCP4M_CONFIG_FILE );
 
-	if( !conf[ "name" ] || !conf[ "email" ] ) {
+	auto v = Vars::GetSingleton();
+
+	pdata.author.name = v->Replace( GetString( conf, "name" ) );
+	pdata.author.email = v->Replace( GetString( conf, "email" ) );
+
+	if( pdata.author.name.empty() || pdata.author.email.empty() ) {
 		Display( "{r}Unable to fetch name and email from system config.{0}" );
 		return false;
 	}
 
-	pdata.author.name = conf[ "name" ].as< std::string >();
-	pdata.author.email = conf[ "email" ].as< std::string >();
+	return true;
+}
+
+bool ProjectConfig::GenerateDefaultConfig()
+{
+	if( !this->GetDefaultAuthor() )
+		return false;
 
 	pdata.name = "DefaultProject";
 	pdata.version = "0.1";
@@ -39,6 +88,8 @@ bool ProjectConfig::GenerateDefaultConfig()
 	Build build;
 	build.name = "DefaultProject";
 	build.main_src = "src/main.cpp";
+
+	return true;
 }
 
 bool ProjectConfig::LoadFile( const std::string & file )
@@ -48,24 +99,30 @@ bool ProjectConfig::LoadFile( const std::string & file )
 
 	YAML::Node conf = YAML::LoadFile( file );
 
-	pdata.name = conf[ "name" ].as< std::string >();
-	pdata.version = conf[ "version" ].as< std::string >();
-	pdata.lang = conf[ "lang" ].as< std::string >();
-	pdata.std = conf[ "std" ].as< std::string >();
-	pdata.type = conf[ "type" ].as< std::string >();
-	pdata.compile_flags = conf[ "compile_flags" ].as< std::string >();
-	pdata.build_date = conf[ "build_date" ].as< std::string >();
+	auto v = Vars::GetSingleton();
 
-	pdata.author.name = conf[ "author" ][ "name" ].as< std::string >();
-	pdata.author.email = conf[ "author" ][ "email" ].as< std::string >();
+	pdata.name = v->Replace( GetString( conf, "name" ) );
+	pdata.version = v->Replace( GetString( conf, "version" ) );
+	pdata.lang = v->Replace( GetString( conf, "lang" ) );
+	pdata.std = v->Replace( GetString( conf, "std" ) );
+	pdata.type = v->Replace( GetString( conf, "type" ) );
+	pdata.compile_flags = v->Replace( GetString( conf, "compile_flags" ) );
+	pdata.build_date = v->Replace( GetString( conf, "build_date" ) );
+
+	pdata.author.name = v->Replace( GetString( conf, "author", "name" ) );
+	pdata.author.email = v->Replace( GetString( conf, "author", "email" ) );
+
+	if( ( pdata.author.name.empty() || pdata.author.email.empty() ) && !this->GetDefaultAuthor() ) {
+		return false;
+	}
 
 	for( auto libdata : conf[ "libs" ] ) {
 		Library lib;
 
-		lib.name = libdata[ "name" ].as< std::string >();
-		lib.version = libdata[ "version" ].as< std::string >();
-		lib.inc_flags = libdata[ "inc_flags" ].as< std::string >();
-		lib.lib_flags = libdata[ "lib_flags" ].as< std::string >();
+		lib.name = v->Replace( GetString( libdata, "name" ) );
+		lib.version = v->Replace( GetString( libdata, "version" ) );
+		lib.inc_flags = v->Replace( GetString( libdata, "inc_flags" ) );
+		lib.lib_flags = v->Replace( GetString( libdata, "lib_flags" ) );
 
 		pdata.libs.push_back( lib );
 	}
@@ -73,18 +130,25 @@ bool ProjectConfig::LoadFile( const std::string & file )
 	for( auto builddata : conf[ "builds" ] ) {
 		Build build;
 
-		build.name = builddata[ "name" ].as< std::string >();
-		build.main_src = builddata[ "main_src" ].as< std::string >();
+		build.name = v->Replace( GetString( builddata, "name" ) );
+		build.main_src = v->Replace( GetString( builddata, "main_src" ) );
 
-		for( auto othersrcs : conf[ "builds" ][ "other_src" ] ) {
-			build.srcs.push_back( othersrcs.as< std::string >() );
-		}
+		build.srcs = v->Replace( GetStringVector( builddata, "other_src" ) );
 
 		pdata.builds.push_back( build );
 	}
 }
 
-bool SaveFile( const std::string & file );
+bool ProjectConfig::SaveFile( const std::string & file )
+{
+	if( !FS::CreateFile( file ) ) {
+		return false;
+	}
+
+	YAML::Emitter o;
+
+
+}
 
 void ProjectConfig::DisplayAll()
 {
@@ -111,9 +175,10 @@ void ProjectConfig::DisplayAll()
 
 	for( auto build : pdata.builds ) {
 		Display( "\t{bm}Name: {bg}" + build.name + "\n" );
-		Display( "\t{bm}Version: {bg}" + build.main_src + "\n" );
+		Display( "\t{bm}Main source: {bg}" + build.main_src + "\n" );
+		Display( "\t{bm}Other sources:\n" );
 		for( auto s : build.srcs ) {
-			Display( "\t{bg}" + s + "\n" );
+			Display( "\t\t{bg}" + s + "\n" );
 		}
 	}
 

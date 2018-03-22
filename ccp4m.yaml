@@ -16,4 +16,6 @@ builds:
 -
   name: 'ccp4m'
   main_src: 'src/main.cpp'
-  other_src: 'src/*'
+  other_src:
+  - 'src/*'
+#  - '{HOME}-{LOGNAME}'
