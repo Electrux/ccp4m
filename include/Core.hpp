@@ -5,6 +5,7 @@
 
 namespace Core
 {
+	bool ReturnBool( bool val );
 	bool Init();
 }
 

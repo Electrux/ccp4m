@@ -7,6 +7,8 @@
 #include "../../include/FSFuncs.hpp"
 #include "../../include/Environment.hpp"
 #include "../../include/Vars.hpp"
+#include "../../include/GlobalData.hpp"
+#include "../../include/Core.hpp"
 
 #include "../../include/Project/Config.hpp"
 
@@ -51,10 +53,18 @@ template< typename T > std::vector< std::string > GetStringVector( T & t, const 
 void AddLibrary( const Library & lib );
 void AddBuild( const Build & build );
 
-ProjectData & GetData();
+ProjectData & ProjectConfig::GetData()
+{
+	return this->pdata;
+}
 
 bool ProjectConfig::GetDefaultAuthor()
 {
+	Global::logger.AddLogSection( "ProjectConfig" );
+	Global::logger.AddLogSection( "GetDefaultAuthor" );
+
+	Global::logger.AddLogString( LogLevels::ALL, "Fetching default author information from system configuration" );
+
 	YAML::Node conf = YAML::LoadFile( Env::CCP4M_CONFIG_FILE );
 
 	auto v = Vars::GetSingleton();
@@ -64,10 +74,12 @@ bool ProjectConfig::GetDefaultAuthor()
 
 	if( pdata.author.name.empty() || pdata.author.email.empty() ) {
 		Display( "{r}Unable to fetch name and email from system config.{0}" );
-		return false;
+		Global::logger.AddLogString( LogLevels::ALL, "Default author information fetch failed. Name and/or email does not exist" );
+		return Core::ReturnBool( false );
 	}
 
-	return true;
+	Global::logger.AddLogString( LogLevels::ALL, "Default author information fetched successfully - Name: " + pdata.author.name + " Email: " + pdata.author.email );
+	return Core::ReturnBool( true );
 }
 
 bool ProjectConfig::GenerateDefaultConfig()
@@ -97,6 +109,11 @@ bool ProjectConfig::LoadFile( const std::string & file )
 	if( !FS::LocExists( file ) )
 		return false;
 
+	Global::logger.AddLogSection( "ProjectConfig" );
+	Global::logger.AddLogSection( "LoadFile" );
+
+	Global::logger.AddLogString( LogLevels::ALL, "Loading configuration from file: " + file );
+
 	YAML::Node conf = YAML::LoadFile( file );
 
 	auto v = Vars::GetSingleton();
@@ -113,7 +130,8 @@ bool ProjectConfig::LoadFile( const std::string & file )
 	pdata.author.email = v->Replace( GetString( conf, "author", "email" ) );
 
 	if( ( pdata.author.name.empty() || pdata.author.email.empty() ) && !this->GetDefaultAuthor() ) {
-		return false;
+		Global::logger.AddLogString( LogLevels::ALL, "Configuration load failed. No author information in this file or in system configuration" );
+		return Core::ReturnBool( false );
 	}
 
 	for( auto libdata : conf[ "libs" ] ) {
@@ -137,17 +155,79 @@ bool ProjectConfig::LoadFile( const std::string & file )
 
 		pdata.builds.push_back( build );
 	}
+
+	Global::logger.AddLogString( LogLevels::ALL, "Loaded configuration file successfully" );
+
+	return Core::ReturnBool( true );
 }
 
 bool ProjectConfig::SaveFile( const std::string & file )
 {
-	if( !FS::CreateFile( file ) ) {
+	if( !FS::CreateFile( file ) )
 		return false;
-	}
+
+	Global::logger.AddLogSection( "ProjectConfig" );
+	Global::logger.AddLogSection( "SaveFile" );
+
+	Global::logger.AddLogString( LogLevels::ALL, "Saving configuration for: " + pdata.name + " to file: " + file );
 
 	YAML::Emitter o;
+	o << YAML::BeginMap;
+	o << YAML::Key << "name" << YAML::Value << pdata.name;
+	o << YAML::Key << "version" << YAML::Value << pdata.version;
+	o << YAML::Key << "lang" << YAML::Value << pdata.lang;
+	o << YAML::Key << "std" << YAML::Value << pdata.std;
+	o << YAML::Key << "type" << YAML::Value << pdata.type;
+	o << YAML::Key << "compile_flags" << YAML::Value << pdata.compile_flags;
+	o << YAML::Key << "build_date" << YAML::Value << pdata.build_date;
 
+	o << YAML::Key << "author" << YAML::Value;
+	o << YAML::BeginMap;
+	o << YAML::Key << "name" << YAML::Value << pdata.author.name;
+	o << YAML::Key << "email" << YAML::Value << pdata.author.email;
+	o << YAML::EndMap;
 
+	o << YAML::Key << "libs" << YAML::Value;
+	for( auto lib : pdata.libs ) {
+		o << YAML::BeginSeq;
+		o << YAML::BeginMap;
+
+		o << YAML::Key << "name" << YAML::Value << lib.name;
+		o << YAML::Key << "version" << YAML::Value << lib.version;
+		o << YAML::Key << "inc_flags" << YAML::Value << lib.inc_flags;
+		o << YAML::Key << "lib_flags" << YAML::Value << lib.lib_flags;
+
+		o << YAML::EndMap;
+		o << YAML::EndSeq;
+	}
+
+	o << YAML::Key << "builds" << YAML::Value;
+	for( auto build : pdata.builds ) {
+		o << YAML::BeginSeq;
+		o << YAML::BeginMap;
+
+		o << YAML::Key << "name" << YAML::Value << build.name;
+		o << YAML::Key << "main_src" << YAML::Value << build.main_src;
+		o << YAML::Key << "other_src" << YAML::Value;
+		o << YAML::BeginSeq;
+		for( auto src : build.srcs ) {
+			o << src;
+		}
+		o << YAML::EndSeq;
+
+		o << YAML::EndMap;
+		o << YAML::EndSeq;
+	}
+
+	o << YAML::EndMap;
+
+	if( FS::CreateFile( file, o.c_str() ) ) {
+		Global::logger.AddLogString( LogLevels::ALL, "Configuration file successfully saved" );
+		return Core::ReturnBool( true );
+	}
+
+	Global::logger.AddLogString( LogLevels::ALL, "Configuration file save failed" );
+	return Core::ReturnBool( false );
 }
 
 void ProjectConfig::DisplayAll()

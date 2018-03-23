@@ -11,28 +11,38 @@
 
 #include "../include/Core.hpp"
 
+bool Core::ReturnBool( bool val )
+{
+	// Remove function and class / namespace
+	Global::logger.RemoveLastLogSection();
+	Global::logger.RemoveLastLogSection();
+	return val;
+}
+
 bool Core::Init()
 {
 	bool new_config = false;
 
 	Global::logger.AddLogSection( "Core" );
+	Global::logger.AddLogSection( "Init" );
 
-	if( !FS::LocExists( Env::CCP4M_DIR ) && !FS::CreateDir( Env::CCP4M_DIR ) ) {
+	// Also checks if location already exists
+	if( !FS::CreateDir( Env::CCP4M_DIR ) ) {
 		Display( "{r}Unable to create configuration directory! Please check permissions for your {fc}HOME{r} directory{0}\n" );
 		Global::logger.AddLogString( LogLevels::ALL, "Failed to create configuration directory: " + Env::CCP4M_DIR );
-		return false;
+		return ReturnBool( false );
 	}
 
 	if( !FS::LocExists( Env::CCP4M_CONFIG_FILE ) ) {
 		if( !FS::CreateFile( Env::CCP4M_CONFIG_FILE ) ) {
 			Display( "{r}Unable to create configuration file! Please check permissions for directory: {fc}" + Env::CCP4M_DIR + "{0}\n" );
-			return false;
+			return ReturnBool( false );
 		}
 		new_config = true;
 	}
 
 	if( !new_config )
-		return true;
+		return ReturnBool( true );
 
 	Display( "{fc}Initializing first time setup...\n\n" );
 	Display( "{sc}Enter your name: {tc}" );
@@ -59,13 +69,11 @@ bool Core::Init()
 	if( !FS::CreateFile( Env::CCP4M_CONFIG_FILE, out.c_str() ) ) {
 		Display( "{fc}Failed to create system config. Please check if you have correct permissions. {br}" + UTF::CROSS + "{0}\n" );
 		Global::logger.AddLogString( LogLevels::ALL, "Failed to create system configuration file: " + Env::CCP4M_CONFIG_FILE );
-		return false;
+		return ReturnBool( false );
 	}
 
 	Global::logger.AddLogString( LogLevels::ALL, "Successfully created system configuration file" );
 
-	Global::logger.RemoveLastLogSection();
-
 	Display( "{fc}Successfully generated system config. {bg}" + UTF::TICK + "{0}\n" );
-	return true;
+	return ReturnBool( true );
 }

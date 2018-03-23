@@ -39,6 +39,8 @@ int main( int argc, char ** argv )
 	conf.LoadFile( "ccp4m.yaml" );
 	conf.DisplayAll();
 
+	conf.SaveFile( "ccp4m_copy.yaml" );
+
 	if( args.size() < 2 ) {
 		Helps::Usage( args );
 		err_code = 0;
