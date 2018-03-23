@@ -2,8 +2,7 @@
 #include <map>
 #include <iostream>
 
-#include "../include/GlobalData.hpp"
-#include "../include/Colors.hpp"
+#include "../include/Core.hpp"
 #include "../include/Environment.hpp"
 
 #include "../include/Vars.hpp"
@@ -13,7 +12,7 @@ Vars * Vars::v = nullptr;
 Vars::Vars()
 {
 	// Default error string, for when there exists no value for a particular key
-	this->vars[ Global::ERR_STR ] = Global::ERR_STR;
+	this->vars[ Core::ERR_STR ] = Core::ERR_STR;
 }
 
 Vars::~Vars() {}
@@ -28,7 +27,7 @@ std::string Vars::GetVar( const std::string & key )
 	if( this->vars.find( key ) != this->vars.end() )
 		return this->vars[ key ];
 
-	return this->vars[ Global::ERR_STR ];
+	return this->vars[ Core::ERR_STR ];
 }
 
 Vars * Vars::GetSingleton()
@@ -54,9 +53,9 @@ void Vars::Initialize()
 	v->AddVar( "CCP4M_DIR", Env::CCP4M_DIR );
 	v->AddVar( "CCP4M_CONFIG_FILE", Env::CCP4M_CONFIG_FILE );
 
-	Global::logger.AddLogSection( "Vars" );
-	Global::logger.AddLogString( LogLevels::ALL, "Vars initialized successfully" );
-	Global::logger.RemoveLastLogSection();
+	Core::logger.AddLogSection( "Vars" );
+	Core::logger.AddLogString( LogLevels::ALL, "Vars initialized successfully" );
+	Core::logger.RemoveLastLogSection();
 }
 
 // To avoid using static replace function which will cause a lot of overhead if the function is called many times.
@@ -85,8 +84,8 @@ int Vars::Replace( std::string & str, bool colors )
 
 			std::string val;
 
-			if( colors && COLORS.find( var ) != COLORS.end() )
-				val = COLORS[ var ];
+			if( colors && Core::COLORS.find( var ) != Core::COLORS.end() )
+				val = Core::COLORS[ var ];
 			
 			if( val.empty() )
 				val = Env::GetEnvVar( var );
@@ -94,7 +93,7 @@ int Vars::Replace( std::string & str, bool colors )
 			if( val.empty() )
 				val = v->GetVar( var );
 
-			if( val == Global::ERR_STR )
+			if( val == Core::ERR_STR )
 				continue;
 
 			it = str.insert( it, val.begin(), val.end() );

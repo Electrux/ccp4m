@@ -3,33 +3,72 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "../include/GlobalData.hpp"
 #include "../include/FSFuncs.hpp"
 #include "../include/DisplayFuncs.hpp"
 #include "../include/Environment.hpp"
 #include "../include/UTFChars.hpp"
+#include "../include/Logger/Logger.hpp"
+#include "../include/Logger/TimeManager.hpp"
 
 #include "../include/Core.hpp"
+
+const std::string Core::ERR_STR = "__ERR__";
+const std::string Core::FILE_TIME_FORMAT = "%ds%.%MS%.%D%.%YS%";
+
+std::map< std::string, std::string > Core::COLORS = {
+	{ "0", "\033[0m" },
+
+	{ "r", "\033[0;31m" },
+	{ "g", "\033[0;32m" },
+	{ "y", "\033[0;33m" },
+	{ "b", "\033[0;34m" },
+	{ "m", "\033[0;35m" },
+	{ "c", "\033[0;36m" },
+	{ "w", "\033[0;37m" },
+
+	{ "br", "\033[1;31m" },
+	{ "bg", "\033[1;32m" },
+	{ "by", "\033[1;33m" },
+	{ "bb", "\033[1;34m" },
+	{ "bm", "\033[1;35m" },
+	{ "bc", "\033[1;36m" },
+	{ "bw", "\033[1;37m" },
+
+	{ "fc", "\033[0;35m" },
+	{ "sc", "\033[0;33m" },
+	{ "tc", "\033[0;37m" },
+	{ "lc", "\033[0;36m" },
+};
+
+Logger Core::logger;
 
 bool Core::ReturnBool( bool val )
 {
 	// Remove function and class / namespace
-	Global::logger.RemoveLastLogSection();
-	Global::logger.RemoveLastLogSection();
+	logger.RemoveLastLogSection();
+	logger.RemoveLastLogSection();
 	return val;
 }
 
-bool Core::Init()
+int Core::ReturnInt( int val )
+{
+	// Remove function and class / namespace
+	logger.RemoveLastLogSection();
+	logger.RemoveLastLogSection();
+	return val;
+}
+
+bool Core::InitCore()
 {
 	bool new_config = false;
 
-	Global::logger.AddLogSection( "Core" );
-	Global::logger.AddLogSection( "Init" );
+	Core::logger.AddLogSection( "Core" );
+	Core::logger.AddLogSection( "Init" );
 
 	// Also checks if location already exists
 	if( !FS::CreateDir( Env::CCP4M_DIR ) ) {
 		Display( "{r}Unable to create configuration directory! Please check permissions for your {fc}HOME{r} directory{0}\n" );
-		Global::logger.AddLogString( LogLevels::ALL, "Failed to create configuration directory: " + Env::CCP4M_DIR );
+		Core::logger.AddLogString( LogLevels::ALL, "Failed to create configuration directory: " + Env::CCP4M_DIR );
 		return ReturnBool( false );
 	}
 
@@ -55,7 +94,7 @@ bool Core::Init()
 	std::string email;
 	std::getline( std::cin, email );
 
-	Global::logger.AddLogString( LogLevels::ALL, "Config username: " + name + ", email: " + email );
+	Core::logger.AddLogString( LogLevels::ALL, "Config username: " + name + ", email: " + email );
 
 	Display( "\n{fc}Generating system config...\n" );
 
@@ -68,12 +107,40 @@ bool Core::Init()
 
 	if( !FS::CreateFile( Env::CCP4M_CONFIG_FILE, out.c_str() ) ) {
 		Display( "{fc}Failed to create system config. Please check if you have correct permissions. {br}" + UTF::CROSS + "{0}\n" );
-		Global::logger.AddLogString( LogLevels::ALL, "Failed to create system configuration file: " + Env::CCP4M_CONFIG_FILE );
+		Core::logger.AddLogString( LogLevels::ALL, "Failed to create system configuration file: " + Env::CCP4M_CONFIG_FILE );
 		return ReturnBool( false );
 	}
 
-	Global::logger.AddLogString( LogLevels::ALL, "Successfully created system configuration file" );
+	Core::logger.AddLogString( LogLevels::ALL, "Successfully created system configuration file" );
 
 	Display( "{fc}Successfully generated system config. {bg}" + UTF::TICK + "{0}\n" );
 	return ReturnBool( true );
+}
+
+bool Core::InitLogger( const std::string & file )
+{
+	logger.SetMaxLogsPerIteration( 25 );
+
+	logger.SetLogLevel( LogLevels::ALL );
+
+	logger.SetLogOnConsole( false );
+	logger.SetLogInFile( true );
+
+	logger.SetLogFile( file );
+
+	return logger.BeginLogging();
+}
+
+bool Core::EndLogger()
+{
+	return logger.IsLogging() ? logger.EndLogging() : false;
+}
+
+std::string Core::GetCurrDateTime()
+{
+	TimeManager tm;
+
+	tm.SetFormat( Core::FILE_TIME_FORMAT );
+
+	return tm.GetFormattedDateTime();
 }

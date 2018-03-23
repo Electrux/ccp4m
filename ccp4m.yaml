@@ -6,6 +6,10 @@ type: 'bin'
 compile_flags: '-O2'
 build_date: '2018-03-09T21:25:25+05:30'
 
+author:
+  name: Electrux
+  email: ElectruxRedsworth@gmail.com
+
 libs:
 -
   name: 'yaml-cpp'

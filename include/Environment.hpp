@@ -13,7 +13,10 @@ namespace Env
 
 	std::string GetEnvVar( const std::string & key );
 
-	std::vector< std::string > EnvPathVec();
+	bool SetCurrentDir( const std::string & dir );
+	std::string GetCurrentDir();
+
+	std::vector< std::string > GetEnvPathVec();
 }
 
 #endif // ENVIRONMENT_HPP

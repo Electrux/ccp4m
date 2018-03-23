@@ -7,7 +7,6 @@
 #include "../../include/FSFuncs.hpp"
 #include "../../include/Environment.hpp"
 #include "../../include/Vars.hpp"
-#include "../../include/GlobalData.hpp"
 #include "../../include/Core.hpp"
 
 #include "../../include/Project/Config.hpp"
@@ -73,10 +72,10 @@ ProjectData & ProjectConfig::GetData()
 
 bool ProjectConfig::GetDefaultAuthor()
 {
-	Global::logger.AddLogSection( "ProjectConfig" );
-	Global::logger.AddLogSection( "GetDefaultAuthor" );
+	Core::logger.AddLogSection( "ProjectConfig" );
+	Core::logger.AddLogSection( "GetDefaultAuthor" );
 
-	Global::logger.AddLogString( LogLevels::ALL, "Fetching default author information from system configuration" );
+	Core::logger.AddLogString( LogLevels::ALL, "Fetching default author information from system configuration" );
 
 	YAML::Node conf = YAML::LoadFile( Env::CCP4M_CONFIG_FILE );
 
@@ -87,11 +86,11 @@ bool ProjectConfig::GetDefaultAuthor()
 
 	if( pdata.author.name.empty() || pdata.author.email.empty() ) {
 		Display( "{r}Unable to fetch name and email from system config.{0}" );
-		Global::logger.AddLogString( LogLevels::ALL, "Default author information fetch failed. Name and/or email does not exist" );
+		Core::logger.AddLogString( LogLevels::ALL, "Default author information fetch failed. Name and/or email does not exist" );
 		return Core::ReturnBool( false );
 	}
 
-	Global::logger.AddLogString( LogLevels::ALL, "Default author information fetched successfully - Name: " + pdata.author.name + " Email: " + pdata.author.email );
+	Core::logger.AddLogString( LogLevels::ALL, "Default author information fetched successfully - Name: " + pdata.author.name + " Email: " + pdata.author.email );
 	return Core::ReturnBool( true );
 }
 
@@ -122,10 +121,10 @@ bool ProjectConfig::LoadFile( const std::string & file )
 	if( !FS::LocExists( file ) )
 		return false;
 
-	Global::logger.AddLogSection( "ProjectConfig" );
-	Global::logger.AddLogSection( "LoadFile" );
+	Core::logger.AddLogSection( "ProjectConfig" );
+	Core::logger.AddLogSection( "LoadFile" );
 
-	Global::logger.AddLogString( LogLevels::ALL, "Loading configuration from file: " + file );
+	Core::logger.AddLogString( LogLevels::ALL, "Loading configuration from file: " + file );
 
 	YAML::Node conf = YAML::LoadFile( file );
 
@@ -143,7 +142,7 @@ bool ProjectConfig::LoadFile( const std::string & file )
 	pdata.author.email = v->Replace( GetString( conf, "author", "email" ) );
 
 	if( ( pdata.author.name.empty() || pdata.author.email.empty() ) && !this->GetDefaultAuthor() ) {
-		Global::logger.AddLogString( LogLevels::ALL, "Configuration load failed. No author information in this file or in system configuration" );
+		Core::logger.AddLogString( LogLevels::ALL, "Configuration load failed. No author information in this file or in system configuration" );
 		return Core::ReturnBool( false );
 	}
 
@@ -169,7 +168,7 @@ bool ProjectConfig::LoadFile( const std::string & file )
 		pdata.builds.push_back( build );
 	}
 
-	Global::logger.AddLogString( LogLevels::ALL, "Loaded configuration file successfully" );
+	Core::logger.AddLogString( LogLevels::ALL, "Loaded configuration file successfully" );
 
 	return Core::ReturnBool( true );
 }
@@ -179,10 +178,10 @@ bool ProjectConfig::SaveFile( const std::string & file )
 	if( !FS::CreateFile( file ) )
 		return false;
 
-	Global::logger.AddLogSection( "ProjectConfig" );
-	Global::logger.AddLogSection( "SaveFile" );
+	Core::logger.AddLogSection( "ProjectConfig" );
+	Core::logger.AddLogSection( "SaveFile" );
 
-	Global::logger.AddLogString( LogLevels::ALL, "Saving configuration for: " + pdata.name + " to file: " + file );
+	Core::logger.AddLogString( LogLevels::ALL, "Saving configuration for: " + pdata.name + " to file: " + file );
 
 	YAML::Emitter o;
 	o << YAML::BeginMap;
@@ -235,11 +234,11 @@ bool ProjectConfig::SaveFile( const std::string & file )
 	o << YAML::EndMap;
 
 	if( FS::CreateFile( file, o.c_str() ) ) {
-		Global::logger.AddLogString( LogLevels::ALL, "Configuration file successfully saved" );
+		Core::logger.AddLogString( LogLevels::ALL, "Configuration file successfully saved" );
 		return Core::ReturnBool( true );
 	}
 
-	Global::logger.AddLogString( LogLevels::ALL, "Configuration file save failed" );
+	Core::logger.AddLogString( LogLevels::ALL, "Configuration file save failed" );
 	return Core::ReturnBool( false );
 }
 
