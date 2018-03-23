@@ -50,8 +50,21 @@ template< typename T > std::vector< std::string > GetStringVector( T & t, const 
 	return res;
 }
 
-void AddLibrary( const Library & lib );
-void AddBuild( const Build & build );
+void ProjectConfig::AddLibrary( const Library & lib )
+{
+	if( lib.name.empty() )
+		return;
+
+	this->pdata.libs.push_back( lib );
+}
+
+void ProjectConfig::AddBuild( const Build & build )
+{
+	if( build.name.empty() )
+		return;
+
+	this->pdata.builds.push_back( build );
+}
 
 ProjectData & ProjectConfig::GetData()
 {
