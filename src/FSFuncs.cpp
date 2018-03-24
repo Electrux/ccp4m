@@ -2,9 +2,12 @@
 #include <fstream>
 #include <algorithm>
 #include <sys/stat.h>
+#include <dirent.h>
+#include <regex>
 
 #include "../include/Environment.hpp"
 #include "../include/Core.hpp"
+#include "../include/DisplayFuncs.hpp"
 
 #include "../include/FSFuncs.hpp"
 
@@ -134,4 +137,49 @@ bool FS::CreateFileIfNotExists( const std::string & loc, const std::string & con
 
 	Core::logger.AddLogString( LogLevels::ALL, "Successfully created file: " + loc + " with contents spanning " + std::to_string( contents.size() ) + " bytes" );
 	return Core::ReturnBool( true );
+}
+
+std::vector< std::string > FS::GetFilesInDir( const std::string & loc, const std::regex & regex, const std::vector< std::string > & except )
+{
+	std::string fdir = loc;
+
+	Env::ReplaceTildeWithHome( fdir );
+
+	if( !fdir.empty() && * fdir.begin() == '.' ) {
+		fdir.erase( fdir.begin() );
+		if( !fdir.empty() && * fdir.begin() == '/' )
+			fdir.erase( fdir.begin() );
+	}
+
+	if( fdir.size() > 0 && * ( fdir.end() - 1 ) != '/' )
+		fdir += "/";
+
+	DIR * dir;
+	struct dirent * ent;
+
+	std::string dir_to_open = fdir.empty() ? "." : fdir;
+
+	std::vector< std::string > res;
+
+	if( ( dir = opendir( dir_to_open.c_str() ) ) != NULL ) {
+		while( ( ent = readdir( dir ) ) != NULL ) {
+			if( strcmp( ent->d_name, "." ) == 0 || strcmp( ent->d_name, ".." ) == 0 )
+				continue;
+			if( strncmp( ent->d_name, ".", strlen( "." ) ) == 0 )
+				continue;
+
+			std::string loc_name = fdir.empty() ? ent->d_name : fdir + ent->d_name;
+
+			if( ent->d_type == DT_DIR ) {
+				auto tempres = GetFilesInDir( loc_name, regex, except );
+				res.insert( res.end(), tempres.begin(), tempres.end() );
+				continue;
+			}
+			if( std::regex_match( loc_name, regex ) && std::find( except.begin(), except.end(), loc_name ) == except.end() ) {
+				res.push_back( loc_name );
+			}
+		}
+	}
+
+	return res;
 }

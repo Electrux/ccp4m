@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include <yaml-cpp/yaml.h>
 
@@ -11,6 +12,28 @@
 #include "../include/Logger/TimeManager.hpp"
 
 #include "../include/Core.hpp"
+
+Core::Arch Core::arch =
+#ifdef __linux__
+	Core::LINUX
+#elif __APPLE__
+	Core::MAC
+#elif __FreeBSD__
+	Core::BSD
+#else
+	Core::OTHER
+#endif
+;
+
+void Core::SetVarArch( std::string & var, const std::vector< std::string > & opts )
+{
+	var = opts.size() <= arch ? "" : opts[ arch ];
+}
+
+void Core::SetVarArch( int & var, const std::vector< int > & opts )
+{
+	var = opts.size() <= arch ? std::numeric_limits< int >().min() : opts[ arch ];
+}
 
 const std::string Core::ERR_STR = "__ERR__";
 const std::string Core::FILE_TIME_FORMAT = "%ds%.%MS%.%D%.%YS%";

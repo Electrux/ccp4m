@@ -8,6 +8,19 @@
 
 namespace Core
 {
+	enum Arch
+	{
+		LINUX,
+		MAC,
+		BSD,
+		OTHER
+	};
+
+	extern Arch arch;
+
+	void SetVarArch( std::string & var, const std::vector< std::string > & opts );
+	void SetVarArch( int & var, const std::vector< int > & opts );
+
 	extern const std::string ERR_STR;
 	extern const std::string FILE_TIME_FORMAT;
 

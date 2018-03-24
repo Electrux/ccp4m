@@ -5,7 +5,7 @@
 
 namespace Project
 {
-	int BuildBinary( ProjectConfig & conf );
+	int BuildBinary( const ProjectData & data, const int data_i );
 }
 
 #endif // PROJECT_BUILD_BINARY_HPP

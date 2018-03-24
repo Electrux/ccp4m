@@ -103,7 +103,6 @@ bool ProjectConfig::GenerateDefaultConfig()
 	pdata.version = "0.1";
 	pdata.lang = "c++";
 	pdata.std = "14";
-	pdata.type = "bin";
 	pdata.compile_flags = "-O2";
 
 	// Will be set when the build command is called
@@ -111,7 +110,8 @@ bool ProjectConfig::GenerateDefaultConfig()
 
 	Build build;
 	build.name = "DefaultProject";
-	build.main_src = "src/main.cpp";
+	build.type = "bin";
+	build.main_src = "./src/main.cpp";
 
 	return true;
 }
@@ -134,7 +134,6 @@ bool ProjectConfig::LoadFile( const std::string & file )
 	pdata.version = v->Replace( GetString( conf, "version" ) );
 	pdata.lang = v->Replace( GetString( conf, "lang" ) );
 	pdata.std = v->Replace( GetString( conf, "std" ) );
-	pdata.type = v->Replace( GetString( conf, "type" ) );
 	pdata.compile_flags = v->Replace( GetString( conf, "compile_flags" ) );
 	pdata.build_date = v->Replace( GetString( conf, "build_date" ) );
 
@@ -161,6 +160,7 @@ bool ProjectConfig::LoadFile( const std::string & file )
 		Build build;
 
 		build.name = v->Replace( GetString( builddata, "name" ) );
+		build.type = v->Replace( GetString( builddata, "type" ) );
 		build.main_src = v->Replace( GetString( builddata, "main_src" ) );
 
 		build.srcs = v->Replace( GetStringVector( builddata, "other_src" ) );
@@ -189,7 +189,6 @@ bool ProjectConfig::SaveFile( const std::string & file )
 	o << YAML::Key << "version" << YAML::Value << pdata.version;
 	o << YAML::Key << "lang" << YAML::Value << pdata.lang;
 	o << YAML::Key << "std" << YAML::Value << pdata.std;
-	o << YAML::Key << "type" << YAML::Value << pdata.type;
 	o << YAML::Key << "compile_flags" << YAML::Value << pdata.compile_flags;
 	o << YAML::Key << "build_date" << YAML::Value << pdata.build_date;
 
@@ -219,6 +218,7 @@ bool ProjectConfig::SaveFile( const std::string & file )
 		o << YAML::BeginMap;
 
 		o << YAML::Key << "name" << YAML::Value << build.name;
+		o << YAML::Key << "type" << YAML::Value << build.type;
 		o << YAML::Key << "main_src" << YAML::Value << build.main_src;
 		o << YAML::Key << "other_src" << YAML::Value;
 		o << YAML::BeginSeq;
@@ -249,7 +249,6 @@ void ProjectConfig::DisplayAll()
 	Display( "{bm}Version: {bg}" + pdata.version + "\n" );
 	Display( "{bm}Lang: {bg}" + pdata.lang + "\n" );
 	Display( "{bm}Std: {bg}" + pdata.std + "\n" );
-	Display( "{bm}Type: {bg}" + pdata.type + "\n" );
 	Display( "{bm}Compile_Flags: {bg}" + pdata.compile_flags + "\n\n" );
 
 	Display( "{by}Libs:\n" );
@@ -267,6 +266,7 @@ void ProjectConfig::DisplayAll()
 
 	for( auto build : pdata.builds ) {
 		Display( "\t{bm}Name: {bg}" + build.name + "\n" );
+		Display( "{bm}Type: {bg}" + build.type + "\n" );
 		Display( "\t{bm}Main source: {bg}" + build.main_src + "\n" );
 		Display( "\t{bm}Other sources:\n" );
 		for( auto s : build.srcs ) {

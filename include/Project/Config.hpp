@@ -15,6 +15,7 @@ struct Library
 struct Build
 {
 	std::string name;
+	std::string type;
 	std::vector< std::string > srcs;
 	std::string main_src;
 };
@@ -33,7 +34,6 @@ struct ProjectData
 	std::string version;
 	std::string lang;
 	std::string std;
-	std::string type;
 	std::string compile_flags;
 
 	std::string build_date;

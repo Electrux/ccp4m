@@ -17,6 +17,8 @@ namespace Env
 	std::string GetCurrentDir();
 
 	std::vector< std::string > GetEnvPathVec();
+
+	void ReplaceTildeWithHome( std::string & str );
 }
 
 #endif // ENVIRONMENT_HPP

@@ -82,3 +82,15 @@ std::vector< std::string > Env::GetEnvPathVec()
 
 	return res;
 }
+
+void Env::ReplaceTildeWithHome( std::string & str )
+{
+	for( auto it = str.begin(); it != str.end(); ++it ) {
+		if( * it == '~' ) {
+			it = str.erase( it );
+			std::string home = Env::GetEnvVar( "HOME" );
+			str.insert( it, home.begin(), home.end() );
+			it += home.size() - 1;
+		}
+	}
+}

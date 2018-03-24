@@ -6,6 +6,7 @@
 #include "../include/FSFuncs.hpp"
 #include "../include/Environment.hpp"
 #include "../include/DisplayFuncs.hpp"
+#include "../include/UTFChars.hpp"
 
 #include "../include/Project/Config.hpp"
 #include "../include/Project/BuildBinary.hpp"
@@ -48,6 +49,14 @@ int Project::Build()
 		return Core::ReturnInt( 1 );
 	}
 
+	Display( "{fc}Creating build directories {0}...\n\n" );
+
+	if( !FS::CreateDir( "buildfiles" ) || !FS::CreateDir( "lib" ) || !FS::CreateDir( "bin" ) ) {
+		Core::logger.AddLogString( LogLevels::ALL, "Unable to create necessary project build directories" );
+		Display( "{fc}Unable to create necessary build directories. Exiting. {br}" + UTF::CROSS + "{0}\n" );
+		return Core::ReturnInt( 1 );
+	}
+
 	ProjectConfig pconf;
 
 	pconf.LoadFile( Env::CCP4M_PROJECT_CONFIG_FILE );
@@ -57,11 +66,14 @@ int Project::Build()
 		return Core::ReturnInt( 1 );
 	}
 
-	if( pconf.GetData().type == "bin" ) {
-		Project::BuildBinary( pconf );
-	}
-	else if( pconf.GetData().type == "lib" ) {
+	for( int i = 0; i < pconf.GetData().builds.size(); ++i ) {
+		if( pconf.GetData().builds[ i ].type == "bin" ) {
+			if( Project::BuildBinary( pconf.GetData(), i ) != 0 )
+				return Core::ReturnInt( 1 );
+		}
+		else if( pconf.GetData().builds[ i ].type == "lib" ) {
 
+		}
 	}
 
 	return Core::ReturnInt( 0 );
