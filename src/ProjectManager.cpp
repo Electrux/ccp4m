@@ -70,6 +70,8 @@ int Project::Build()
 		if( pconf.GetData().builds[ i ].type == "bin" ) {
 			if( Project::BuildBinary( pconf.GetData(), i ) != 0 )
 				return Core::ReturnInt( 1 );
+			pconf.GetData().build_date = Core::GetCurrDateTime();
+			pconf.SaveFile( Env::CCP4M_PROJECT_CONFIG_FILE );
 		}
 		else if( pconf.GetData().builds[ i ].type == "lib" ) {
 

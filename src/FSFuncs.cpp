@@ -4,6 +4,8 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <regex>
+#include <sstream>
+#include <streambuf>
 
 #include "../include/Environment.hpp"
 #include "../include/Core.hpp"
@@ -30,9 +32,9 @@ bool FS::LocExists( const std::string & loc )
 	return Core::ReturnBool( false );
 }
 
-bool FS::CreateDir( const std::string & dir )
+bool FS::CreateDir( const std::string & dir, bool check_exists )
 {
-	if( LocExists( dir ) )
+	if( check_exists && LocExists( dir ) )
 		return true;
 
 	int ctr = 0;
@@ -180,6 +182,27 @@ std::vector< std::string > FS::GetFilesInDir( const std::string & loc, const std
 			}
 		}
 	}
+
+	return res;
+}
+
+std::string FS::ReadFile( const std::string & filename )
+{
+	std::fstream file;
+
+	file.open( filename, std::ios::in );
+
+	if( !file )
+		return "";
+
+	std::string res;
+	std::string temp;
+
+	while( std::getline( file, temp ) ) {
+		res += temp + "\n";
+	}
+
+	file.close();
 
 	return res;
 }

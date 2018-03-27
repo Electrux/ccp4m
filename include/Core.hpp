@@ -24,6 +24,8 @@ namespace Core
 	extern const std::string ERR_STR;
 	extern const std::string FILE_TIME_FORMAT;
 
+	extern const std::string TMP_FILE;
+
 	extern std::map< std::string, std::string > COLORS;
 
 	extern Logger logger;

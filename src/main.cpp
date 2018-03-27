@@ -42,6 +42,8 @@ int main( int argc, char ** argv )
 		err_code = 0;
 	}
 
+	Display( "\n" );
+
 	if( args[ 1 ] == "project" ) {
 		err_code = Project::Handle( args );
 	}

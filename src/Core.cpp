@@ -37,6 +37,7 @@ void Core::SetVarArch( int & var, const std::vector< int > & opts )
 
 const std::string Core::ERR_STR = "__ERR__";
 const std::string Core::FILE_TIME_FORMAT = "%ds%.%MS%.%D%.%YS%";
+const std::string Core::TMP_FILE = ".ccp4mtmp";
 
 std::map< std::string, std::string > Core::COLORS = {
 	{ "0", "\033[0m" },
