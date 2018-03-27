@@ -161,6 +161,7 @@ bool ProjectConfig::LoadFile( const std::string & file )
 
 		build.name = v->Replace( GetString( builddata, "name" ) );
 		build.type = v->Replace( GetString( builddata, "type" ) );
+		build.build_type = v->Replace( GetString( builddata, "build_type" ) );
 		build.main_src = v->Replace( GetString( builddata, "main_src" ) );
 
 		build.srcs = v->Replace( GetStringVector( builddata, "other_src" ) );
@@ -267,6 +268,7 @@ void ProjectConfig::DisplayAll()
 	for( auto build : pdata.builds ) {
 		Display( "\t{bm}Name: {bg}" + build.name + "\n" );
 		Display( "{bm}Type: {bg}" + build.type + "\n" );
+		Display( "{bm}Build Type: {bg}" + build.build_type + "\n" );
 		Display( "\t{bm}Main source: {bg}" + build.main_src + "\n" );
 		Display( "\t{bm}Other sources:\n" );
 		for( auto s : build.srcs ) {

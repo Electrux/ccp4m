@@ -16,6 +16,7 @@ struct Build
 {
 	std::string name;
 	std::string type;
+	std::string build_type;
 	std::vector< std::string > srcs;
 	std::string main_src;
 };

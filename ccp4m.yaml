@@ -18,3 +18,10 @@ builds:
     main_src: src/main.cpp
     other_src:
       - src/(.*).cpp
+
+  - name: ccp4m2
+    type: lib
+    main_src: src/main.cpp
+    build_type: static
+    other_src:
+      - src/(.*).cpp

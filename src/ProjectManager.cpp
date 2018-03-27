@@ -25,7 +25,7 @@ int Project::Handle( const std::vector< std::string > & args )
 		//err_code = Project::New( args );
 	}
 	else if( args[ 2 ] == "build" ) {
-		err_code = Project::Build();
+		err_code = Build();
 	}
 	else if( args[ 2 ] == "run" ) {
 		//err_code = Project::Run( args );
@@ -70,13 +70,14 @@ int Project::Build()
 		if( pconf.GetData().builds[ i ].type == "bin" ) {
 			if( Project::BuildBinary( pconf.GetData(), i ) != 0 )
 				return Core::ReturnInt( 1 );
-			pconf.GetData().build_date = Core::GetCurrDateTime();
-			pconf.SaveFile( Env::CCP4M_PROJECT_CONFIG_FILE );
 		}
 		else if( pconf.GetData().builds[ i ].type == "lib" ) {
 
 		}
 	}
+
+	pconf.GetData().build_date = Core::GetCurrDateTime();
+	pconf.SaveFile( Env::CCP4M_PROJECT_CONFIG_FILE );
 
 	return Core::ReturnInt( 0 );
 }
