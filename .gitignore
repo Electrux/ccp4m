@@ -12,6 +12,7 @@
 # Build files #
 ###############
 build/
+buildfiles/
 
 # Build file on BSD #
 #####################
