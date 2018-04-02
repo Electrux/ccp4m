@@ -8,7 +8,7 @@ namespace Project
 {
 	int Handle( const std::vector< std::string > & args );
 
-	int Build();
+	int Build( const std::vector< std::string > & args );
 }
 
 #endif // PROJECT_MANAGER_HPP

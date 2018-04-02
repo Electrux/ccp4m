@@ -30,9 +30,14 @@ namespace Core
 
 	extern Logger logger;
 
-	bool ReturnBool( bool val );
-	int ReturnInt( int val );
-	std::string ReturnString( std::string && val );
+	// Template class/function definitions cant be in separate source files
+	template< class T > T ReturnVar( T val )
+	{
+		// Remove function and class / namespace
+		logger.RemoveLastLogSection();
+		logger.RemoveLastLogSection();
+		return val;
+	}
 
 	bool InitCore();
 

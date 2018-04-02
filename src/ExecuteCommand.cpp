@@ -25,7 +25,7 @@ int Exec::ExecuteCommand( const std::string & cmd, std::string * err, std::strin
 	FILE * pipe = popen( cmd.c_str(), "r" );
 	if( !pipe ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Failed to open external command pipe" );
-		return Core::ReturnInt( -1 );
+		return Core::ReturnVar( -1 );
 	}
 
 	while( !feof( pipe ) ) {
@@ -37,5 +37,5 @@ int Exec::ExecuteCommand( const std::string & cmd, std::string * err, std::strin
 	if( err != nullptr && FS::LocExists( tmp_file ) )
 		* err = FS::ReadFile( tmp_file );
 
-	return Core::ReturnInt( pclose( pipe ) );
+	return Core::ReturnVar( pclose( pipe ) );
 }

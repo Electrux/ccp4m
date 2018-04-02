@@ -28,7 +28,7 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 	Core::logger.AddLogString( LogLevels::ALL, "Compiling " + std::to_string( files.size() ) + " sources with main_src as: " + main_src );
 
 	if( !Common::CreateSourceDirs( files ) )
-		return Core::ReturnInt( 1 );
+		return Core::ReturnVar( 1 );
 
 	Core::logger.AddLogString( LogLevels::ALL, "Building target: " + data.builds[ data_i ].name );
 
@@ -51,7 +51,7 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 		if( ret_val != 0 ) {
 			if( !err.empty() )
 				Display( "{fc}Error: {r}" + err );
-			return Core::ReturnInt( ret_val );
+			return Core::ReturnVar( ret_val );
 		}
 		++ctr;
 	}
@@ -66,7 +66,7 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 		if( ret_val != 0 ) {
 			if( !err.empty() )
 				Display( "{fc}Error: {r}" + err );
-			return Core::ReturnInt( ret_val );
+			return Core::ReturnVar( ret_val );
 		}
 
 		Display( "\n{fc}Moving {sc}buildfiles/" + data.builds[ data_i ].name + "{fc} to {sc}bin/" + data.builds[ data_i ].name + " {0}...\n" );
@@ -75,9 +75,9 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 		if( ret_val != 0 ) {
 			if( !err.empty() )
 				Display( "{fc}Error: {r}" + err );
-			return Core::ReturnInt( ret_val );
+			return Core::ReturnVar( ret_val );
 		}
 	}
 
-	return Core::ReturnInt( 0 );
+	return Core::ReturnVar( 0 );
 }

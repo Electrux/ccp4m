@@ -3,6 +3,7 @@
 #include "../include/FSFuncs.hpp"
 #include "../include/StringFuncs.hpp"
 #include "../include/DisplayFuncs.hpp"
+#include "../include/Environment.hpp"
 #include "../include/Helps.hpp"
 #include "../include/ProjectManager.hpp"
 #include "../include/Core.hpp"
@@ -16,7 +17,7 @@ int Exit( int err_code )
 
 int main( int argc, char ** argv )
 {
-	std::string logfile = Core::GetCurrDateTime() + ".log";
+	std::string logfile = Env::CCP4M_LOG_DIR + "/" + Core::GetCurrDateTime() + ".log";
 	FS::CreateFileIfNotExists( logfile );
 	if( !Core::InitLogger( logfile ) ) {
 		Display( "{br}Failed to initialize logging engine!{0}" );

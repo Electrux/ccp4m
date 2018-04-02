@@ -10,10 +10,11 @@
 const std::string Env::CCP4M_DIR = std::string( std::getenv( "HOME" ) ) + "/.ccp4m";
 const std::string Env::CCP4M_CONFIG_FILE = Env::CCP4M_DIR + "/config.yaml";
 const std::string Env::CCP4M_LICENSE_DIR = Env::CCP4M_DIR + "/licenses";
+const std::string Env::CCP4M_LOG_DIR = Env::CCP4M_DIR + "/logs";
 
 const std::string Env::CCP4M_PROJECT_CONFIG_FILE = "ccp4m.yaml";
 
-const std::string Env::LICENSE_URL = "";
+const std::string Env::LICENSE_URL = "https://raw.githubusercontent.com/Electrux/CCP4M-Final/master/Licenses/";
 
 std::string Env::GetEnvVar( const std::string & key )
 {
@@ -22,10 +23,14 @@ std::string Env::GetEnvVar( const std::string & key )
 
 	Core::logger.AddLogString( LogLevels::ALL, "Retrieving environment variable: " + key );
 
-	Core::logger.RemoveLastLogSection();
-	Core::logger.RemoveLastLogSection();
+	std::string ret;
 
-	return std::getenv( key.c_str() );
+	char * res = std::getenv( key.c_str() );
+
+	if( res != NULL )
+		ret = res;
+
+	return Core::ReturnVar( ret );
 }
 
 bool Env::SetCurrentDir( const std::string & dir )
@@ -37,11 +42,11 @@ bool Env::SetCurrentDir( const std::string & dir )
 
 	if( chdir( dir.c_str() ) != 0 ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Altering current directory failed" );
-		return Core::ReturnBool( false );
+		return Core::ReturnVar( false );
 	}
 
 	Core::logger.AddLogString( LogLevels::ALL, "Current directory altered successfully" );
-	return Core::ReturnBool( true );
+	return Core::ReturnVar( true );
 }
 
 std::string Env::GetCurrentDir()
@@ -63,10 +68,7 @@ std::string Env::GetCurrentDir()
 		Core::logger.AddLogString( LogLevels::ALL, "Unable to fetch current directory" );
 	}
 
-	Core::logger.RemoveLastLogSection();
-	Core::logger.RemoveLastLogSection();
-
-	return dir;
+	return Core::ReturnVar( dir );
 }
 
 std::vector< std::string > Env::GetEnvPathVec()

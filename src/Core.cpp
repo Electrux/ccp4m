@@ -3,6 +3,7 @@
 #include <vector>
 
 #include <yaml-cpp/yaml.h>
+#include <curl/curl.h>
 
 #include "../include/FSFuncs.hpp"
 #include "../include/DisplayFuncs.hpp"
@@ -10,6 +11,7 @@
 #include "../include/UTFChars.hpp"
 #include "../include/Logger/Logger.hpp"
 #include "../include/Logger/TimeManager.hpp"
+#include "../include/Vars.hpp"
 
 #include "../include/Core.hpp"
 
@@ -66,30 +68,6 @@ std::map< std::string, std::string > Core::COLORS = {
 
 Logger Core::logger;
 
-bool Core::ReturnBool( bool val )
-{
-	// Remove function and class / namespace
-	logger.RemoveLastLogSection();
-	logger.RemoveLastLogSection();
-	return val;
-}
-
-int Core::ReturnInt( int val )
-{
-	// Remove function and class / namespace
-	logger.RemoveLastLogSection();
-	logger.RemoveLastLogSection();
-	return val;
-}
-
-std::string Core::ReturnString( std::string && val )
-{
-	// Remove function and class / namespace
-	logger.RemoveLastLogSection();
-	logger.RemoveLastLogSection();
-	return val;
-}
-
 bool Core::InitCore()
 {
 	bool new_config = false;
@@ -101,25 +79,37 @@ bool Core::InitCore()
 	if( !FS::CreateDir( Env::CCP4M_DIR ) ) {
 		Display( "{r}Unable to create configuration directory! Please check permissions for your {fc}HOME{r} directory{0}\n" );
 		Core::logger.AddLogString( LogLevels::ALL, "Failed to create configuration directory: " + Env::CCP4M_DIR );
-		return ReturnBool( false );
+		return ReturnVar( false );
 	}
 
 	if( !FS::CreateDir( Env::CCP4M_LICENSE_DIR ) ) {
 		Display( "{r}Unable to create license directory! Please check permissions for your {fc}HOME{r} directory{0}\n" );
 		Core::logger.AddLogString( LogLevels::ALL, "Failed to create license directory: " + Env::CCP4M_DIR );
-		return ReturnBool( false );
+		return ReturnVar( false );
 	}
+
+	// No need of creating log directory here since it is done by the main() function itself at the very beginning
 
 	if( !FS::LocExists( Env::CCP4M_CONFIG_FILE ) ) {
 		if( !FS::CreateFile( Env::CCP4M_CONFIG_FILE ) ) {
 			Display( "{r}Unable to create configuration file! Please check permissions for directory: {fc}" + Env::CCP4M_DIR + "{0}\n" );
-			return ReturnBool( false );
+			return ReturnVar( false );
 		}
 		new_config = true;
 	}
 
-	if( !new_config )
-		return ReturnBool( true );
+	auto v = Vars::GetSingleton();
+
+	TimeManager tm;
+	tm.SetFormat( "%Y%" );
+	v->AddVar( "year", tm.GetFormattedDateTime() );
+
+	if( !new_config ) {
+		YAML::Node conf = YAML::LoadFile( Env::CCP4M_CONFIG_FILE );
+		if( conf[ "author" ] )
+			v->AddVar( "author", v->Replace( conf[ "author" ].as< std::string >() ) );
+		return ReturnVar( true );
+	}
 
 	Display( "{fc}Initializing first time setup...\n\n" );
 	Display( "{sc}Enter your name: {tc}" );
@@ -134,6 +124,8 @@ bool Core::InitCore()
 
 	Core::logger.AddLogString( LogLevels::ALL, "Config username: " + name + ", email: " + email );
 
+	v->AddVar( "author", name );
+
 	Display( "\n{fc}Generating system config...\n" );
 
 	YAML::Emitter out;
@@ -146,13 +138,13 @@ bool Core::InitCore()
 	if( !FS::CreateFile( Env::CCP4M_CONFIG_FILE, out.c_str() ) ) {
 		Display( "{fc}Failed to create system config. Please check if you have correct permissions. {br}" + UTF::CROSS + "{0}\n" );
 		Core::logger.AddLogString( LogLevels::ALL, "Failed to create system configuration file: " + Env::CCP4M_CONFIG_FILE );
-		return ReturnBool( false );
+		return ReturnVar( false );
 	}
 
 	Core::logger.AddLogString( LogLevels::ALL, "Successfully created system configuration file" );
 
 	Display( "{fc}Successfully generated system config. {bg}" + UTF::TICK + "{0}\n" );
-	return ReturnBool( true );
+	return ReturnVar( true );
 }
 
 bool Core::InitLogger( const std::string & file )

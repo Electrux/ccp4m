@@ -33,14 +33,14 @@ bool Common::CreateSourceDirs( const std::vector< std::string > & srcs )
 			if( !FS::LocExists( dir ) ) {
 				if( !FS::CreateDir( dir, false ) ) {
 					Core::logger.AddLogString( LogLevels::ALL, "Unable to access/create directory: " + dir + " for source file: " + src );
-					return Core::ReturnBool( false );
+					return Core::ReturnVar( false );
 				}
 				Core::logger.AddLogString( LogLevels::ALL, "Created build directory: " + dir + " for source file: " + src );
 			}
 		}
 	}
 
-	return Core::ReturnBool( true );
+	return Core::ReturnVar( true );
 }
 
 void Common::GetVars( const ProjectData & data, int data_i, std::string & main_src, std::string & compiler, std::string & caps_lang,
@@ -48,34 +48,25 @@ void Common::GetVars( const ProjectData & data, int data_i, std::string & main_s
 {
 	main_src = data.builds[ data_i ].main_src;
 
+	std::vector< std::string > excludefiles = data.builds[ data_i ].exclude;
+	if( !main_src.empty() )
+		excludefiles.push_back( main_src );
+
 	for( auto src : data.builds[ data_i ].srcs ) {
 		std::vector< std::string > tempfiles;
-		if( main_src.empty() )
+		if( excludefiles.empty() )
 			tempfiles = FS::GetFilesInDir( ".", std::regex( src ) );
 		else
-			tempfiles = FS::GetFilesInDir( ".", std::regex( src ), { main_src } );
+			tempfiles = FS::GetFilesInDir( ".", std::regex( src ), excludefiles );
 		files.insert( files.end(), tempfiles.begin(), tempfiles.end() );
 	}
 
 	caps_lang = data.lang == "c++" ? "CXX" : "C";
 
-	if( data.builds[ data_i ].type == "bin" ) {
-		if( data.lang == "c++" )
-			Core::SetVarArch( compiler, { "g++", "clang++", "clang++" } );
-		else
-			Core::SetVarArch( compiler, { "gcc", "clang", "clang" } );
-	}
-	else {
-		if( data.builds[ data_i ].build_type.empty() || data.builds[ data_i ].build_type == "static" ) {
-			compiler = "ar";
-		}
-		else {
-			if( data.lang == "c++" )
-				Core::SetVarArch( compiler, { "g++", "clang++", "clang++" } );
-			else
-				Core::SetVarArch( compiler, { "gcc", "clang", "clang" } );
-		}
-	}
+	if( data.lang == "c++" )
+		Core::SetVarArch( compiler, { "g++", "clang++", "clang++" } );
+	else
+		Core::SetVarArch( compiler, { "gcc", "clang", "clang" } );
 
 	GetFlags( data, inc_flags, lib_flags );
 }

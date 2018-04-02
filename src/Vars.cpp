@@ -1,6 +1,5 @@
 #include <string>
 #include <map>
-#include <iostream>
 
 #include "../include/Core.hpp"
 #include "../include/Environment.hpp"
@@ -50,11 +49,21 @@ void Vars::Initialize()
 {
 	auto v = GetSingleton();
 
+	// Nothing to do for now :(
+	/*
 	v->AddVar( "CCP4M_DIR", Env::CCP4M_DIR );
 	v->AddVar( "CCP4M_CONFIG_FILE", Env::CCP4M_CONFIG_FILE );
+	v->AddVar( "CCP4M_LICENSE_DIR", Env::CCP4M_LICENSE_DIR );
+	v->AddVar( "CCP4M_LOG_DIR", Env::CCP4M_LOG_DIR );
+
+	v->AddVar( "CCP4M_PROJECT_CONFIG_FILE", Env::CCP4M_PROJECT_CONFIG_FILE );
+	v->AddVar( "LICENSE_URL", Env::LICENSE_URL );
+	*/
 
 	Core::logger.AddLogSection( "Vars" );
+	Core::logger.AddLogSection( "Initialize" );
 	Core::logger.AddLogString( LogLevels::ALL, "Vars initialized successfully" );
+	Core::logger.RemoveLastLogSection();
 	Core::logger.RemoveLastLogSection();
 }
 
@@ -63,11 +72,12 @@ int Vars::Replace( std::string & str, bool colors )
 {
 	int ctr = 0;
 
-	for( auto it = str.begin(); it != str.end(); ++it ) {
+	for( auto it = str.begin(); it != str.end(); ) {
 		if( * it == '{' ) {
 			it = str.erase( it );
 			if( it != str.end() && * it == '{' ) {
 				++ctr;
+				++it;
 				continue;
 			}
 
@@ -82,11 +92,25 @@ int Vars::Replace( std::string & str, bool colors )
 			if( it != str.end() )
 				it = str.erase( it );
 
+			if( var.empty() )
+				continue;
+
 			std::string val;
 
-			if( colors && Core::COLORS.find( var ) != Core::COLORS.end() )
+			bool found_in_colors = false;
+
+			if( Core::COLORS.find( var ) != Core::COLORS.end() )
+				found_in_colors = true;
+
+			// Check if it is a part of color. If it is, check if color is enabled. If it is, set that color to val.
+			// Otherwise, continue since there is no point of checking in other places ( the use of colors is clearly
+			// disabled so just skip it completely, thereby saving log space because of Env::GetEnvVar ( especially in
+			// the use of DisplayOneLiner in NW::progress_func( ... ) ) )
+			if( colors )
 				val = Core::COLORS[ var ];
-			
+			else if( found_in_colors )
+				continue;
+
 			if( val.empty() )
 				val = Env::GetEnvVar( var );
 
@@ -97,27 +121,28 @@ int Vars::Replace( std::string & str, bool colors )
 				continue;
 
 			it = str.insert( it, val.begin(), val.end() );
-			it += val.size() - 1;
+			it += val.size();
 			ctr += val.size();
 		}
 		else {
 			++ctr;
+			++it;
 		}
 	}
 
 	return ctr;
 }
 
-std::string Vars::Replace( std::string && str )
+std::string Vars::Replace( std::string && str, bool colors )
 {
-	this->Replace( str );
+	this->Replace( str, colors );
 	return str;
 }
 
-std::vector< std::string > Vars::Replace( std::vector< std::string > && vec )
+std::vector< std::string > Vars::Replace( std::vector< std::string > && vec, bool colors )
 {
 	for( auto & str : vec )
-		this->Replace( str );
+		this->Replace( str, colors );
 
 	return vec;
 }

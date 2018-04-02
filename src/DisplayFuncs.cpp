@@ -29,14 +29,14 @@ void Display( std::string data )
 	std::cout.flush();
 }
 
-void DisplayOneLiner( std::string data )
+void DisplayOneLiner( std::string data, bool store_log )
 {
 	MoveBack( LAST_ONE_LINER_SIZE );
 
 	if( data.empty() )
 		return;
 
-	LAST_ONE_LINER_SIZE = Vars::ReplaceVars( data );
+	LAST_ONE_LINER_SIZE = Vars::ReplaceVars( data, false );
 
 	std::cout << data;
 	std::cout.flush();

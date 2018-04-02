@@ -3,7 +3,7 @@ version: 0.1
 lang: c++
 std: 14
 compile_flags: -O2
-build_date: Monday.April.2.18
+build_date: Tuesday.April.3.18
 author:
   name: Electrux
   email: ElectruxRedsworth@gmail.com
@@ -12,14 +12,22 @@ libs:
     version: 0.6
     inc_flags: ""
     lib_flags: -lyaml-cpp
+  - name: curl
+    version: 1.54
+    inc_flags: ""
+    lib_flags: -lcurl
 builds:
   - name: ccp4m
     type: bin
     main_src: src/main.cpp
     other_src:
       - src/(.*).cpp
-? - name: ccp4m2
-    type: lib
-    main_src: src/main.cpp
+    exclude:
+      - src/tests/licenses.cpp
+  - name: ccp4m_test
+    type: bin
+    main_src: src/tests/licenses.cpp
     other_src:
       - src/(.*).cpp
+    exclude:
+      - src/main.cpp

@@ -28,7 +28,7 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 	Core::logger.AddLogString( LogLevels::ALL, "Compiling " + std::to_string( files.size() ) + " sources with main_src as: " + main_src );
 
 	if( !Common::CreateSourceDirs( files ) )
-		return Core::ReturnInt( 1 );
+		return Core::ReturnVar( 1 );
 
 	int total_sources = files.size() + ( int )!main_src.empty();
 
@@ -51,7 +51,7 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 		if( ret_val != 0 ) {
 			if( !err.empty() )
 				Display( "{fc}Error: {r}" + err );
-			return Core::ReturnInt( ret_val );
+			return Core::ReturnVar( ret_val );
 		}
 		++ctr;
 	}
@@ -60,13 +60,13 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 		int percent = ( ctr * 100 / total_sources );
 		if( data.builds[ data_i ].build_type == "static" ) {
 			Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{fc}Building " + caps_lang + " static library: {sc}buildfiles/lib" + data.builds[ data_i ].name + ".a {0}...\n" );
-			std::string compile_str = compiler + " rcs buildfiles/lib" + data.builds[ data_i ].name + ".a " + main_src + " " + build_files_str;
+			std::string compile_str = "ar rcs buildfiles/lib" + data.builds[ data_i ].name + ".a " + main_src + " " + build_files_str;
 			std::string err;
 			int ret_val = Exec::ExecuteCommand( compile_str, & err );
 			if( ret_val != 0 ) {
 				if( !err.empty() )
 					Display( "{fc}Error: {r}" + err );
-				return Core::ReturnInt( ret_val );
+				return Core::ReturnVar( ret_val );
 			}
 
 			Display( "\n{fc}Moving {sc}buildfiles/lib" + data.builds[ data_i ].name + ".a{fc} to {sc}lib/lib" + data.builds[ data_i ].name + ".a {0}...\n" );
@@ -75,7 +75,7 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 			if( ret_val != 0 ) {
 				if( !err.empty() )
 					Display( "{fc}Error: {r}" + err );
-				return Core::ReturnInt( ret_val );
+				return Core::ReturnVar( ret_val );
 			}
 		}
 		else {
@@ -87,7 +87,7 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 			if( ret_val != 0 ) {
 				if( !err.empty() )
 					Display( "{fc}Error: {r}" + err );
-				return Core::ReturnInt( ret_val );
+				return Core::ReturnVar( ret_val );
 			}
 
 			Display( "\n{fc}Moving {sc}buildfiles/lib" + data.builds[ data_i ].name + ".so{fc} to {sc}lib/lib" + data.builds[ data_i ].name + ".so {0}...\n" );
@@ -96,10 +96,10 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 			if( ret_val != 0 ) {
 				if( !err.empty() )
 					Display( "{fc}Error: {r}" + err );
-				return Core::ReturnInt( ret_val );
+				return Core::ReturnVar( ret_val );
 			}
 		}
 	}
 
-	return Core::ReturnInt( 0 );
+	return Core::ReturnVar( 0 );
 }

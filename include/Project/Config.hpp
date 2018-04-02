@@ -19,6 +19,7 @@ struct Build
 	std::string build_type;
 	std::vector< std::string > srcs;
 	std::string main_src;
+	std::vector< std::string > exclude;
 };
 
 struct Author

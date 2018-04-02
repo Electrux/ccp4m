@@ -87,11 +87,11 @@ bool ProjectConfig::GetDefaultAuthor()
 	if( pdata.author.name.empty() || pdata.author.email.empty() ) {
 		Display( "{r}Unable to fetch name and email from system config.{0}" );
 		Core::logger.AddLogString( LogLevels::ALL, "Default author information fetch failed. Name and/or email does not exist" );
-		return Core::ReturnBool( false );
+		return Core::ReturnVar( false );
 	}
 
 	Core::logger.AddLogString( LogLevels::ALL, "Default author information fetched successfully - Name: " + pdata.author.name + " Email: " + pdata.author.email );
-	return Core::ReturnBool( true );
+	return Core::ReturnVar( true );
 }
 
 bool ProjectConfig::GenerateDefaultConfig()
@@ -142,8 +142,10 @@ bool ProjectConfig::LoadFile( const std::string & file )
 
 	if( ( pdata.author.name.empty() || pdata.author.email.empty() ) && !this->GetDefaultAuthor() ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Configuration load failed. No author information in this file or in system configuration" );
-		return Core::ReturnBool( false );
+		return Core::ReturnVar( false );
 	}
+
+	v->AddVar( "name", pdata.name );
 
 	for( auto libdata : conf[ "libs" ] ) {
 		Library lib;
@@ -165,13 +167,14 @@ bool ProjectConfig::LoadFile( const std::string & file )
 		build.main_src = v->Replace( GetString( builddata, "main_src" ) );
 
 		build.srcs = v->Replace( GetStringVector( builddata, "other_src" ) );
+		build.exclude = v->Replace( GetStringVector( builddata, "exclude" ) );
 
 		pdata.builds.push_back( build );
 	}
 
 	Core::logger.AddLogString( LogLevels::ALL, "Loaded configuration file successfully" );
 
-	return Core::ReturnBool( true );
+	return Core::ReturnVar( true );
 }
 
 bool ProjectConfig::SaveFile( const std::string & file )
@@ -200,8 +203,8 @@ bool ProjectConfig::SaveFile( const std::string & file )
 	o << YAML::EndMap;
 
 	o << YAML::Key << "libs" << YAML::Value;
+	o << YAML::BeginSeq;
 	for( auto lib : pdata.libs ) {
-		o << YAML::BeginSeq;
 		o << YAML::BeginMap;
 
 		o << YAML::Key << "name" << YAML::Value << lib.name;
@@ -210,12 +213,12 @@ bool ProjectConfig::SaveFile( const std::string & file )
 		o << YAML::Key << "lib_flags" << YAML::Value << lib.lib_flags;
 
 		o << YAML::EndMap;
-		o << YAML::EndSeq;
 	}
+	o << YAML::EndSeq;
 
 	o << YAML::Key << "builds" << YAML::Value;
+	o << YAML::BeginSeq;
 	for( auto build : pdata.builds ) {
-		o << YAML::BeginSeq;
 		o << YAML::BeginMap;
 
 		o << YAML::Key << "name" << YAML::Value << build.name;
@@ -228,19 +231,26 @@ bool ProjectConfig::SaveFile( const std::string & file )
 		}
 		o << YAML::EndSeq;
 
-		o << YAML::EndMap;
+		o << YAML::Key << "exclude" << YAML::Value;
+		o << YAML::BeginSeq;
+		for( auto exc : build.exclude ) {
+			o << exc;
+		}
 		o << YAML::EndSeq;
+
+		o << YAML::EndMap;
 	}
+	o << YAML::EndSeq;
 
 	o << YAML::EndMap;
 
 	if( FS::CreateFile( file, o.c_str() ) ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Configuration file successfully saved" );
-		return Core::ReturnBool( true );
+		return Core::ReturnVar( true );
 	}
 
 	Core::logger.AddLogString( LogLevels::ALL, "Configuration file save failed" );
-	return Core::ReturnBool( false );
+	return Core::ReturnVar( false );
 }
 
 void ProjectConfig::DisplayAll()

@@ -18,12 +18,12 @@ int NW::DownloadFile( const std::string & url, const std::string & out_loc )
 
 	if( out_loc.empty() ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Cannot download to an empty location" );
-		return Core::ReturnInt( 1 );
+		return Core::ReturnVar( 1 );
 	}
 
 	if( FS::LocExists( out_loc ) ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Location: " + out_loc + " already exists" );
-		return Core::ReturnInt( -1 );
+		return Core::ReturnVar( 0 );
 	}
 
 	CURLcode ret;
@@ -33,13 +33,13 @@ int NW::DownloadFile( const std::string & url, const std::string & out_loc )
 
 	if( url.empty() ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Cannot download from an empty URL" );
-		return Core::ReturnInt( -1 );
+		return Core::ReturnVar( -1 );
 	}
 
 	hnd = curl_easy_init();
 	if( !hnd ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Unable to initialize curl using curl_easy_init()" );
-		return Core::ReturnInt( 1 );
+		return Core::ReturnVar( 1 );
 	}
 
 	curl_easy_setopt( hnd, CURLOPT_URL, url.c_str() );
@@ -59,6 +59,8 @@ int NW::DownloadFile( const std::string & url, const std::string & out_loc )
 
 	ret = curl_easy_perform( hnd );
 
+	Core::logger.AddLogString( LogLevels::ALL, "Downloading url: " + url + " output: " + out_loc );
+
 	std::fclose( file );
 
 	curl_easy_cleanup( hnd );
@@ -70,12 +72,12 @@ int NW::DownloadFile( const std::string & url, const std::string & out_loc )
 	if( ( int )ret != 0 ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Failed to download from URL: " + url );
 		Core::logger.AddLogString( LogLevels::ALL, "LibCurl Error:" + std::string( curl_easy_strerror( ret ) ) );
-		return Core::ReturnInt( ret );
+		return Core::ReturnVar( ( int )ret );
 	}
 
 	Core::logger.AddLogString( LogLevels::ALL, "Successfully downloaded file: " + out_loc + "from URL: " + url );
 
-	return Core::ReturnInt( ret );
+	return Core::ReturnVar( ( int )ret );
 }
 
 static size_t curl_write_func( void *ptr, size_t size, size_t nmemb, void *stream )
@@ -93,6 +95,6 @@ int progress_func( void* ptr, double totdl, double cdl, double totup, double cup
 
 	std::string percent = std::to_string( percentdown ) + "%";
 
-	DisplayOneLiner( percent );
+	DisplayOneLiner( "{bg}[ {bc}" + percent + " {bg}]{0}" );
 	return 0;
 }

@@ -5,7 +5,7 @@
 
 namespace NW
 {
-	int DownloadFile( const std::string & url, const std::string & out_loc = "" );
+	int DownloadFile( const std::string & url, const std::string & out_loc );
 }
 
 #endif // NETWORK_HPP

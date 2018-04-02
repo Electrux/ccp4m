@@ -26,8 +26,6 @@ namespace License
 
 	extern const ID DEFAULT_LICENSE;
 
-	std::string FetchLicenseName( const ID & id );
-
 	std::string FetchLicense( const ID & id );
 
 	std::string FetchLicenseForFile( const ID & id );
