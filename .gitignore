@@ -11,6 +11,8 @@
 
 # Build files #
 ###############
+bin/
+lib/
 build/
 buildfiles/
 
