@@ -9,8 +9,11 @@
 
 const std::string Env::CCP4M_DIR = std::string( std::getenv( "HOME" ) ) + "/.ccp4m";
 const std::string Env::CCP4M_CONFIG_FILE = Env::CCP4M_DIR + "/config.yaml";
+const std::string Env::CCP4M_LICENSE_DIR = Env::CCP4M_DIR + "/licenses";
 
 const std::string Env::CCP4M_PROJECT_CONFIG_FILE = "ccp4m.yaml";
+
+const std::string Env::LICENSE_URL = "";
 
 std::string Env::GetEnvVar( const std::string & key )
 {

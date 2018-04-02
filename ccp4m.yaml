@@ -3,7 +3,7 @@ version: 0.1
 lang: c++
 std: 14
 compile_flags: -O2
-build_date: Tuesday.March.27.18
+build_date: Monday.April.2.18
 author:
   name: Electrux
   email: ElectruxRedsworth@gmail.com
@@ -18,10 +18,8 @@ builds:
     main_src: src/main.cpp
     other_src:
       - src/(.*).cpp
-
-  - name: ccp4m2
+? - name: ccp4m2
     type: lib
     main_src: src/main.cpp
-    build_type: static
     other_src:
       - src/(.*).cpp

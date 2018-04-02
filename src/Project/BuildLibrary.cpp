@@ -30,9 +30,9 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 	if( !Common::CreateSourceDirs( files ) )
 		return Core::ReturnInt( 1 );
 
-	Core::logger.AddLogString( LogLevels::ALL, "Building target: " + data.builds[ data_i ].name );
-
 	int total_sources = files.size() + ( int )!main_src.empty();
+
+	Core::logger.AddLogString( LogLevels::ALL, "Building target: " + data.builds[ data_i ].name + " with " + std::to_string( total_sources ) + " sources" );
 
 	Display( "{fc}Building target {sc}" + data.builds[ data_i ].name + " {fc}with {sc}" + std::to_string( total_sources ) + " {fc}sources {0}...\n\n" );
 

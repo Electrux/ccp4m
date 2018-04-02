@@ -33,6 +33,9 @@ void DisplayOneLiner( std::string data )
 {
 	MoveBack( LAST_ONE_LINER_SIZE );
 
+	if( data.empty() )
+		return;
+
 	LAST_ONE_LINER_SIZE = Vars::ReplaceVars( data );
 
 	std::cout << data;

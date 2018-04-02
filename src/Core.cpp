@@ -82,6 +82,14 @@ int Core::ReturnInt( int val )
 	return val;
 }
 
+std::string Core::ReturnString( std::string && val )
+{
+	// Remove function and class / namespace
+	logger.RemoveLastLogSection();
+	logger.RemoveLastLogSection();
+	return val;
+}
+
 bool Core::InitCore()
 {
 	bool new_config = false;
@@ -93,6 +101,12 @@ bool Core::InitCore()
 	if( !FS::CreateDir( Env::CCP4M_DIR ) ) {
 		Display( "{r}Unable to create configuration directory! Please check permissions for your {fc}HOME{r} directory{0}\n" );
 		Core::logger.AddLogString( LogLevels::ALL, "Failed to create configuration directory: " + Env::CCP4M_DIR );
+		return ReturnBool( false );
+	}
+
+	if( !FS::CreateDir( Env::CCP4M_LICENSE_DIR ) ) {
+		Display( "{r}Unable to create license directory! Please check permissions for your {fc}HOME{r} directory{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Failed to create license directory: " + Env::CCP4M_DIR );
 		return ReturnBool( false );
 	}
 

@@ -69,6 +69,28 @@ bool FS::CreateDir( const std::string & dir, bool check_exists )
 	return Core::ReturnBool( true );
 }
 
+bool FS::CreateFileDir( const std::string & file )
+{
+	Core::logger.AddLogSection( "FS" );
+	Core::logger.AddLogSection( "CreateFileDir" );
+
+	if( file.empty() ) {
+		Core::logger.AddLogString( LogLevels::ALL, "Filename is empty" );
+		return Core::ReturnBool( false );
+	}
+
+	auto last_slash = file.rfind( '/' );
+	if( last_slash != std::string::npos ) {
+		std::string dir = file.substr( 0, last_slash );
+		if( !LocExists( dir ) && !CreateDir( dir ) ) {
+			Core::logger.AddLogString( LogLevels::ALL, "Unable to access/create directory: " + dir + " for file: " + file );
+			return Core::ReturnBool( false );
+		}
+	}
+
+	return Core::ReturnBool( true );
+}
+
 bool FS::CreateFile( const std::string & loc, const std::string & contents )
 {
 	Core::logger.AddLogSection( "FS" );
@@ -110,17 +132,13 @@ bool FS::CreateFileIfNotExists( const std::string & loc, const std::string & con
 	Core::logger.AddLogSection( "FS" );
 	Core::logger.AddLogSection( "CreateFileIfNotExists" );
 
-	auto last_slash = loc.rfind( '/' );
-	if( last_slash != std::string::npos ) {
-		std::string dir = loc.substr( 0, last_slash );
-		if( !LocExists( dir ) && !CreateDir( dir ) ) {
-			Core::logger.AddLogString( LogLevels::ALL, "Unable to access/create directory: " + dir + " for file: " + loc );
-			return Core::ReturnBool( false );
-		}
-	}
-
 	if( loc.empty() ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Filename is empty" );
+		return Core::ReturnBool( false );
+	}
+
+	if( !CreateFileDir( loc ) ) {
+		Core::logger.AddLogString( LogLevels::ALL, "FS::CreateFileDir failed" );
 		return Core::ReturnBool( false );
 	}
 

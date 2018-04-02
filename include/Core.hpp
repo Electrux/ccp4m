@@ -32,6 +32,7 @@ namespace Core
 
 	bool ReturnBool( bool val );
 	int ReturnInt( int val );
+	std::string ReturnString( std::string && val );
 
 	bool InitCore();
 
