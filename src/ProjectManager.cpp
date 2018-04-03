@@ -50,7 +50,7 @@ int Project::Build( const std::vector< std::string > & args )
 		return Core::ReturnVar( 1 );
 	}
 
-	Display( "{fc}Creating build directories {0}...\n\n" );
+	Display( "{fc}Creating build directories {0}...\n" );
 
 	if( !FS::CreateDir( "buildfiles" ) || !FS::CreateDir( "lib" ) || !FS::CreateDir( "bin" ) ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Unable to create necessary project build directories" );
@@ -68,6 +68,7 @@ int Project::Build( const std::vector< std::string > & args )
 	}
 
 	// User specified which build info to use
+
 	if( args.size() > 3 ) {
 		std::string which_build = args[ 3 ];
 
@@ -104,9 +105,6 @@ int Project::Build( const std::vector< std::string > & args )
 			}
 		}
 	}
-
-	pconf.GetData().build_date = Core::GetCurrDateTime();
-	pconf.SaveFile( Env::CCP4M_PROJECT_CONFIG_FILE );
 
 	return Core::ReturnVar( 0 );
 }

@@ -34,7 +34,7 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 
 	int total_sources = files.size() + ( int )!main_src.empty();
 
-	Display( "{fc}Building target {sc}" + data.builds[ data_i ].name + " {fc}with {sc}" + std::to_string( total_sources ) + " {fc}sources {0}...\n\n" );
+	Display( "\n{fc}Building target {sc}" + data.builds[ data_i ].name + " {fc}with {sc}" + std::to_string( total_sources ) + " {fc}sources {0}...\n\n" );
 
 	std::string build_files_str;
 

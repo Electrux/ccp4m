@@ -195,13 +195,23 @@ std::vector< std::string > FS::GetFilesInDir( const std::string & loc, const std
 				res.insert( res.end(), tempres.begin(), tempres.end() );
 				continue;
 			}
-			if( std::regex_match( loc_name, regex ) && std::find( except.begin(), except.end(), loc_name ) == except.end() ) {
+			if( std::regex_match( loc_name, regex ) && !RegexVectorMatch( loc_name, except ) ) {
 				res.push_back( loc_name );
 			}
 		}
 	}
 
 	return res;
+}
+
+bool FS::RegexVectorMatch( const std::string & loc_name, const std::vector< std::string > & vec )
+{
+	for( auto & v : vec ) {
+		if( std::regex_match( loc_name, std::regex( v ) ) )
+			return true;
+	}
+
+	return false;
 }
 
 std::string FS::ReadFile( const std::string & filename )
@@ -249,6 +259,54 @@ bool FS::IsFileLatest( const std::string & file1, const std::string & file2 )
 		return Core::ReturnVar( false );
 	}
 
-	Core::logger.AddLogString( LogLevels::ALL, "File1: " + file1 + " is newer than File2: " + file2 );
+	Core::logger.AddLogString( LogLevels::ALL, "File1: " + file1 + " is newer than File2: " + file2 + " checking internal includes" );
+
+	std::fstream f2;
+
+	f2.open( file2, std::ios::in );
+	if( !f2 ) {
+		Core::logger.AddLogString( LogLevels::ALL, "Unable to open file2: " + file2 );
+		return Core::ReturnVar( false );
+	}
+
+	std::string line;
+
+	std::regex inc_regex( "#include \"(.*)\"" );
+	std::smatch match;
+
+	auto last_slash = file2.rfind( '/' );
+	std::string dir;
+	if( last_slash != std::string::npos ) {
+		dir = file2.substr( 0, last_slash );
+	}
+
+	while( std::getline( f2, line ) ) {
+		if( std::regex_search( line, match, inc_regex ) ) {
+			struct stat temp_info;
+			std::string m = dir + "/" + std::string( match[ 1 ] );
+
+			if( stat( m.c_str(), & temp_info ) != 0 )
+				continue;
+
+			if( !LocExists( m ) ) {
+				Core::logger.AddLogString( LogLevels::ALL, "Unable to access/create directory: " + dir + " for file: " + file1 );
+				f2.close();
+				return Core::ReturnVar( false );
+			}
+
+			if( temp_info.st_mtime >= info1.st_mtime ) {
+				Core::logger.AddLogString( LogLevels::ALL, "Match file: " + m + " is newer than File1: " + file1 );
+
+				f2.close();
+				return Core::ReturnVar( false );
+			}
+
+			Core::logger.AddLogString( LogLevels::ALL, "Match file: " + m + " is older than File1: " + file1 );
+		}
+	}
+
+	f2.close();
+
+	Core::logger.AddLogString( LogLevels::ALL, "File1 is newer than File2 and all its includes" );
 	return Core::ReturnVar( true );
 }

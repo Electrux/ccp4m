@@ -19,6 +19,8 @@ namespace FS
 	std::vector< std::string > GetFilesInDir( const std::string & dir = ".", const std::regex & regex = std::regex( "(.*)" ),
 		const std::vector< std::string > & except = std::vector< std::string >() );
 
+	bool RegexVectorMatch( const std::string & loc_name, const std::vector< std::string > & vec );
+
 	std::string ReadFile( const std::string & filename );
 
 	bool IsFileLatest( const std::string & file1, const std::string & file2 );

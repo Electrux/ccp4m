@@ -105,9 +105,6 @@ bool ProjectConfig::GenerateDefaultConfig()
 	pdata.std = "14";
 	pdata.compile_flags = "-O2";
 
-	// Will be set when the build command is called
-	pdata.build_date = "None";
-
 	Build build;
 	build.name = "DefaultProject";
 	build.type = "bin";
@@ -135,7 +132,6 @@ bool ProjectConfig::LoadFile( const std::string & file )
 	pdata.lang = v->Replace( GetString( conf, "lang" ) );
 	pdata.std = v->Replace( GetString( conf, "std" ) );
 	pdata.compile_flags = v->Replace( GetString( conf, "compile_flags" ) );
-	pdata.build_date = v->Replace( GetString( conf, "build_date" ) );
 
 	pdata.author.name = v->Replace( GetString( conf, "author", "name" ) );
 	pdata.author.email = v->Replace( GetString( conf, "author", "email" ) );
@@ -194,7 +190,6 @@ bool ProjectConfig::SaveFile( const std::string & file )
 	o << YAML::Key << "lang" << YAML::Value << pdata.lang;
 	o << YAML::Key << "std" << YAML::Value << pdata.std;
 	o << YAML::Key << "compile_flags" << YAML::Value << pdata.compile_flags;
-	o << YAML::Key << "build_date" << YAML::Value << pdata.build_date;
 
 	o << YAML::Key << "author" << YAML::Value;
 	o << YAML::BeginMap;

@@ -23,7 +23,7 @@ builds:
     other_src:
       - src/(.*).cpp
     exclude:
-      - src/tests/licenses.cpp
+      - src/tests/(.*).cpp
   - name: ccp4m_test
     type: bin
     main_src: src/tests/licenses.cpp
