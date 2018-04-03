@@ -39,13 +39,27 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 	std::string build_files_str;
 
 	int ctr = 1;
+	bool is_any_single_file_compiled = false;
+
 	for( auto src : files ) {
 		int percent = ( ctr * 100 / total_sources );
-		Display( "{tc}[" + std::to_string( percent ) + "%]\t{fc}Compiling " + caps_lang + " object: {sc}buildfiles/" + src + ".o {0}...\n" );
 
 		build_files_str += "buildfiles/" + src + ".o ";
+
+		// Remove files which are up to date
+		if( FS::IsFileLatest( "buildfiles/" + src + ".o", src ) ) {
+			Display( "{tc}[" + std::to_string( percent ) + "%]\t{g}Up to date " + caps_lang + " object: {sc}buildfiles/" + src + ".o {0}\n" );
+			++ctr;
+			continue;
+		}
+
+		Display( "{tc}[" + std::to_string( percent ) + "%]\t{fc}Compiling " + caps_lang + " object:  {sc}buildfiles/" + src + ".o {0}...\n" );
+
 		std::string compile_str = compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
 			+ inc_flags + " -c " + src + " -o buildfiles/" + src + ".o";
+
+		is_any_single_file_compiled = true;
+
 		std::string err;
 		int ret_val = Exec::ExecuteCommand( compile_str, & err );
 		if( ret_val != 0 ) {
@@ -56,48 +70,46 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 		++ctr;
 	}
 
+	std::string ext = data.builds[ data_i ].build_type == "static" ? ".a" : ".so";
+	std::string lib_type = data.builds[ data_i ].build_type;
+	std::string compile_str;
+
+	if( lib_type == "static" ) {
+		compile_str = "ar rcs buildfiles/lib" + data.builds[ data_i ].name + ext + " " + main_src + " " + build_files_str;
+	}
+	else {
+		compile_str = compiler + " -shared " + data.compile_flags + " -std=" + data.lang + data.std + " "
+				+ inc_flags + " " + lib_flags + " -o buildfiles/lib" + data.builds[ data_i ].name + ".so " + main_src + " " + build_files_str;
+	}
+
 	if( !main_src.empty() ) {
 		int percent = ( ctr * 100 / total_sources );
-		if( data.builds[ data_i ].build_type == "static" ) {
-			Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{fc}Building " + caps_lang + " static library: {sc}buildfiles/lib" + data.builds[ data_i ].name + ".a {0}...\n" );
-			std::string compile_str = "ar rcs buildfiles/lib" + data.builds[ data_i ].name + ".a " + main_src + " " + build_files_str;
-			std::string err;
-			int ret_val = Exec::ExecuteCommand( compile_str, & err );
-			if( ret_val != 0 ) {
-				if( !err.empty() )
-					Display( "{fc}Error: {r}" + err );
-				return Core::ReturnVar( ret_val );
-			}
 
-			Display( "\n{fc}Moving {sc}buildfiles/lib" + data.builds[ data_i ].name + ".a{fc} to {sc}lib/lib" + data.builds[ data_i ].name + ".a {0}...\n" );
-			std::string cmd = "mv buildfiles/lib" + data.builds[ data_i ].name + ".a lib/";
-			ret_val = Exec::ExecuteCommand( cmd, & err );
-			if( ret_val != 0 ) {
-				if( !err.empty() )
-					Display( "{fc}Error: {r}" + err );
-				return Core::ReturnVar( ret_val );
-			}
+		// Check if there already exists a build whose modification time is newer than main source and / or
+		if( !is_any_single_file_compiled && FS::IsFileLatest( "lib/" + data.builds[ data_i ].name + ext, main_src ) &&
+			FS::IsFileLatest( "lib/" + data.builds[ data_i ].name + ext, "ccp4m.yaml" ) ) {
+
+			Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{bg}Project is already up to date{0}\n" );
+			return Core::ReturnVar( 0 );
 		}
-		else {
-			Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{fc}Building " + caps_lang + " library: {sc}buildfiles/lib" + data.builds[ data_i ].name + ".so {0}...\n" );
-			std::string compile_str = compiler + " -shared " + data.compile_flags + " -std=" + data.lang + data.std + " "
-				+ inc_flags + " " + lib_flags + " -o buildfiles/lib" + data.builds[ data_i ].name + ".so " + main_src + " " + build_files_str;
-			std::string err;
-			int ret_val = Exec::ExecuteCommand( compile_str, & err );
-			if( ret_val != 0 ) {
-				if( !err.empty() )
-					Display( "{fc}Error: {r}" + err );
-				return Core::ReturnVar( ret_val );
-			}
+		Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{fc}Building " + caps_lang + " " + lib_type + " library:   {sc}buildfiles/lib" +
+			data.builds[ data_i ].name + ext + " {0}...\n" );
 
-			Display( "\n{fc}Moving {sc}buildfiles/lib" + data.builds[ data_i ].name + ".so{fc} to {sc}lib/lib" + data.builds[ data_i ].name + ".so {0}...\n" );
-			std::string cmd = "mv buildfiles/lib" + data.builds[ data_i ].name + ".so lib/";
-			ret_val = Exec::ExecuteCommand( cmd, & err );
-			if( ret_val != 0 ) {
-				if( !err.empty() )
-					Display( "{fc}Error: {r}" + err );
-				return Core::ReturnVar( ret_val );
-			}
+		std::string err;
+		int ret_val = Exec::ExecuteCommand( compile_str, & err );
+		if( ret_val != 0 ) {
+			if( !err.empty() )
+				Display( "{fc}Error: {r}" + err );
+			return Core::ReturnVar( ret_val );
+		}
+
+		Display( "\n{fc}Moving {sc}buildfiles/lib" + data.builds[ data_i ].name + ext + "{fc} to {sc}lib/lib" + data.builds[ data_i ].name + ext + " {0}...\n" );
+		std::string cmd = "mv buildfiles/lib" + data.builds[ data_i ].name + ext + " lib/";
+		ret_val = Exec::ExecuteCommand( cmd, & err );
+		if( ret_val != 0 ) {
+			if( !err.empty() )
+				Display( "{fc}Error: {r}" + err );
+			return Core::ReturnVar( ret_val );
 		}
 	}
 

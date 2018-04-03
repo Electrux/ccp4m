@@ -223,3 +223,32 @@ std::string FS::ReadFile( const std::string & filename )
 
 	return res;
 }
+
+bool FS::IsFileLatest( const std::string & file1, const std::string & file2 )
+{
+	Core::logger.AddLogSection( "FS" );
+	Core::logger.AddLogSection( "IsFileLatest" );
+
+	if( !LocExists( file1 ) )
+		return Core::ReturnVar( false );
+
+	struct stat info1, info2;
+
+	if( stat( file1.c_str(), & info1 ) != 0 ) {
+		Core::logger.AddLogString( LogLevels::ALL, "Error in calling stat for file1: " + file1 + " - return value is not zero" );
+		return Core::ReturnVar( false );
+	}
+
+	if( stat( file2.c_str(), & info2 ) != 0 ) {
+		Core::logger.AddLogString( LogLevels::ALL, "Error in calling stat for file2: " + file2 + " - return value is not zero" );
+		return Core::ReturnVar( false );
+	}
+
+	if( info1.st_mtime < info2.st_mtime ) {
+		Core::logger.AddLogString( LogLevels::ALL, "File1: " + file1 + " is older than File2: " + file2 );
+		return Core::ReturnVar( false );
+	}
+
+	Core::logger.AddLogString( LogLevels::ALL, "File1: " + file1 + " is newer than File2: " + file2 );
+	return Core::ReturnVar( true );
+}

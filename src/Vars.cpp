@@ -122,6 +122,10 @@ int Vars::Replace( std::string & str, bool colors )
 
 			it = str.insert( it, val.begin(), val.end() );
 			it += val.size();
+			// Do not add to size if a color is added because it is not a character on terminal
+			if( colors && found_in_colors )
+				continue;
+
 			ctr += val.size();
 		}
 		else {

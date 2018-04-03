@@ -20,6 +20,8 @@ namespace FS
 		const std::vector< std::string > & except = std::vector< std::string >() );
 
 	std::string ReadFile( const std::string & filename );
+
+	bool IsFileLatest( const std::string & file1, const std::string & file2 );
 }
 
 #endif // FS_FUNCS_HPP
