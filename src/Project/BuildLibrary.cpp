@@ -84,7 +84,7 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 			for( int i = 0; i < cores; ++i ) {
 				if( Exec::Internal::threadinfo[ i ].res == std::numeric_limits< int >::min() ) {
 					Display( "{tc}[" + std::to_string( percent ) + "%]\t{fc}Compiling " + caps_lang + " object:  {sc}buildfiles/" + src + ".o {0}...\n" );
-					allthreads.push_back( std::thread( Exec::MultithreadedExecute, compile_str, i, src ) );
+					allthreads.emplace_back( Exec::MultithreadedExecute, compile_str, i, src );
 					thread_found = true;
 					Exec::Internal::threadinfo[ i ].res = -1;
 					break;
