@@ -14,21 +14,15 @@ enum class Errors
 	LAST
 };
 
-const char FMT_SPECIFIER_BEGIN = '%';
-const char FMT_SPECIFIER_END = '%';
+extern const char FMT_SPECIFIER_BEGIN;
+extern const char FMT_SPECIFIER_END;
 
-const std::string DEFAULT_TIMEDATE_FORMAT = "%ds% %MS% %D% %YS% - %HH%:%MM%:%SS%";
-const std::string DEFAULT_LOG_FORMAT = "%t% -> %s% : %l%";
+extern const std::string DEFAULT_TIMEDATE_FORMAT;
+extern const std::string DEFAULT_LOG_FORMAT;
 
-const int DEFAULT_MAX_LOGS_PER_ITERATION = 400;
+extern const int DEFAULT_MAX_LOGS_PER_ITERATION ;
 
-const std::string ERRORSTR[ ( int )Errors::LAST ] = {
-	"Success",
-	"Unknown Failure",
-	"Undefined Format Specifier",
-	"Variable Not Set",
-	"File cannot be openend",
-};
+extern const std::string ERRORSTR[ ( int )Errors::LAST ];
 
 static Errors last_error;
 static std::string last_error_str;
