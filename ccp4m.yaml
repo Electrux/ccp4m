@@ -15,6 +15,10 @@ libs:
     version: 1.54
     inc_flags: ""
     lib_flags: -lcurl
+  - name: pthread
+    version: 0
+    inc_flags: ""
+    lib_flags: -lpthread
 builds:
   - name: ccp4m
     type: bin

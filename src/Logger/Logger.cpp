@@ -46,7 +46,6 @@ std::string Logger::GetFormattedLogString( const TimedString & logmsg )
 			std::string replstr = ReplaceSpecifierByInformation( tmpstr, logmsg );
 
 			if( replstr.empty() ) {
-				std::cout << "\nTmpStr: " << tmpstr << std::endl;
 				return "";
 			}
 
