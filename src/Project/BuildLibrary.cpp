@@ -41,6 +41,14 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 	int ctr = 1;
 	bool is_any_single_file_compiled = false;
 
+	int cores = std::thread::hardware_concurrency() / 2;
+
+	std::vector< std::thread > allthreads;
+
+	for( int i = 0; i < cores; ++i ) {
+		Exec::Internal::threadinfo.push_back( { std::numeric_limits< int >::min(), "", "" } );
+	}
+
 	for( auto src : files ) {
 		int percent = ( ctr * 100 / total_sources );
 
@@ -53,22 +61,67 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 			continue;
 		}
 
-		Display( "{tc}[" + std::to_string( percent ) + "%]\t{fc}Compiling " + caps_lang + " object:  {sc}buildfiles/" + src + ".o {0}...\n" );
-
 		std::string compile_str = compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
 			+ inc_flags + " -c " + src + " -o buildfiles/" + src + ".o";
 
-		is_any_single_file_compiled = true;
+		bool thread_found = false;
 
-		std::string err;
-		int ret_val = Exec::ExecuteCommand( compile_str, & err );
-		if( ret_val != 0 ) {
-			if( !err.empty() )
-				Display( "{fc}Error: {r}" + err );
-			return Core::ReturnVar( ret_val );
+		while( !thread_found ) {
+
+			for( auto & i : Exec::Internal::threadinfo ) {
+				if( i.res != std::numeric_limits< int >::min() && i.res != -1 ) {
+					if( i.res != 0 ) {
+						Display( "{fc}Error in source: {sc}" + i.src + " {0}:\n" + i.err );
+						for( auto & thread : allthreads )
+							thread.join();
+						return Core::ReturnVar( i.res );
+					}
+					i.res = std::numeric_limits< int >::min();
+					i.err.clear();
+				}
+			}
+
+			for( int i = 0; i < cores; ++i ) {
+				if( Exec::Internal::threadinfo[ i ].res == std::numeric_limits< int >::min() ) {
+					Display( "{tc}[" + std::to_string( percent ) + "%]\t{fc}Compiling " + caps_lang + " object:  {sc}buildfiles/" + src + ".o {0}...\n" );
+					allthreads.push_back( std::thread( Exec::MultithreadedExecute, compile_str, i, src ) );
+					thread_found = true;
+					Exec::Internal::threadinfo[ i ].res = -1;
+					break;
+				}
+			}
 		}
+
 		++ctr;
 	}
+
+	bool all_done = false;
+
+	while( !all_done ) {
+		all_done = true;
+		for( auto & i : Exec::Internal::threadinfo ) {
+			if( i.res == -1 ) {
+				all_done = false;
+				continue;
+			}
+			if( i.res != std::numeric_limits< int >::min() ) {
+				if( i.res != 0 ) {
+					Display( "{fc}Error in source: {sc}" + i.src + " {0}:\n" + i.err );
+					for( auto & thread : allthreads )
+						thread.join();
+					return Core::ReturnVar( i.res );
+				}
+				i.res = std::numeric_limits< int >::min();
+				i.err.clear();
+				all_done = false;
+			}
+		}
+	}
+
+	for( auto & thread : allthreads )
+		thread.join();
+
+	Exec::Internal::threadinfo.clear();
 
 	std::string ext = data.builds[ data_i ].build_type == "static" ? ".a" : ".so";
 	std::string lib_type = data.builds[ data_i ].build_type;
@@ -85,8 +138,20 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 	if( !main_src.empty() ) {
 		int percent = ( ctr * 100 / total_sources );
 
+		bool are_all_latest = true;
+
+		if( FS::LocExists( "lib/" + data.builds[ data_i ].name + ext ) ) {
+			for( auto src : files ) {
+				if( !FS::IsFileLatest( "lib/" + data.builds[ data_i ].name + ext, src ) )
+					are_all_latest = false;
+			}
+		}
+		else {
+			are_all_latest = false;
+		}
+
 		// Check if there already exists a build whose modification time is newer than main source and / or
-		if( !is_any_single_file_compiled && FS::IsFileLatest( "lib/" + data.builds[ data_i ].name + ext, main_src ) &&
+		if( !is_any_single_file_compiled && are_all_latest && FS::IsFileLatest( "lib/" + data.builds[ data_i ].name + ext, main_src ) &&
 			FS::IsFileLatest( "lib/" + data.builds[ data_i ].name + ext, "ccp4m.yaml" ) ) {
 
 			Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{bg}Project is already up to date{0}\n" );

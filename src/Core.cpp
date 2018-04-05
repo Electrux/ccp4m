@@ -68,6 +68,13 @@ std::map< std::string, std::string > Core::COLORS = {
 
 Logger Core::logger;
 
+void Core::ReturnVoid()
+{
+	// Remove function and class / namespace
+	logger.RemoveLastLogSection();
+	logger.RemoveLastLogSection();
+}
+
 bool Core::InitCore()
 {
 	bool new_config = false;

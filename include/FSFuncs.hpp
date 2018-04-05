@@ -24,6 +24,8 @@ namespace FS
 	std::string ReadFile( const std::string & filename );
 
 	bool IsFileLatest( const std::string & file1, const std::string & file2 );
+
+	bool DeleteFile( const std::string & file );
 }
 
 #endif // FS_FUNCS_HPP

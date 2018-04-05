@@ -310,3 +310,8 @@ bool FS::IsFileLatest( const std::string & file1, const std::string & file2 )
 	Core::logger.AddLogString( LogLevels::ALL, "File1 is newer than File2 and all its includes" );
 	return Core::ReturnVar( true );
 }
+
+bool FS::DeleteFile( const std::string & file )
+{
+	return std::remove( file.c_str() ) == 0 ? true : false;
+}
