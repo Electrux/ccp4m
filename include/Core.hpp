@@ -1,6 +1,7 @@
 #ifndef CORE_HPP
 #define CORE_HPP
 
+#include <vector>
 #include <string>
 #include <map>
 
