@@ -3,7 +3,6 @@ version: 0.4
 lang: c++
 std: 14
 compile_flags: -O2
-build_date: Tuesday.April.3.18
 author:
   name: Electrux
   email: ElectruxRedsworth@gmail.com
@@ -24,7 +23,7 @@ builds:
       - src/(.*).cpp
     exclude:
       - src/tests/(.*).cpp
-  - name: ccp4m_test
+  - name: ccp4m_test_licenses
     type: bin
     main_src: src/tests/licenses.cpp
     other_src:
