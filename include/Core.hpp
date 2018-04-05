@@ -31,9 +31,9 @@ namespace Core
 
 	extern Logger logger;
 
-	// Template class/function definitions cant be in separate source files
 	void ReturnVoid();
 
+	// Template class/function definitions cant be in separate source files
 	template< class T > T ReturnVar( T val )
 	{
 		// Remove function and class / namespace
