@@ -35,7 +35,7 @@ int Project::Handle( const std::vector< std::string > & args )
 		//err_code = Project::HandleFlags( args );
 	}
 
-	return 0;
+	return err_code;
 }
 
 int Project::Build( const std::vector< std::string > & args )

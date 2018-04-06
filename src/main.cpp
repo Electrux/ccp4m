@@ -18,14 +18,19 @@ int Exit( int err_code )
 
 int main( int argc, char ** argv )
 {
+	auto args = Str::DoublePtrToVector( argc, ( const char ** & )argv );
+
+	if( args.size() > 1 && args[ 1 ] == "autoclean" ) {
+		Display( "\n" );
+		return Core::AutoClean();
+	}
+
 	std::string logfile = Env::CCP4M_LOG_DIR + "/" + Core::GetCurrDateTime() + ".log";
 	FS::CreateFileIfNotExists( logfile );
 	if( !Core::InitLogger( logfile ) ) {
 		Display( "{br}Failed to initialize logging engine! + {fc}" + GetLastErrorStr() + "{0}\n" );
 		return 1;
 	}
-
-	auto args = Str::DoublePtrToVector( argc, ( const char ** & )argv );
 
 	if( !Core::InitCore() )
 		return Exit( 1 );
@@ -39,12 +44,12 @@ int main( int argc, char ** argv )
 		err_code = 0;
 	}
 
+	Display( "\n" );
+
 	if( args[ 1 ] == "help" ) {
 		Helps::Usage( args );
 		err_code = 0;
 	}
-
-	Display( "\n" );
 
 	if( args[ 1 ] == "project" ) {
 		err_code = Project::Handle( args );

@@ -49,6 +49,8 @@ namespace Core
 	bool EndLogger();
 
 	std::string GetCurrDateTime();
+
+	int AutoClean();
 }
 
 #endif // CORE_HPP

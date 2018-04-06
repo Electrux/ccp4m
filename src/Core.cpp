@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <regex>
 
 #include <yaml-cpp/yaml.h>
 #include <curl/curl.h>
@@ -180,4 +181,49 @@ std::string Core::GetCurrDateTime()
 	tm.SetFormat( Core::FILE_TIME_FORMAT );
 
 	return tm.GetFormattedDateTime();
+}
+
+int Core::AutoClean()
+{
+	Display( "{fc}Cleaning self directories {0}...\n\n" );
+
+	auto logfiles = FS::GetFilesInDir( Env::CCP4M_LOG_DIR, std::regex( "(.*).log" ) );
+
+	if( logfiles.empty() ) {
+		Display( "{bg}Log directory is clean{0}\n" );
+	}
+	else {
+		Display( "{fc}Removing {sc}" + std::to_string( logfiles.size() ) + "{fc} log files {0}...\n" );
+		for( auto f : logfiles ) {
+			if( !FS::DeleteFile( f ) ) {
+				Display( "{fc}Error in deleting log file: {r}" + f + "{0}\n" );
+				return ReturnVar( 1 );
+			}
+		}
+
+		Display( "{fc}Successfully deleted the log files{0}\n" );
+	}
+
+	logfiles.clear();
+
+	Display( "\n" );
+
+	auto licfiles = FS::GetFilesInDir( Env::CCP4M_LICENSE_DIR, std::regex( "(.*).txt" ) );
+
+	if( licfiles.empty() ) {
+		Display( "{bg}License directory is clean{0}\n" );
+	}
+	else {
+		Display( "{fc}Removing {sc}" + std::to_string( licfiles.size() ) + "{fc} license files {0}...\n" );
+		for( auto f : licfiles ) {
+			if( !FS::DeleteFile( f ) ) {
+				Display( "{fc}Error in deleting license file: {r}" + f + "{0}\n" );
+				return ReturnVar( 1 );
+			}
+		}
+
+		Display( "{fc}cSuccessfully deleted the license files{0}\n" );
+	}
+
+	return ReturnVar( 0 );
 }
