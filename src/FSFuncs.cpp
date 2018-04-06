@@ -315,3 +315,10 @@ bool FS::DeleteFile( const std::string & file )
 {
 	return std::remove( file.c_str() ) == 0 ? true : false;
 }
+
+bool FS::DeleteDir( const std::string & dir )
+{
+	if( !LocExists( dir ) )
+		return true;
+	return std::system( ( "rm -rf " + dir ).c_str() ) == 0 ? true : false;
+}

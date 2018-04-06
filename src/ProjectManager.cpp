@@ -31,6 +31,9 @@ int Project::Handle( const std::vector< std::string > & args )
 	else if( args[ 2 ] == "run" ) {
 		//err_code = Project::Run( args );
 	}
+	else if( args[ 2 ] == "clean" ) {
+		err_code = Project::Clean();
+	}
 	else {
 		//err_code = Project::HandleFlags( args );
 	}
@@ -105,6 +108,59 @@ int Project::Build( const std::vector< std::string > & args )
 			}
 		}
 	}
+
+	return Core::ReturnVar( 0 );
+}
+
+int Project::Clean()
+{
+	Core::logger.AddLogSection( "Project" );
+	Core::logger.AddLogSection( "Clean" );
+
+	Display( "{fc}Cleaning project directory {0}...\n\n" );
+	Core::logger.AddLogString( LogLevels::ALL, "Cleaning project build directory" );
+
+	Display( "{sc}=> {fc}Removing binary directory {0}... " );
+	Core::logger.AddLogString( LogLevels::ALL, "Removing binary directory" );
+
+	if( FS::DeleteDir( "bin" ) ) {
+		Display( "{g}Success{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Successful" );
+	}
+	else {
+		Display( "{r}Failed{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Failed deleting directory: bin" );
+		return Core::ReturnVar( 1 );
+	}
+
+	Display( "{sc}=> {fc}Removing library directory {0}... " );
+	Core::logger.AddLogString( LogLevels::ALL, "Removing library directory" );
+
+	if( FS::DeleteDir( "lib" ) ) {
+		Display( "{g}Success{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Successful" );
+	}
+	else {
+		Display( "{r}Failed{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Failed deleting directory: lib" );
+		return Core::ReturnVar( 1 );
+	}
+
+	Display( "{sc}=> {fc}Removing buildfiles directory {0}... " );
+	Core::logger.AddLogString( LogLevels::ALL, "Removing buildfiles directory" );
+
+	if( FS::DeleteDir( "buildfiles" ) ) {
+		Display( "{g}Success{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Successful" );
+	}
+	else {
+		Display( "{r}Failed{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Failed deleting directory: buildfiles" );
+		return Core::ReturnVar( 1 );
+	}
+
+	Display( "\n{fc}Successfully cleaned directory{0}\n" );
+	Core::logger.AddLogString( LogLevels::ALL, "Successfully cleaned directory" );
 
 	return Core::ReturnVar( 0 );
 }

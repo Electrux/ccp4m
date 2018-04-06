@@ -26,6 +26,8 @@ namespace FS
 	bool IsFileLatest( const std::string & file1, const std::string & file2 );
 
 	bool DeleteFile( const std::string & file );
+
+	bool DeleteDir( const std::string & dir );
 }
 
 #endif // FS_FUNCS_HPP

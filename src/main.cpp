@@ -20,7 +20,7 @@ int main( int argc, char ** argv )
 {
 	auto args = Str::DoublePtrToVector( argc, ( const char ** & )argv );
 
-	if( args.size() > 1 && args[ 1 ] == "autoclean" ) {
+	if( args.size() > 1 && args[ 1 ] == "clean" ) {
 		Display( "\n" );
 		return Core::AutoClean();
 	}
@@ -41,7 +41,7 @@ int main( int argc, char ** argv )
 
 	if( args.size() < 2 ) {
 		Helps::Usage( args );
-		err_code = 0;
+		return Exit( 0 );
 	}
 
 	Display( "\n" );
@@ -53,6 +53,10 @@ int main( int argc, char ** argv )
 
 	if( args[ 1 ] == "project" ) {
 		err_code = Project::Handle( args );
+	}
+	else {
+		Display( "{fc}Unknown subcommand found{0}: {r}" + args[ 1 ] + "{0}\n" );
+		err_code = 1;
 	}
 
 	return Exit( err_code );
