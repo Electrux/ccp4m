@@ -10,6 +10,8 @@ namespace Project
 
 	int Build( const std::vector< std::string > & args );
 
+	int Run( const std::vector< std::string > & args );
+
 	int Clean();
 }
 

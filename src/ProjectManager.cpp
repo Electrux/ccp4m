@@ -29,7 +29,7 @@ int Project::Handle( const std::vector< std::string > & args )
 		err_code = Build( args );
 	}
 	else if( args[ 2 ] == "run" ) {
-		//err_code = Project::Run( args );
+		err_code = Project::Run( args );
 	}
 	else if( args[ 2 ] == "clean" ) {
 		err_code = Project::Clean();
@@ -67,6 +67,7 @@ int Project::Build( const std::vector< std::string > & args )
 
 	if( pconf.GetData().name.empty() ) {
 		Core::logger.AddLogString( LogLevels::ALL, "No project name! Unable to continue." );
+		Display( "{fc}No project name exists in the configuration file. Unable to continue{0}\n" );
 		return Core::ReturnVar( 1 );
 	}
 
@@ -110,6 +111,59 @@ int Project::Build( const std::vector< std::string > & args )
 	}
 
 	return Core::ReturnVar( 0 );
+}
+
+int Project::Run( const std::vector< std::string > & args )
+{
+	Core::logger.AddLogSection( "Project" );
+	Core::logger.AddLogSection( "Run" );
+
+	if( args.size() < 4 ) {
+		Display( "{fc}Build to execute is not specified{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Build to run is not specified" );
+		return Core::ReturnVar( 1 );
+	}
+
+	if( !FS::LocExists( Env::CCP4M_PROJECT_CONFIG_FILE ) ) {
+		std::string currdir = Env::GetCurrentDir();
+		Core::logger.AddLogString( LogLevels::ALL, "No project configuration in directory: " + currdir );
+		Display( "{fc}Project configuration file: {sc}" + Env::CCP4M_PROJECT_CONFIG_FILE + "{fc} does not exist in this directory.{0}" );
+		return Core::ReturnVar( 1 );
+	}
+
+	ProjectConfig pconf;
+	pconf.LoadFile( "ccp4m.yaml" );
+
+	int which = -1;
+
+	for( int i = 0; i < pconf.GetData().builds.size(); ++i ) {
+		if( pconf.GetData().builds[ i ].name == args[ 3 ] ) {
+			which = i;
+			break;
+		}
+	}
+
+	if( which == -1 ) {
+		Core::logger.AddLogString( LogLevels::ALL, "Used build name: " + args[ 3 ] + " but it does not exist in builds list in config" );
+		Display( "{fc}Unable to find build: {sc}" + args[ 3 ] + "{fc}. Exiting. {br}" + UTF::CROSS + "{0}\n" );
+		return Core::ReturnVar( 1 );
+	}
+
+	auto & build = pconf.GetData().builds[ which ];
+
+	if( build.type != "bin" ) {
+		Display( "{fc}The specified build {sc}" + build.name + "{fc} is not a binary, it is a {sc}" + build.type + "{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Build: " + build.name + " is not binary, it is: " + build.type );
+		return Core::ReturnVar( 1 );
+	}
+
+	if( !FS::LocExists( "bin/" + build.name ) ) {
+		Display( "{fc}The specified build {sc}" + build.name + "{fc} is not already built, build it first using{0}: {tc}" + args[ 0 ] + " project build{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Build: " + build.name + " is not already built, it must be first built using " + args[ 0 ] + " project build" );
+		return Core::ReturnVar( 1 );
+	}
+
+	return Core::ReturnVar( std::system( ( "bin/" + build.name ).c_str() ) );
 }
 
 int Project::Clean()
