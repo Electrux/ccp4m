@@ -50,7 +50,7 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 		Exec::Internal::threadinfo.push_back( { std::numeric_limits< int >::min(), "", "" } );
 	}
 
-	Display( "{fc}Using cores: {sc}" + std::to_string( cores ) + "{0}\n\n" );
+	Display( "{fc}Using cores{0}: {sc}" + std::to_string( cores ) + "{0}\n\n" );
 
 	for( auto src : files ) {
 		int percent = ( ctr * 100 / total_sources );
@@ -59,7 +59,7 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 
 		// Remove files which are up to date
 		if( FS::IsFileLatest( "buildfiles/" + src + ".o", src ) ) {
-			Display( "{tc}[" + std::to_string( percent ) + "%]\t{g}Up to date " + caps_lang + " object: {sc}buildfiles/" + src + ".o {0}\n" );
+			Display( "{tc}[" + std::to_string( percent ) + "%]\t{g}Up to date " + caps_lang + " object{0}: {sc}buildfiles/" + src + ".o {0}\n" );
 			++ctr;
 			continue;
 		}
@@ -76,7 +76,7 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 			for( auto & i : Exec::Internal::threadinfo ) {
 				if( i.res != std::numeric_limits< int >::min() && i.res != -1 ) {
 					if( i.res != 0 ) {
-						Display( "{fc}Error in source: {sc}" + i.src + " {0}:\n" + i.err );
+						Display( "{fc}Error in source{0}: {sc}" + i.src + " {0}:\n" + i.err );
 						for( auto & thread : allthreads )
 							thread.join();
 						return Core::ReturnVar( i.res );
@@ -88,7 +88,7 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 
 			for( int i = 0; i < cores; ++i ) {
 				if( Exec::Internal::threadinfo[ i ].res == std::numeric_limits< int >::min() ) {
-					Display( "{tc}[" + std::to_string( percent ) + "%]\t{fc}Compiling " + caps_lang + " object:  {sc}buildfiles/" + src + ".o {0}...\n" );
+					Display( "{tc}[" + std::to_string( percent ) + "%]\t{fc}Compiling " + caps_lang + " object{0}:  {sc}buildfiles/" + src + ".o {0}...\n" );
 					allthreads.emplace_back( Exec::MultithreadedExecute, compile_str, i, src );
 					thread_found = true;
 					Exec::Internal::threadinfo[ i ].res = -1;
@@ -111,7 +111,7 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 			}
 			if( i.res != std::numeric_limits< int >::min() ) {
 				if( i.res != 0 ) {
-					Display( "{fc}Error in source: {sc}" + i.src + " {0}:\n" + i.err );
+					Display( "{fc}Error in source{0}: {sc}" + i.src + " {0}:\n" + i.err );
 					for( auto & thread : allthreads )
 						thread.join();
 					return Core::ReturnVar( i.res );
@@ -151,7 +151,7 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 			return Core::ReturnVar( 0 );
 		}
 
-		Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{fc}Building " + caps_lang + " binary:   {sc}buildfiles/" + data.builds[ data_i ].name + " {0}...\n" );
+		Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{fc}Building " + caps_lang + " binary{0}:   {sc}buildfiles/" + data.builds[ data_i ].name + " {0}...\n" );
 		std::string compile_str = compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
 			+ inc_flags + " " + lib_flags + " -g -o buildfiles/" + data.builds[ data_i ].name + " " + main_src + " " + build_files_str;
 		std::string err;
@@ -167,7 +167,7 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 		ret_val = Exec::ExecuteCommand( cmd, & err );
 		if( ret_val != 0 ) {
 			if( !err.empty() )
-				Display( "{fc}Error: {r}" + err );
+				Display( "{fc}Error{0}: {r}" + err );
 			return Core::ReturnVar( ret_val );
 		}
 	}

@@ -56,7 +56,7 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 
 		// Remove files which are up to date
 		if( FS::IsFileLatest( "buildfiles/" + src + ".o", src ) ) {
-			Display( "{tc}[" + std::to_string( percent ) + "%]\t{g}Up to date " + caps_lang + " object: {sc}buildfiles/" + src + ".o {0}\n" );
+			Display( "{tc}[" + std::to_string( percent ) + "%]\t{g}Up to date " + caps_lang + " object{0}: {sc}buildfiles/" + src + ".o {0}\n" );
 			++ctr;
 			continue;
 		}
@@ -71,7 +71,7 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 			for( auto & i : Exec::Internal::threadinfo ) {
 				if( i.res != std::numeric_limits< int >::min() && i.res != -1 ) {
 					if( i.res != 0 ) {
-						Display( "{fc}Error in source: {sc}" + i.src + " {0}:\n" + i.err );
+						Display( "{fc}Error in source{0}: {sc}" + i.src + " {0}:\n" + i.err );
 						for( auto & thread : allthreads )
 							thread.join();
 						return Core::ReturnVar( i.res );
@@ -83,7 +83,7 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 
 			for( int i = 0; i < cores; ++i ) {
 				if( Exec::Internal::threadinfo[ i ].res == std::numeric_limits< int >::min() ) {
-					Display( "{tc}[" + std::to_string( percent ) + "%]\t{fc}Compiling " + caps_lang + " object:  {sc}buildfiles/" + src + ".o {0}...\n" );
+					Display( "{tc}[" + std::to_string( percent ) + "%]\t{fc}Compiling " + caps_lang + " object{0}:  {sc}buildfiles/" + src + ".o {0}...\n" );
 					allthreads.emplace_back( Exec::MultithreadedExecute, compile_str, i, src );
 					thread_found = true;
 					Exec::Internal::threadinfo[ i ].res = -1;
@@ -106,7 +106,7 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 			}
 			if( i.res != std::numeric_limits< int >::min() ) {
 				if( i.res != 0 ) {
-					Display( "{fc}Error in source: {sc}" + i.src + " {0}:\n" + i.err );
+					Display( "{fc}Error in source{0}: {sc}" + i.src + " {0}:\n" + i.err );
 					for( auto & thread : allthreads )
 						thread.join();
 					return Core::ReturnVar( i.res );
@@ -157,14 +157,14 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 			Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{bg}Project is already up to date{0}\n" );
 			return Core::ReturnVar( 0 );
 		}
-		Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{fc}Building " + caps_lang + " " + lib_type + " library:   {sc}buildfiles/lib" +
+		Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{fc}Building " + caps_lang + " " + lib_type + " library{0}:   {sc}buildfiles/lib" +
 			data.builds[ data_i ].name + ext + " {0}...\n" );
 
 		std::string err;
 		int ret_val = Exec::ExecuteCommand( compile_str, & err );
 		if( ret_val != 0 ) {
 			if( !err.empty() )
-				Display( "{fc}Error: {r}" + err );
+				Display( "{fc}Error{0}: {r}" + err );
 			return Core::ReturnVar( ret_val );
 		}
 
@@ -173,7 +173,7 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 		ret_val = Exec::ExecuteCommand( cmd, & err );
 		if( ret_val != 0 ) {
 			if( !err.empty() )
-				Display( "{fc}Error: {r}" + err );
+				Display( "{fc}Error{0}: {r}" + err );
 			return Core::ReturnVar( ret_val );
 		}
 	}
