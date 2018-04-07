@@ -26,14 +26,14 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 
 	Common::GetVars( data, data_i, main_src, compiler, caps_lang, inc_flags, lib_flags, files );
 
-	Core::logger.AddLogString( LogLevels::ALL, "Compiling " + std::to_string( files.size() ) + " sources with main_src as: " + main_src );
+	int total_sources = files.size() + ( int )!main_src.empty();
+
+	Core::logger.AddLogString( LogLevels::ALL, "Compiling " + std::to_string( total_sources ) + " sources with main_src as: " + main_src );
 
 	if( !Common::CreateSourceDirs( files ) )
 		return Core::ReturnVar( 1 );
 
 	Core::logger.AddLogString( LogLevels::ALL, "Building target: " + data.builds[ data_i ].name );
-
-	int total_sources = files.size() + ( int )!main_src.empty();
 
 	Display( "\n{fc}Building target {sc}" + data.builds[ data_i ].name + " {fc}with {sc}" + std::to_string( total_sources ) + " {fc}sources {0}...\n\n" );
 
