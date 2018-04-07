@@ -158,7 +158,7 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 		int ret_val = Exec::ExecuteCommand( compile_str, & err );
 		if( ret_val != 0 ) {
 			if( !err.empty() )
-				Display( "{fc}Error: {r}" + err );
+				Display( "{fc}Error{0}: {r}" + err );
 			return Core::ReturnVar( ret_val );
 		}
 
