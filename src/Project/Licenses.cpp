@@ -173,7 +173,7 @@ bool License::UpdateProjectLicenseFile( const std::string & license )
 		Core::logger.AddLogString( LogLevels::ALL, "Unable to retrieve license file" );
 		return Core::ReturnVar( false );
 	}
-	if( !FS::LocExists( "LICENSE" ) || FS::ReadFile( "LICENSE" ).size() != license_str.size() ) {
+	if( !FS::LocExists( "LICENSE" ) || FS::ReadFile( "LICENSE" ) != license_str ) {
 		Core::logger.AddLogString( LogLevels::ALL, "License file not found in project directory or is different than it should be. Creating a new one" );
 		Display( "{fc}Updating {sc}LICENSE {fc}file {0}...\n" );
 		if( !FS::CreateFile( "LICENSE", license_str ) )
