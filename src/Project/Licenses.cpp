@@ -56,9 +56,10 @@ std::string License::FetchLicense( const License::ID & id )
 	std::string license_sys_loc = Env::CCP4M_LICENSE_DIR + "/" + LICENSES[ id ] + ".txt";
 
 	// check if license file already exists
-	Display( "{fc}Fetching copy of license: {sc}" + LICENSES[ id ] + " {0}... " );
+	Display( "{fc}Fetching copy of license{0}: {sc}" + LICENSES[ id ] + " {0}... " );
 	if( NW::DownloadFile( license_web_loc, license_sys_loc ) != 0 ) {
-		Display( "\n{r}Failed to fetch a copy of license: {sc}" + LICENSES[ id ] + "{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Failed to fetch a copy of license: " + LICENSES[ id ] );
+		Display( "\n{r}Failed to fetch a copy of license{0}: {sc}" + LICENSES[ id ] + "{0}\n" );
 		return Core::ReturnVar( std::string() );
 	}
 	Display( "\n" );
@@ -66,7 +67,7 @@ std::string License::FetchLicense( const License::ID & id )
 	std::string license_str = FS::ReadFile( license_sys_loc );
 
 	if( license_str.empty() ) {
-		Display( "\n{r}Failed to read license from file: {sc}" + license_sys_loc + "{0}\n" );
+		Display( "\n{r}Failed to read license from file{0}: {sc}" + license_sys_loc + "{0}\n" );
 		Core::logger.AddLogString( LogLevels::ALL, "Failed to read license from file: " + license_sys_loc );
 
 		return Core::ReturnVar( std::string() );
@@ -109,9 +110,10 @@ std::string License::FetchLicenseForFile( const License::ID & id )
 	std::string license_sys_loc = Env::CCP4M_LICENSE_DIR + "/mini_license_for_file.txt";
 
 	// check if license file already exists
-	Display( "{fc}Fetching copy of {sc}mini {fc}license: {sc}" + LICENSES[ id ] + " {0}... " );
+	Display( "{fc}Fetching copy of {sc}mini {fc}license{0}: {sc}" + LICENSES[ id ] + " {0}... " );
 	if( NW::DownloadFile( license_web_loc, license_sys_loc ) != 0 ) {
-		Display( "\n{r}Failed to fetch a copy of {sc}mini {fc}license: {sc}" + LICENSES[ id ] + "{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Failed to fetch a copy of mini license: " + LICENSES[ id ] );
+		Display( "\n{r}Failed to fetch a copy of {sc}mini {fc}license{0}: {sc}" + LICENSES[ id ] + "{0}\n" );
 		return Core::ReturnVar( "" );
 	}
 	Display( "\n" );
@@ -119,7 +121,7 @@ std::string License::FetchLicenseForFile( const License::ID & id )
 	std::string license_str = FS::ReadFile( license_sys_loc, "\t" );
 
 	if( license_str.empty() ) {
-		Display( "\n{r}Failed to read license from file: {sc}" + license_sys_loc + "{0}\n" );
+		Display( "\n{r}Failed to read license from file{0}: {sc}" + license_sys_loc + "{0}\n" );
 		Core::logger.AddLogString( LogLevels::ALL, "Failed to read license from file: " + license_sys_loc );
 
 		return Core::ReturnVar( "" );
@@ -159,4 +161,24 @@ std::string License::FetchLicenseFormalName( const std::string & license )
 	}
 
 	return "";
+}
+
+bool License::UpdateProjectLicenseFile( const std::string & license )
+{
+	Core::logger.AddLogSection( "License" );
+	Core::logger.AddLogSection( "UpdateProjectLicenseFile" );
+
+	std::string && license_str = License::FetchLicense( license );
+	if( license_str == "" ) {
+		Core::logger.AddLogString( LogLevels::ALL, "Unable to retrieve license file" );
+		return Core::ReturnVar( false );
+	}
+	if( !FS::LocExists( "LICENSE" ) || FS::ReadFile( "LICENSE" ).size() != license_str.size() ) {
+		Core::logger.AddLogString( LogLevels::ALL, "License file not found in project directory or is different than it should be. Creating a new one" );
+		Display( "{fc}Updating {sc}LICENSE {fc}file {0}...\n" );
+		if( !FS::CreateFile( "LICENSE", license_str ) )
+			return Core::ReturnVar( false );
+	}
+
+	return Core::ReturnVar( true );
 }

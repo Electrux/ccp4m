@@ -95,20 +95,19 @@ bool ProjectConfig::GenerateDefaultConfig()
 	pdata.std = "14";
 	pdata.compile_flags = "-O2";
 
-	pdata.license = "bsd3";
+	pdata.license = License::LICENSES[ License::DEFAULT_LICENSE ];
 
 	auto v = Vars::GetSingleton();
 	v->AddVar( "license", License::FetchLicenseFormalName( pdata.license ) );
 	v->AddVar( "name", pdata.name );
 
-	if( License::FetchLicense( pdata.license ) == "" ) {
-		Core::logger.AddLogString( LogLevels::ALL, "Unable to retrieve license file" );
-	}
+	if( !License::UpdateProjectLicenseFile( pdata.license ) )
+			return Core::ReturnVar( 1 );
 
 	Build build;
 	build.name = "DefaultProject";
 	build.type = "bin";
-	build.main_src = "./src/main.cpp";
+	build.main_src = "src/main.cpp";
 
 	return Core::ReturnVar( true );
 }
@@ -137,9 +136,8 @@ bool ProjectConfig::LoadFile( const std::string & file )
 
 	v->AddVar( "license", License::FetchLicenseFormalName( pdata.license ) );
 
-	if( License::FetchLicense( pdata.license ) == "" ) {
-		Core::logger.AddLogString( LogLevels::ALL, "Unable to retrieve license file" );
-	}
+	if( !License::UpdateProjectLicenseFile( pdata.license ) )
+			return Core::ReturnVar( 1 );
 
 	pdata.author.name = v->Replace( GetString( conf, "author", "name" ) );
 	pdata.author.email = v->Replace( GetString( conf, "author", "email" ) );

@@ -264,9 +264,8 @@ int Project::Set( const std::vector< std::string > & args )
 			return Core::ReturnVar( 1 );
 		}
 
-		if( License::FetchLicense( args[ 4 ] ) == "" ) {
-			Core::logger.AddLogString( LogLevels::ALL, "Unable to retrieve license file" );
-		}
+		if( !License::UpdateProjectLicenseFile( args[ 4 ] ) )
+			return Core::ReturnVar( 1 );
 
 		Display( "\n" );
 
