@@ -114,8 +114,8 @@ bool Core::InitCore()
 
 	if( !new_config ) {
 		YAML::Node conf = YAML::LoadFile( Env::CCP4M_CONFIG_FILE );
-		if( conf[ "author" ] )
-			v->AddVar( "author", v->Replace( conf[ "author" ].as< std::string >() ) );
+		if( conf[ "name" ] )
+			v->AddVar( "author", v->Replace( conf[ "name" ].as< std::string >() ) );
 		return ReturnVar( true );
 	}
 

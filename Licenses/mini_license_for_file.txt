@@ -1,6 +1,6 @@
 Copyright (c) {year}, {author}
 All rights reserved.
-Using {license} license for the project,
+Using the {license} license for the project,
 main LICENSE file resides in project's root directory.
 
 Please read that file and understand the license terms

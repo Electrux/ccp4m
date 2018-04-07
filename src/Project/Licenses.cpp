@@ -25,6 +25,20 @@ const std::vector< std::string > License::LICENSES = {
 	"unlicense",
 };
 
+const std::vector< std::string > License::LICENSES_FORMAL = {
+	"Apache 2.0",
+	"GNU GPL 3.0",
+	"MIT",
+	"BSD 2-Clause",
+	"BSD 3-Clause",
+	"Eclipse 2.0",
+	"GNU Affero GPL 3.0",
+	"GNU Lesser GPL 2.1",
+	"GNU Lesser GPL 3.0",
+	"Mozilla",
+	"Unlicense",
+};
+
 // This is used as LICENSES[ DEFAULT_LICENSE ]
 const License::ID License::DEFAULT_LICENSE = License::ID::gnugpl3_0;
 
@@ -129,6 +143,19 @@ std::string License::FetchLicenseForFile( const std::string & name )
 
 	if( loc != -1 ) {
 		return FetchLicenseForFile( ( ID )loc );
+	}
+
+	return "";
+}
+
+std::string License::FetchLicenseFormalName( const std::string & license )
+{
+	int loc = -1;
+
+	for( int i = 0; i < LICENSES.size(); ++i ) {
+		if( LICENSES[ i ] == license ) {
+			return LICENSES_FORMAL[ i ];
+		}
 	}
 
 	return "";

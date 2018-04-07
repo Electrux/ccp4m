@@ -26,14 +26,14 @@ int Project::GenerateIncludeFile( ProjectConfig & pconf, const std::string & fil
 	std::replace( caps_file.begin(), caps_file.end(), '.', '_' );
 	std::replace( caps_file.begin(), caps_file.end(), ' ', '_' );
 
-	std::string inc_data = "/*\n" + license_str + "*/\n\n#ifndef " + caps_file + "\n#define " + caps_file + "\n\n\n\n#endif //" + caps_file;
+	std::string inc_data = "/*\n" + license_str + "*/\n\n#ifndef " + caps_file + "\n#define " + caps_file + "\n\n\n\n#endif // " + caps_file;
 
 	if( !FS::CreateFile( final_file, inc_data ) ) {
-		Display( "{fc}Failed to create include file{0}: {r}" + final_file + "{0}\n" );
+		Display( "\n{fc}Failed to create include file{0}: {r}" + final_file + "{0}\n" );
 		return Core::ReturnVar( 1 );
 	}
 
-	Display( "{fc}Successfully created include file{0}: {g}" + final_file + "{0}\n" );
+	Display( "\n{fc}Successfully created include file{0}: {g}" + final_file + "{0}\n" );
 	return Core::ReturnVar( 0 );
 }
 
@@ -44,8 +44,11 @@ int Project::GenerateSourceFile( ProjectConfig & pconf, const std::string & file
 
 	std::string final_file = "src/" + file;
 
+	std::string && license_str = License::FetchLicenseForFile( pconf.GetData().license );
+
 	if( which_build == -1 ) {
-		Core::logger.AddLogString( LogLevels::ALL, "Adding source file: " + final_file + " to all builds" );
+		Core::logger.AddLogString( LogLevels::ALL, "Unspecified build name, adding source file: " + final_file + " to all builds" );
+		Display( "\n{fc}Warning{0}: {sc}Unspecified build name, will add the source to all builds{0}\n" );
 		for( auto & b : pconf.GetData().builds ) {
 			bool found_regex = false;
 
@@ -60,6 +63,7 @@ int Project::GenerateSourceFile( ProjectConfig & pconf, const std::string & file
 
 			b.srcs.push_back( final_file );
 			Core::logger.AddLogString( LogLevels::ALL, "Added source file: " + final_file + " to build: " + b.name );
+			Display( "{sc}=> {fc}Added source file to build{0}: {tc}" + b.name + "{0}\n" );
 		}
 	}
 	else {
@@ -77,12 +81,11 @@ int Project::GenerateSourceFile( ProjectConfig & pconf, const std::string & file
 		if( !found_regex ) {
 			b.srcs.push_back( final_file );
 			Core::logger.AddLogString( LogLevels::ALL, "Added source file: " + final_file + " to build: " + b.name );
+			Display( "{sc}=> {fc}Added source file to build{0}: {tc}" + b.name + "{0}\n" );
 		}
 	}
 
 	pconf.SaveFile( Env::CCP4M_PROJECT_CONFIG_FILE );
-
-	std::string && license_str = License::FetchLicenseForFile( pconf.GetData().license );
 
 	std::string caps_file = Str::ToUpper( file );
 	std::replace( caps_file.begin(), caps_file.end(), '/', '_' );
@@ -92,10 +95,10 @@ int Project::GenerateSourceFile( ProjectConfig & pconf, const std::string & file
 	std::string src_data = "/*\n" + license_str + "*/\n\n";
 
 	if( !FS::CreateFile( final_file, src_data ) ) {
-		Display( "{fc}Failed to create source file{0}: {r}" + final_file + "{0}\n" );
+		Display( "\n{fc}Failed to create source file{0}: {r}" + final_file + "{0}\n" );
 		return Core::ReturnVar( 1 );
 	}
 
-	Display( "{fc}Successfully created source file{0}: {g}" + final_file + "{0}\n" );
+	Display( "\n{fc}Successfully created source file{0}: {g}" + final_file + "{0}\n" );
 	return Core::ReturnVar( 0 );
 }

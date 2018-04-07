@@ -9,6 +9,8 @@ namespace License
 {
 	extern const std::vector< std::string > LICENSES;
 
+	extern const std::vector< std::string > LICENSES_FORMAL;
+
 	enum ID
 	{
 		apache2_0,
@@ -33,6 +35,8 @@ namespace License
 	std::string FetchLicenseForFile( const ID & id );
 
 	std::string FetchLicenseForFile( const std::string & name );
+
+	std::string FetchLicenseFormalName( const std::string & license );
 }
 
 #endif // LICENSES_HPP

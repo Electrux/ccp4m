@@ -177,13 +177,8 @@ int Project::Add( const std::vector< std::string > & args )
 
 	if( FS::LocExists( file ) ) {
 		Core::logger.AddLogString( LogLevels::ALL, "File: " + file + " already exists" );
-		Display( "{fc}File{0}: {r}" + file + "{fc} already exists" );
+		Display( "{fc}File{0}: {r}" + file + "{fc} already exists{0}\n" );
 		return Core::ReturnVar( 1 );
-	}
-
-	if( args.size() < 6 && args[ 3 ] == "src" ) {
-		Core::logger.AddLogString( LogLevels::ALL, "Warning: Unspecified build name, will add the source to all builds" );
-		Display( "{fc}Warning{0}: {fc}Unspecified build name, will add the source to all builds\n" );
 	}
 
 	int which_build = -1;

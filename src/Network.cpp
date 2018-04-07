@@ -21,7 +21,7 @@ int NW::DownloadFile( const std::string & url, const std::string & out_loc )
 		return Core::ReturnVar( 1 );
 	}
 
-	if( FS::LocExists( out_loc ) ) {
+	if( FS::LocExists( out_loc ) && FS::ReadFile( out_loc ).size() > 0 ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Location: " + out_loc + " already exists" );
 		return Core::ReturnVar( 0 );
 	}

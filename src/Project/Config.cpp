@@ -75,6 +75,7 @@ bool ProjectConfig::GetDefaultAuthor()
 		Core::logger.AddLogString( LogLevels::ALL, "Default author information fetch failed. Name and/or email does not exist" );
 		return Core::ReturnVar( false );
 	}
+	v->AddVar( "author", pdata.author.name );
 
 	Core::logger.AddLogString( LogLevels::ALL, "Default author information fetched successfully - Name: " + pdata.author.name + " Email: " + pdata.author.email );
 	return Core::ReturnVar( true );
@@ -97,7 +98,7 @@ bool ProjectConfig::GenerateDefaultConfig()
 	pdata.license = "bsd3";
 
 	auto v = Vars::GetSingleton();
-	v->AddVar( "license", pdata.license );
+	v->AddVar( "license", License::FetchLicenseFormalName( pdata.license ) );
 	v->AddVar( "name", pdata.name );
 
 	if( License::FetchLicense( pdata.license ) == "" ) {
@@ -134,7 +135,7 @@ bool ProjectConfig::LoadFile( const std::string & file )
 
 	pdata.license = v->Replace( GetString( conf, "license" ) );
 
-	v->AddVar( "license", pdata.license );
+	v->AddVar( "license", License::FetchLicenseFormalName( pdata.license ) );
 
 	if( License::FetchLicense( pdata.license ) == "" ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Unable to retrieve license file" );
@@ -149,6 +150,7 @@ bool ProjectConfig::LoadFile( const std::string & file )
 	}
 
 	v->AddVar( "name", pdata.name );
+	v->AddVar( "author", pdata.author.name );
 
 	for( auto libdata : conf[ "libs" ] ) {
 		Library lib;
@@ -193,7 +195,8 @@ bool ProjectConfig::SaveFile( const std::string & file )
 	auto v = Vars::GetSingleton();
 
 	v->AddVar( "name", pdata.name );
-	v->AddVar( "license", pdata.license );
+	v->AddVar( "author", pdata.author.name );
+	v->AddVar( "license", License::FetchLicenseFormalName( pdata.license ) );
 
 	YAML::Emitter o;
 	o << YAML::BeginMap;
@@ -270,6 +273,7 @@ void ProjectConfig::DisplayAll()
 	Display( "{bm}Lang: {bg}" + pdata.lang + "\n" );
 	Display( "{bm}Std: {bg}" + pdata.std + "\n" );
 	Display( "{bm}Compile_Flags: {bg}" + pdata.compile_flags + "\n\n" );
+	Display( "{bm}License: {bg}" + pdata.license + "\n\n" );
 
 	Display( "{by}Libs:\n" );
 
