@@ -50,7 +50,7 @@ namespace Core
 
 	std::string GetCurrDateTime();
 
-	int AutoClean();
+	int AutoClean( const std::vector< std::string > & args );
 }
 
 #endif // CORE_HPP

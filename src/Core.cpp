@@ -183,46 +183,50 @@ std::string Core::GetCurrDateTime()
 	return tm.GetFormattedDateTime();
 }
 
-int Core::AutoClean()
+int Core::AutoClean( const std::vector< std::string > & args )
 {
 	Display( "{fc}Cleaning self directories {0}...\n\n" );
 
-	auto logfiles = FS::GetFilesInDir( Env::CCP4M_LOG_DIR, std::regex( "(.*).log" ) );
+	if( args.size() < 3 || args[ 2 ] == "log" ) {
+		auto logfiles = FS::GetFilesInDir( Env::CCP4M_LOG_DIR, std::regex( "(.*).log" ) );
 
-	if( logfiles.empty() ) {
-		Display( "{bg}Log directory is clean{0}\n" );
-	}
-	else {
-		Display( "{fc}Removing {sc}" + std::to_string( logfiles.size() ) + "{fc} log files {0}...\n" );
-		for( auto f : logfiles ) {
-			if( !FS::DeleteFile( f ) ) {
-				Display( "{fc}Error in deleting log file: {r}" + f + "{0}\n" );
-				return ReturnVar( 1 );
+		if( logfiles.empty() ) {
+			Display( "{bg}Log directory is clean{0}\n" );
+		}
+		else {
+			Display( "{fc}Removing {sc}" + std::to_string( logfiles.size() ) + "{fc} log files {0}...\n" );
+			for( auto f : logfiles ) {
+				if( !FS::DeleteFile( f ) ) {
+					Display( "{fc}Error in deleting log file: {r}" + f + "{0}\n" );
+					return ReturnVar( 1 );
+				}
 			}
+
+			Display( "{fc}Successfully deleted the log files{0}\n" );
 		}
 
-		Display( "{fc}Successfully deleted the log files{0}\n" );
+		logfiles.clear();
+
+		Display( "\n" );
 	}
 
-	logfiles.clear();
+	if( args.size() < 3 || args[ 2 ] == "license" ) {
+		auto licfiles = FS::GetFilesInDir( Env::CCP4M_LICENSE_DIR, std::regex( "(.*).txt" ) );
 
-	Display( "\n" );
-
-	auto licfiles = FS::GetFilesInDir( Env::CCP4M_LICENSE_DIR, std::regex( "(.*).txt" ) );
-
-	if( licfiles.empty() ) {
-		Display( "{bg}License directory is clean{0}\n" );
-	}
-	else {
-		Display( "{fc}Removing {sc}" + std::to_string( licfiles.size() ) + "{fc} license files {0}...\n" );
-		for( auto f : licfiles ) {
-			if( !FS::DeleteFile( f ) ) {
-				Display( "{fc}Error in deleting license file: {r}" + f + "{0}\n" );
-				return ReturnVar( 1 );
-			}
+		if( licfiles.empty() ) {
+			Display( "{bg}License directory is clean{0}\n" );
 		}
+		else {
+			Display( "{fc}Removing {sc}" + std::to_string( licfiles.size() ) + "{fc} license files {0}...\n" );
+			for( auto f : licfiles ) {
+				if( !FS::DeleteFile( f ) ) {
+					Display( "{fc}Error in deleting license file: {r}" + f + "{0}\n" );
+					return ReturnVar( 1 );
+				}
+			}
 
-		Display( "{fc}Successfully deleted the license files{0}\n" );
+			Display( "{fc}Successfully deleted the license files{0}\n" );
+		}
 	}
 
 	return ReturnVar( 0 );

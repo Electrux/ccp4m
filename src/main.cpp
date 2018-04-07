@@ -22,7 +22,7 @@ int main( int argc, char ** argv )
 
 	if( args.size() > 1 && args[ 1 ] == "clean" ) {
 		Display( "\n" );
-		return Core::AutoClean();
+		return Core::AutoClean( args );
 	}
 
 	std::string logfile = Env::CCP4M_LOG_DIR + "/" + Core::GetCurrDateTime() + ".log";
