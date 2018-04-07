@@ -38,6 +38,8 @@ struct ProjectData
 	std::string std;
 	std::string compile_flags;
 
+	std::string license;
+
 	std::vector< Library > libs;
 	std::vector< Build > builds;
 };

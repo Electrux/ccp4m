@@ -214,7 +214,7 @@ bool FS::RegexVectorMatch( const std::string & loc_name, const std::vector< std:
 	return false;
 }
 
-std::string FS::ReadFile( const std::string & filename )
+std::string FS::ReadFile( const std::string & filename, const std::string & prefix_per_line )
 {
 	std::fstream file;
 
@@ -227,7 +227,7 @@ std::string FS::ReadFile( const std::string & filename )
 	std::string temp;
 
 	while( std::getline( file, temp ) )
-		res += temp + "\n";
+		res += prefix_per_line + temp + "\n";
 
 	file.close();
 

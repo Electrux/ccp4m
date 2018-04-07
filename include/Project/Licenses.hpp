@@ -28,7 +28,11 @@ namespace License
 
 	std::string FetchLicense( const ID & id );
 
+	std::string FetchLicense( const std::string & name );
+
 	std::string FetchLicenseForFile( const ID & id );
+
+	std::string FetchLicenseForFile( const std::string & name );
 }
 
 #endif // LICENSES_HPP

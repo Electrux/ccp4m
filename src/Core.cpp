@@ -222,7 +222,7 @@ int Core::AutoClean()
 			}
 		}
 
-		Display( "{fc}cSuccessfully deleted the license files{0}\n" );
+		Display( "{fc}Successfully deleted the license files{0}\n" );
 	}
 
 	return ReturnVar( 0 );

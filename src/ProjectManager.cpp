@@ -9,8 +9,10 @@
 #include "../include/UTFChars.hpp"
 
 #include "../include/Project/Config.hpp"
+#include "../include/Project/Licenses.hpp"
 #include "../include/Project/BuildBinary.hpp"
 #include "../include/Project/BuildLibrary.hpp"
+#include "../include/Project/CodeFileGenerator.hpp"
 
 #include "../include/ProjectManager.hpp"
 
@@ -27,6 +29,12 @@ int Project::Handle( const std::vector< std::string > & args )
 	}
 	else if( args[ 2 ] == "build" ) {
 		err_code = Build( args );
+	}
+	else if( args[ 2 ] == "add" ) {
+		err_code = Add( args );
+	}
+	else if( args[ 2 ] == "set" ) {
+		err_code = Set( args );
 	}
 	else if( args[ 2 ] == "run" ) {
 		err_code = Project::Run( args );
@@ -71,8 +79,7 @@ int Project::Build( const std::vector< std::string > & args )
 		return Core::ReturnVar( 1 );
 	}
 
-	// User specified which build info to use
-
+	// User specified which build to use
 	if( args.size() > 3 ) {
 		std::string which_build = args[ 3 ];
 
@@ -109,6 +116,178 @@ int Project::Build( const std::vector< std::string > & args )
 			}
 		}
 	}
+
+	return Core::ReturnVar( 0 );
+}
+
+int Project::New( const std::vector< std::string > & args )
+{
+	
+}
+
+int Project::Add( const std::vector< std::string > & args )
+{
+	Core::logger.AddLogSection( "Project" );
+	Core::logger.AddLogSection( "Add" );
+
+	if( !FS::LocExists( Env::CCP4M_PROJECT_CONFIG_FILE ) ) {
+		std::string currdir = Env::GetCurrentDir();
+		Core::logger.AddLogString( LogLevels::ALL, "No project configuration in directory: " + currdir );
+		Display( "{fc}Project configuration file: {sc}" + Env::CCP4M_PROJECT_CONFIG_FILE + "{fc} does not exist in this directory.{0}" );
+		return Core::ReturnVar( 1 );
+	}
+
+	if( args.size() < 4 ) {
+		Core::logger.AddLogString( LogLevels::ALL, "No parameter ( source / header ) specified to set" );
+		Display( "{fc}No parameter specified to set. Use a parameter{0}: {sc}inc{0} / {sc}src{0} ...\n" );
+		return Core::ReturnVar( 1 );
+	}
+
+	if( args.size() < 5 ) {
+		Core::logger.AddLogString( LogLevels::ALL, "No value to the parameter ( source / header ) specified" );
+		Display( "{fc}No value to the parameter specified. Format is{0}: {sc}" + args[ 0 ] + " project set < parameter > < value > < optional: build_name >{0}\n" );
+		Display( "{tc}\tNote{0}: {sc}Use double quotes to enclose a space separated string in the value field{0}, {r}although that is highly discouraged{0}\n" );
+		return Core::ReturnVar( 1 );
+	}
+
+	ProjectConfig pconf;
+
+	pconf.LoadFile( Env::CCP4M_PROJECT_CONFIG_FILE );
+
+	if( pconf.GetData().name.empty() ) {
+		Core::logger.AddLogString( LogLevels::ALL, "No project name! Unable to continue." );
+		Display( "{fc}No project name exists in the configuration file. Unable to continue{0}\n" );
+		return Core::ReturnVar( 1 );
+	}
+
+	std::string ext;
+	if( args[ 3 ] == "src" ) {
+		if( pconf.GetData().lang == "c++" )
+			ext = ".cpp";
+		else
+			ext = ".c";
+	}
+	else if( args[ 3 ] == "inc" ) {
+		if( pconf.GetData().lang == "c++" )
+			ext = ".hpp";
+		else
+			ext = ".h";
+	}
+	std::string file = ( args[ 3 ] == "src" ? "src/" : "include/" ) + args[ 4 ] + ext;
+
+	if( FS::LocExists( file ) ) {
+		Core::logger.AddLogString( LogLevels::ALL, "File: " + file + " already exists" );
+		Display( "{fc}File{0}: {r}" + file + "{fc} already exists" );
+		return Core::ReturnVar( 1 );
+	}
+
+	if( args.size() < 6 && args[ 3 ] == "src" ) {
+		Core::logger.AddLogString( LogLevels::ALL, "Warning: Unspecified build name, will add the source to all builds" );
+		Display( "{fc}Warning{0}: {fc}Unspecified build name, will add the source to all builds\n" );
+	}
+
+	int which_build = -1;
+	if( args.size() > 5 ) {
+		for( int i = 0; i < pconf.GetData().builds.size(); ++i ) {
+			if( pconf.GetData().builds[ i ].name == args[ 5 ] )
+				which_build = i;
+		}
+
+		if( which_build == -1 ) {
+			Core::logger.AddLogString( LogLevels::ALL, "Used build name: " + args[ 5 ] + " but it does not exist in builds list in config" );
+			Display( "{fc}Unable to find build: {sc}" + args[ 5 ] + "{fc}. Exiting. {br}" + UTF::CROSS + "{0}\n" );
+			return Core::ReturnVar( 1 );
+		}
+	}
+
+	if( args[ 3 ] == "src" ) {
+		return Core::ReturnVar( Project::GenerateSourceFile( pconf, args[ 4 ] + ext, which_build ) );
+	}
+
+	return Core::ReturnVar( Project::GenerateIncludeFile( pconf, args[ 4 ] + ext, which_build ) );
+}
+
+int Project::Set( const std::vector< std::string > & args )
+{
+	Core::logger.AddLogSection( "Project" );
+	Core::logger.AddLogSection( "Set" );
+
+	if( !FS::LocExists( Env::CCP4M_PROJECT_CONFIG_FILE ) ) {
+		std::string currdir = Env::GetCurrentDir();
+		Core::logger.AddLogString( LogLevels::ALL, "No project configuration in directory: " + currdir );
+		Display( "{fc}Project configuration file: {sc}" + Env::CCP4M_PROJECT_CONFIG_FILE + "{fc} does not exist in this directory.{0}" );
+		return Core::ReturnVar( 1 );
+	}
+
+	if( args.size() < 4 ) {
+		Core::logger.AddLogString( LogLevels::ALL, "No parameter specified to set" );
+		Display( "{fc}No parameter specified to set. Use a parameter like{0}: {sc}name{0} / {sc}compile_flags{0} / {sc}version {fc}and so on{0} ...\n" );
+		return Core::ReturnVar( 1 );
+	}
+
+	if( args.size() < 5 ) {
+		Core::logger.AddLogString( LogLevels::ALL, "No value to the parameter specified" );
+		Display( "{fc}No value to the parameter specified. Format is{0}: {sc}" + args[ 0 ] + " project set < parameter > < value >{0}\n" );
+		Display( "{tc}\tNote{0}: {sc}Use double quotes to enclose a space separated string in the value field{0}\n" );
+		return Core::ReturnVar( 1 );
+	}
+
+	ProjectConfig pconf;
+
+	pconf.LoadFile( Env::CCP4M_PROJECT_CONFIG_FILE );
+
+	if( pconf.GetData().name.empty() ) {
+		Core::logger.AddLogString( LogLevels::ALL, "No project name! Unable to continue." );
+		Display( "{fc}No project name exists in the configuration file. Unable to continue{0}\n" );
+		return Core::ReturnVar( 1 );
+	}
+
+	std::string old_var;
+
+	if( args[ 3 ] == "name" ) {
+		old_var = pconf.GetData().name;
+		pconf.GetData().name = args[ 4 ];
+	}
+	else if( args[ 3 ] == "version" ) {
+		old_var = pconf.GetData().version;
+		pconf.GetData().version = args[ 4 ];
+	}
+	else if( args[ 3 ] == "std" ) {
+		old_var = pconf.GetData().std;
+		pconf.GetData().std = args[ 4 ];
+	}
+	else if( args[ 3 ] == "compile_flags" ) {
+		old_var = pconf.GetData().compile_flags;
+		pconf.GetData().compile_flags = args[ 4 ];
+	}
+	else if( args[ 3 ] == "license" ) {
+		if( std::find( License::LICENSES.begin(), License::LICENSES.end(), args[ 4 ] ) == License::LICENSES.end() ) {
+			Core::logger.AddLogString( LogLevels::ALL, "Unknown license specified: " + args[ 4 ] );
+			Display( "{fc}Unknown license {r}" + args[ 4 ] + "{fc} specified, possible options are{0}:\n" );
+			for( auto & lic : License::LICENSES )
+				Display( "{sc}\t" + lic + "{0}\n" );
+			return Core::ReturnVar( 1 );
+		}
+
+		if( License::FetchLicense( args[ 4 ] ) == "" ) {
+			Core::logger.AddLogString( LogLevels::ALL, "Unable to retrieve license file" );
+		}
+
+		Display( "\n" );
+
+		old_var = pconf.GetData().license;
+		pconf.GetData().license = args[ 4 ];
+	}
+	else {
+		Core::logger.AddLogString( LogLevels::ALL, "Unknown parameter specified: " + args[ 3 ] );
+		Display( "{fc}Unknown parameter {r}" + args[ 3 ] + "{fc} specified{0}\n" );
+		return Core::ReturnVar( 1 );
+	}
+
+	pconf.SaveFile( Env::CCP4M_PROJECT_CONFIG_FILE );
+
+	Core::logger.AddLogString( LogLevels::ALL, "Altered option: " + args[ 3 ] + " from: " + old_var + " to: " + args[ 4 ] );
+	Display( "{fc}Altering successful{0}\n" );
 
 	return Core::ReturnVar( 0 );
 }

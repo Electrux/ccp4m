@@ -9,6 +9,8 @@
 #include "../../include/Vars.hpp"
 #include "../../include/Core.hpp"
 
+#include "../../include/Project/Licenses.hpp"
+
 #include "../../include/Project/Config.hpp"
 
 // Helper function to avoid crash for YAML-CPP
@@ -49,22 +51,6 @@ template< typename T > std::vector< std::string > GetStringVector( T & t, const 
 	return res;
 }
 
-void ProjectConfig::AddLibrary( const Library & lib )
-{
-	if( lib.name.empty() )
-		return;
-
-	this->pdata.libs.push_back( lib );
-}
-
-void ProjectConfig::AddBuild( const Build & build )
-{
-	if( build.name.empty() )
-		return;
-
-	this->pdata.builds.push_back( build );
-}
-
 ProjectData & ProjectConfig::GetData()
 {
 	return this->pdata;
@@ -99,18 +85,31 @@ bool ProjectConfig::GenerateDefaultConfig()
 	if( !this->GetDefaultAuthor() )
 		return false;
 
+	Core::logger.AddLogSection( "ProjectConfig" );
+	Core::logger.AddLogSection( "GenerateDefaultConfig" );
+
 	pdata.name = "DefaultProject";
 	pdata.version = "0.1";
 	pdata.lang = "c++";
 	pdata.std = "14";
 	pdata.compile_flags = "-O2";
 
+	pdata.license = "bsd3";
+
+	auto v = Vars::GetSingleton();
+	v->AddVar( "license", pdata.license );
+	v->AddVar( "name", pdata.name );
+
+	if( License::FetchLicense( pdata.license ) == "" ) {
+		Core::logger.AddLogString( LogLevels::ALL, "Unable to retrieve license file" );
+	}
+
 	Build build;
 	build.name = "DefaultProject";
 	build.type = "bin";
 	build.main_src = "./src/main.cpp";
 
-	return true;
+	return Core::ReturnVar( true );
 }
 
 bool ProjectConfig::LoadFile( const std::string & file )
@@ -132,6 +131,14 @@ bool ProjectConfig::LoadFile( const std::string & file )
 	pdata.lang = v->Replace( GetString( conf, "lang" ) );
 	pdata.std = v->Replace( GetString( conf, "std" ) );
 	pdata.compile_flags = v->Replace( GetString( conf, "compile_flags" ) );
+
+	pdata.license = v->Replace( GetString( conf, "license" ) );
+
+	v->AddVar( "license", pdata.license );
+
+	if( License::FetchLicense( pdata.license ) == "" ) {
+		Core::logger.AddLogString( LogLevels::ALL, "Unable to retrieve license file" );
+	}
 
 	pdata.author.name = v->Replace( GetString( conf, "author", "name" ) );
 	pdata.author.email = v->Replace( GetString( conf, "author", "email" ) );
@@ -183,6 +190,11 @@ bool ProjectConfig::SaveFile( const std::string & file )
 
 	Core::logger.AddLogString( LogLevels::ALL, "Saving configuration for: " + pdata.name + " to file: " + file );
 
+	auto v = Vars::GetSingleton();
+
+	v->AddVar( "name", pdata.name );
+	v->AddVar( "license", pdata.license );
+
 	YAML::Emitter o;
 	o << YAML::BeginMap;
 	o << YAML::Key << "name" << YAML::Value << pdata.name;
@@ -190,6 +202,8 @@ bool ProjectConfig::SaveFile( const std::string & file )
 	o << YAML::Key << "lang" << YAML::Value << pdata.lang;
 	o << YAML::Key << "std" << YAML::Value << pdata.std;
 	o << YAML::Key << "compile_flags" << YAML::Value << pdata.compile_flags;
+
+	o << YAML::Key << "license" << YAML::Value << pdata.license;
 
 	o << YAML::Key << "author" << YAML::Value;
 	o << YAML::BeginMap;

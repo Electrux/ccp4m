@@ -32,3 +32,23 @@ std::vector< std::string > Str::Delimit( const std::string & str, const char ch 
 
 	return vec;
 }
+
+std::string Str::ToLower( const std::string & str )
+{
+	std::string res;
+	for( auto c : str ) {
+		res += std::tolower( c );
+	}
+
+	return res;
+}
+
+std::string Str::ToUpper( const std::string & str )
+{
+	std::string res;
+	for( auto c : str ) {
+		res += std::toupper( c );
+	}
+
+	return res;
+}

@@ -21,7 +21,7 @@ namespace FS
 
 	bool RegexVectorMatch( const std::string & loc_name, const std::vector< std::string > & vec );
 
-	std::string ReadFile( const std::string & filename );
+	std::string ReadFile( const std::string & filename, const std::string & prefix_per_line = "" );
 
 	bool IsFileLatest( const std::string & file1, const std::string & file2 );
 

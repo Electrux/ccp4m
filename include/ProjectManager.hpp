@@ -10,6 +10,12 @@ namespace Project
 
 	int Build( const std::vector< std::string > & args );
 
+	int New( const std::vector< std::string > & args );
+
+	int Add( const std::vector< std::string > & args );
+
+	int Set( const std::vector< std::string > & args );
+
 	int Run( const std::vector< std::string > & args );
 
 	int Clean();
