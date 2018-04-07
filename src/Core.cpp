@@ -229,5 +229,10 @@ int Core::AutoClean( const std::vector< std::string > & args )
 		}
 	}
 
+	if( args.size() > 2 && args[ 2 ] != "log" && args[ 2 ] != "license" ) {
+		Display( "{fc}Incorrect parameter specified{0}. {fc}Valid options are{0}: {sc}log {fc}and{sc} license{0}\n" );
+		return ReturnVar( 1 );
+	}
+
 	return ReturnVar( 0 );
 }
