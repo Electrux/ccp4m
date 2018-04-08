@@ -1,0 +1,10 @@
+language: cpp
+compiler: clang
+os: osx
+osx_image: xcode9.3beta
+install:
+  - brew update && brew install wget
+  - wget https://github.com/Electrux/CCP4M-Final/releases/download/v0.4/ccp4m_macos -O /tmp/ccp4m
+  - chmod +x /tmp/ccp4m
+script:
+  - /tmp/ccp4m project build
