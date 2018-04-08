@@ -130,7 +130,7 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 
 	if( !main_src.empty() ) {
 		if( !FS::LocExists( main_src ) ) {
-			Display( "{fc}Main source{0}: {r}" + main_src + " {fc}is defined but the file does not exist{0}\n" );
+			Display( "\n{fc}Main source{0}: {r}" + main_src + " {fc}is defined but the file does not exist{0}\n" );
 			Core::logger.AddLogString( LogLevels::ALL, "Main source: " + main_src + " is defined but the file does not exist" );
 			return Core::ReturnVar( 1 );
 		}
