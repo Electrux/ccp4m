@@ -112,7 +112,7 @@ bool ProjectConfig::GenerateDefaultConfig()
 	return Core::ReturnVar( true );
 }
 
-bool ProjectConfig::LoadFile( const std::string & file )
+bool ProjectConfig::LoadFile( const std::string & file, bool update_license )
 {
 	if( !FS::LocExists( file ) )
 		return false;
@@ -136,7 +136,7 @@ bool ProjectConfig::LoadFile( const std::string & file )
 
 	v->AddVar( "license", License::FetchLicenseFormalName( pdata.license ) );
 
-	if( !License::UpdateProjectLicenseFile( pdata.license ) )
+	if( !License::UpdateProjectLicenseFile( pdata.license, update_license ) )
 			return Core::ReturnVar( 1 );
 
 	pdata.author.name = v->Replace( GetString( conf, "author", "name" ) );

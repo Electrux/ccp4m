@@ -59,7 +59,7 @@ public:
 
 	bool GenerateDefaultConfig();
 
-	bool LoadFile( const std::string & file );
+	bool LoadFile( const std::string & file, bool update_license = true );
 
 	bool SaveFile( const std::string & file );
 

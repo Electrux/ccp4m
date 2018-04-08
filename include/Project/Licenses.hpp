@@ -38,7 +38,7 @@ namespace License
 
 	std::string FetchLicenseFormalName( const std::string & license );
 
-	bool UpdateProjectLicenseFile( const std::string & license );
+	bool UpdateProjectLicenseFile( const std::string & license, bool really_update = true );
 }
 
 #endif // LICENSES_HPP

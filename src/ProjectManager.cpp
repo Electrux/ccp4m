@@ -71,7 +71,7 @@ int Project::Build( const std::vector< std::string > & args )
 
 	ProjectConfig pconf;
 
-	pconf.LoadFile( Env::CCP4M_PROJECT_CONFIG_FILE );
+	pconf.LoadFile( Env::CCP4M_PROJECT_CONFIG_FILE, false );
 
 	if( pconf.GetData().name.empty() ) {
 		Core::logger.AddLogString( LogLevels::ALL, "No project name! Unable to continue." );
