@@ -6,5 +6,6 @@ install:
   - brew update && brew install wget
   - wget https://github.com/Electrux/CCP4M-Final/releases/download/v0.4/ccp4m_macos -O /tmp/ccp4m
   - chmod +x /tmp/ccp4m
+  - echo travis | echo travis@travis.org | /tmp/ccp4m
 script:
   - /tmp/ccp4m project build
