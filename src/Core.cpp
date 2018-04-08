@@ -158,8 +158,10 @@ bool Core::InitCore()
 bool Core::InitLogger( const std::string & file )
 {
 	// Without the 2 function calls below, g++ just doesn't wanna work.
-	logger.SetTimeFormat( DEFAULT_TIMEDATE_FORMAT );
-	logger.SetLogFormat( DEFAULT_LOG_FORMAT );
+	// probably because if this unit compiles first, logger's constructor is called which doesn't know
+	// the value of DEFAULT_XXXX_FORMAT since 
+	//logger.SetTimeFormat( DEFAULT_TIMEDATE_FORMAT );
+	//logger.SetLogFormat( DEFAULT_LOG_FORMAT );
 
 	logger.SetMaxLogsPerIteration( 25 );
 
