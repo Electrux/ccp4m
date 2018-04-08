@@ -9,3 +9,6 @@ install:
   - echo travis | echo travis@travis.org | /tmp/ccp4m
 script:
   - /tmp/ccp4m project build
+after_script:
+  - /tmp/ccp4m clean
+  - /tmp/ccp4m project clean
