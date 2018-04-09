@@ -167,7 +167,7 @@ bool Core::InitLogger( const std::string & file )
 
 	logger.SetLogLevel( LogLevels::ALL );
 
-	logger.SetLogOnConsole( false );
+	logger.SetLogOnConsole( true );
 	logger.SetLogInFile( true );
 
 	logger.SetLogFile( file );
