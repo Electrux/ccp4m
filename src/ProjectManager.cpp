@@ -122,7 +122,7 @@ int Project::Build( const std::vector< std::string > & args )
 
 int Project::New( const std::vector< std::string > & args )
 {
-	
+	return 0;
 }
 
 int Project::Add( const std::vector< std::string > & args )

@@ -1,14 +1,19 @@
 language: cpp
-os: osx
+os:
+  - linux
+  - osx
+compiler:
+  - gcc
+  - clang
 osx_image: xcode9.3beta
-compiler: clang
 install:
-  - brew update && brew install yaml-cpp
-  - wget https://github.com/Electrux/CCP4M-Final/releases/download/v0.4.1/ccp4m_macos -O /tmp/ccp4m
-  - chmod +x /tmp/ccp4m
-  - echo travis | echo travis@travis.org | /tmp/ccp4m
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew install yaml-cpp                   ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update && sudo apt-get install yaml-cpp ; fi
+  - chmod +x build.sh
+  - ./build.sh
+  - echo travis | echo travis@travis.org | bin/ccp4m
 script:
-  - /tmp/ccp4m project build
+  - bin/ccp4m project build
 after_script:
-  - /tmp/ccp4m clean
-  - /tmp/ccp4m project clean
+  - bin/ccp4m clean
+  - bin/ccp4m project clean

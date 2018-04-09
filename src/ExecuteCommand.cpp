@@ -53,7 +53,10 @@ void Exec::MultithreadedExecute( const std::string & cmd, int thread, const std:
 		FS::DeleteFile( tmp_file );
 	}
 
-	Internal::threadinfo[ thread ].res = res;
+	// res must be last because i am not using mutex, therefore
+	// once res is set to some value, the main thread will do it's job
+	// thereby corrupting the entire threadinfo
 	Internal::threadinfo[ thread ].err = err;
 	Internal::threadinfo[ thread ].src = src;
+	Internal::threadinfo[ thread ].res = res;
 }

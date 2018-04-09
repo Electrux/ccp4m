@@ -81,6 +81,9 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 							thread.join();
 						return Core::ReturnVar( i.res );
 					}
+					if( !i.err.empty() ) {
+						Display( "{fc}Warning in source{0}: {sc}" + i.src + " {0}:\n" + i.err );
+					}
 					i.res = std::numeric_limits< int >::min();
 					i.err.clear();
 				}
@@ -115,6 +118,9 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 					for( auto & thread : allthreads )
 						thread.join();
 					return Core::ReturnVar( i.res );
+				}
+				if( !i.err.empty() ) {
+					Display( "{fc}Warning in source{0}: {sc}" + i.src + " {0}:\n" + i.err );
 				}
 				i.res = std::numeric_limits< int >::min();
 				i.err.clear();
