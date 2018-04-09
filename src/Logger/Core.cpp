@@ -5,8 +5,8 @@
 
 Errors SetLastError( const Errors & err, const std::string & err_str )
 {
-	std::cout << "pretty much ending of SetLastError()" << std::endl;
 	last_error = err;
+	std::cout << "\033[0;32mpretty much ending of SetLastError()\033[0m" << std::endl;
 	last_error_str = err_str;
 
 	return last_error;
