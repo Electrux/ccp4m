@@ -162,6 +162,7 @@ Logger::~Logger()
 		std::lock_guard< std::mutex > mtx_guard( mtx );
 		this->continue_logging = false;
 	}
+	std::cout << "Destroying logger...\n";
 	for( auto & t : threadpool )
 		t.join();
 
