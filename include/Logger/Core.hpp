@@ -33,8 +33,6 @@ static const std::string ERRORSTR[ ( int )Errors::LAST ] = {
 static Errors last_error;
 static std::string last_error_str;
 
-void InitVars();
-
 Errors SetLastError( const Errors & err, const std::string & err_str );
 Errors GetLastError();
 std::string GetLastErrorStr();
