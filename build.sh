@@ -11,7 +11,8 @@ if ! [[ -z "${COMPILER}" ]]; then
 	compiler="${COMPILER}"
 fi
 
-echo "Using compiler: $compiler"
+compiler_version=`$compiler --version`
+echo "Using compiler: $compiler, version: $compiler_version"
 
 echo "Creating directories ..."
 
