@@ -131,8 +131,6 @@ void Logger::InternalBeginLogging()
 		logstrings.erase( logstrings.begin() );
 	}
 
-	std::cout << "Exited log loop" << std::endl;
-
 	if( file ) {
 		file << "\n-----------END: " << this->timemgr.GetFormattedDateTime() << "-----------\n" << std::endl;
 		file.close();
@@ -141,6 +139,8 @@ void Logger::InternalBeginLogging()
 	// This should already be false since only when it is false will the loop exit.
 	// But still, for the sake of safety.
 	this->continue_logging = false;
+
+	std::cout << "Exited log loop" << std::endl;
 
 	SetLastError( Errors::SUCCESS, "[ Logger ][ InternalBeginLogging ]: Logging finished. Exiting async execution." );
 }
