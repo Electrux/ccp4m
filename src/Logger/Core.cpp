@@ -3,10 +3,7 @@
 
 #include "../../include/Logger/Core.hpp"
 
-Errors last_error;
-std::string last_error_str;
-
-Errors SetLastError( const Errors & err, const std::string & err_str )
+Errors SetLastError( const Errors err, const std::string err_str )
 {
 	last_error = err;
 	last_error_str = err_str;

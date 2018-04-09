@@ -30,7 +30,10 @@ static const std::string ERRORSTR[ ( int )Errors::LAST ] = {
 	"File cannot be openend",
 };
 
-Errors SetLastError( const Errors & err, const std::string & err_str );
+static Errors last_error;
+static std::string last_error_str;
+
+Errors SetLastError( const Errors err, const std::string err_str );
 Errors GetLastError();
 std::string GetLastErrorStr();
 
