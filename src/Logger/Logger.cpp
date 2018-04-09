@@ -110,8 +110,6 @@ void Logger::InternalBeginLogging()
 		}
 	}
 
-	std::cout << "Exited log loop" << std::endl;
-
 	std::lock_guard< std::mutex > mtx_guard( mtx );
 	while( !this->logstrings.empty() ) {
 		std::string fmtstr = this->GetFormattedLogString( * logstrings.begin() );
@@ -132,6 +130,8 @@ void Logger::InternalBeginLogging()
 
 		logstrings.erase( logstrings.begin() );
 	}
+
+	std::cout << "Exited log loop" << std::endl;
 
 	if( file ) {
 		file << "\n-----------END: " << this->timemgr.GetFormattedDateTime() << "-----------\n" << std::endl;
