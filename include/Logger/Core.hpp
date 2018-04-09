@@ -31,7 +31,7 @@ static const std::string ERRORSTR[ ( int )Errors::LAST ] = {
 };
 
 static Errors last_error;
-static char last_error_str[ 1024 ];
+static std::string last_error_str;
 
 Errors SetLastError( const Errors & err, const std::string & err_str );
 Errors GetLastError();

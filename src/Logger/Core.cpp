@@ -6,8 +6,7 @@
 Errors SetLastError( const Errors & err, const std::string & err_str )
 {
 	last_error = err;
-	strcpy( last_error_str, err_str.c_str() );
-	std::cout << "\033[0;32mpretty much ending of SetLastError()\033[0m" << std::endl;
+	last_error_str = err_str.c_str();
 
 	return last_error;
 }
