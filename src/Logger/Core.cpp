@@ -6,7 +6,7 @@
 Errors SetLastError( const Errors & err, const std::string & err_str )
 {
 	last_error = err;
-	strcpy( last_error_str, err_str.c_str() );
+	last_error_str = err_str + "";
 
 	return last_error;
 }

@@ -60,5 +60,7 @@ int main( int argc, char ** argv )
 		err_code = 1;
 	}
 
+	Display( "\n" );
+
 	return Exit( err_code );
 }
