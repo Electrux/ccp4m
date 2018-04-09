@@ -13,9 +13,7 @@
 int Exit( int err_code )
 {
 	Vars::DeleteSingleton();
-	Display( "After Vars::DeleteSingleton()\n" );
 	Core::EndLogger();
-	Display( "Exiting\n" );
 	return err_code;
 }
 
@@ -41,8 +39,6 @@ int main( int argc, char ** argv )
 	Vars::Initialize();
 
 	int err_code = 0;
-
-	Display( "After Vars::Initialize()\n" );
 
 	if( args.size() < 2 ) {
 		Helps::Usage( args );

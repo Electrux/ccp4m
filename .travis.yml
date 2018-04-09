@@ -21,7 +21,6 @@ install:
   - chmod +x build.sh
   - ./build.sh
   - printf 'travis\ntravis@travis.org' | bin/ccp4m
-  - cat ~/.ccp4m/logs/Monday.April.9.18.log
 script:
   - bin/ccp4m project build
 after_script:

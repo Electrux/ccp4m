@@ -140,9 +140,7 @@ void Logger::InternalBeginLogging()
 	// But still, for the sake of safety.
 	this->continue_logging = false;
 
-	std::cout << "This is last second statement!!" << std::endl;
 	SetLastError( Errors::SUCCESS, "[ Logger ][ InternalBeginLogging ]: Logging finished. Exiting async execution." );
-	std::cout << "This is last statement!!" << std::endl;
 }
 
 Logger::Logger() : logformat( DEFAULT_LOG_FORMAT ), sections( "" )
@@ -165,12 +163,8 @@ Logger::~Logger()
 		this->continue_logging = false;
 	}
 
-	std::cout << "Destroying..." << std::endl;
-
 	for( auto & t : threadpool )
 		t.join();
-
-	std::cout << "Destroyed" << std::endl;
 }
 
 void Logger::AddLogStrings( const LogLevels & loglevel, const std::vector< std::string > & logstrs )
