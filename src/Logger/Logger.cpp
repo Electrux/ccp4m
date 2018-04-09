@@ -141,6 +141,7 @@ void Logger::InternalBeginLogging()
 	this->continue_logging = false;
 
 	SetLastError( Errors::SUCCESS, "[ Logger ][ InternalBeginLogging ]: Logging finished. Exiting async execution." );
+	std::cout << "This is last statement!!" << std::endl;
 }
 
 Logger::Logger() : logformat( DEFAULT_LOG_FORMAT ), sections( "" )
