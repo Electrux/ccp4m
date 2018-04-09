@@ -14,6 +14,7 @@ int Exit( int err_code )
 {
 	Vars::DeleteSingleton();
 	Core::EndLogger();
+	Display( "\n" );
 	return err_code;
 }
 
@@ -29,7 +30,7 @@ int main( int argc, char ** argv )
 	std::string logfile = Env::CCP4M_LOG_DIR + "/" + Core::GetCurrDateTime() + ".log";
 	FS::CreateFileIfNotExists( logfile );
 	if( !Core::InitLogger( logfile ) ) {
-		Display( "{br}Failed to initialize logging engine! {fc}" + GetLastErrorStr() + "{0}\n" );
+		Display( "\n{br}Failed to initialize logging engine{0}! {fc}" + GetLastErrorStr() + "{0}\n\n" );
 		return 1;
 	}
 
@@ -40,12 +41,12 @@ int main( int argc, char ** argv )
 
 	int err_code = 0;
 
+	Display( "\n" );
+
 	if( args.size() < 2 ) {
 		Helps::Usage( args );
 		return Exit( 0 );
 	}
-
-	Display( "\n" );
 
 	if( args[ 1 ] == "help" ) {
 		Helps::Usage( args );
@@ -59,8 +60,6 @@ int main( int argc, char ** argv )
 		Display( "{fc}Unknown subcommand found{0}: {r}" + args[ 1 ] + "{0}\n" );
 		err_code = 1;
 	}
-
-	Display( "\n" );
 
 	return Exit( err_code );
 }
