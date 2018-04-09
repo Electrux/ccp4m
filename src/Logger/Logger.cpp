@@ -164,6 +164,8 @@ Logger::~Logger()
 	}
 	for( auto & t : threadpool )
 		t.join();
+
+	std::cout << "Destroyed logger...\n";
 }
 
 void Logger::AddLogStrings( const LogLevels & loglevel, const std::vector< std::string > & logstrs )
