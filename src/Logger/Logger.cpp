@@ -112,7 +112,9 @@ void Logger::InternalBeginLogging()
 
 	std::lock_guard< std::mutex > mtx_guard( mtx );
 	while( !this->logstrings.empty() ) {
+		std::cout << "String: " << ( * logstrings.begin() ).data << "\n";
 		std::string fmtstr = this->GetFormattedLogString( * logstrings.begin() );
+		std::cout << "Fmtstr: " << fmtstr << std::endl;
 		if( fmtstr.empty() ) {
 			fmtstr = "Log string error!";
 		}
