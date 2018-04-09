@@ -110,6 +110,8 @@ void Logger::InternalBeginLogging()
 		}
 	}
 
+	std::cout << "Exited log loop" << std::endl;
+
 	std::lock_guard< std::mutex > mtx_guard( mtx );
 	while( !this->logstrings.empty() ) {
 		std::string fmtstr = this->GetFormattedLogString( * logstrings.begin() );
@@ -162,11 +164,8 @@ Logger::~Logger()
 		std::lock_guard< std::mutex > mtx_guard( mtx );
 		this->continue_logging = false;
 	}
-	std::cout << "Destroying logger...\n";
 	for( auto & t : threadpool )
 		t.join();
-
-	std::cout << "Destroyed logger...\n";
 }
 
 void Logger::AddLogStrings( const LogLevels & loglevel, const std::vector< std::string > & logstrs )
