@@ -1,4 +1,5 @@
 language: cpp
+sudo: required
 os:
   - linux
   - osx
@@ -19,7 +20,7 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update && sudo apt-get install libyaml-cpp-dev libboost-all-dev gcc ; fi
   - chmod +x build.sh
   - ./build.sh
-  - echo travis | echo travis@travis.org | bin/ccp4m
+  - echo travis | echo travis@travis.org | bin/ccp4m | return 0
   - cat ~/.ccp4m/logs/Monday.April.9.18.log
 script:
   - bin/ccp4m project build
