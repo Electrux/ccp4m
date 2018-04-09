@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <string.h>
 
 #include "../../include/Logger/Core.hpp"
 
