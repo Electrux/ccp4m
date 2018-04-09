@@ -13,6 +13,7 @@
 int Exit( int err_code )
 {
 	Core::EndLogger();
+	Vars::DeleteSingleton();
 	return err_code;
 }
 
