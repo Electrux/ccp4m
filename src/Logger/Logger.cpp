@@ -140,8 +140,6 @@ void Logger::InternalBeginLogging()
 	// But still, for the sake of safety.
 	this->continue_logging = false;
 
-	std::cout << "Exited log loop" << std::endl;
-
 	SetLastError( Errors::SUCCESS, "[ Logger ][ InternalBeginLogging ]: Logging finished. Exiting async execution." );
 }
 
@@ -164,8 +162,13 @@ Logger::~Logger()
 		std::lock_guard< std::mutex > mtx_guard( mtx );
 		this->continue_logging = false;
 	}
+
+	std::cout << "Destroying..." << std::endl;
+
 	for( auto & t : threadpool )
 		t.join();
+
+	std::cout << "Destroyed" << std::endl;
 }
 
 void Logger::AddLogStrings( const LogLevels & loglevel, const std::vector< std::string > & logstrs )
