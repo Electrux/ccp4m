@@ -13,9 +13,10 @@ matrix:
       compiler: gcc
 
 osx_image: xcode9.3beta
+
 install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew install yaml-cpp                   ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update && sudo apt-get install libyaml-cpp-dev ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update && sudo apt-get install libyaml-cpp-dev libboost-all-dev gcc-6 ; fi
   - chmod +x build.sh
   - ./build.sh
   - echo travis | echo travis@travis.org | bin/ccp4m
