@@ -42,8 +42,12 @@ int Project::Handle( const std::vector< std::string > & args )
 	else if( args[ 2 ] == "clean" ) {
 		err_code = Project::Clean();
 	}
-	else {
+	else if( * args[ 2 ].begin() == '-' ) {
 		//err_code = Project::HandleFlags( args );
+	}
+	else {
+		err_code = 0;
+		Helps::Project( args );
 	}
 
 	return err_code;
