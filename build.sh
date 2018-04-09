@@ -7,6 +7,8 @@ if [[ "$os" == 'Linux' ]]; then
 	compiler="g++"
 fi
 
+echo "Using compiler: $compiler"
+
 echo "Creating directories ..."
 
 mkdir -p "buildfiles/src/Logger"
