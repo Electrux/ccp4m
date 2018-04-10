@@ -1,6 +1,5 @@
 language: cpp
 sudo: required
-
 matrix:
   include:
     - os: linux
@@ -13,7 +12,6 @@ matrix:
       osx_image: xcode9.3beta
       compiler: clang
       env: COMPILER='clang++' BUILD_TYPE='Release'
-
 install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew install yaml-cpp                   ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update && sudo apt-get install libyaml-cpp-dev libboost-all-dev ; fi
