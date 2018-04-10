@@ -28,6 +28,10 @@ find src -name "*.cpp" | grep -v "tests" | grep -v "main.cpp" | while read -r sr
 	fi
 done
 
+if ! [[ $? == 0 ]]; then
+	exit $?
+fi
+
 echo "Building ..."
 
 buildfiles=`find buildfiles -name "*.cpp.o" | paste -sd " " -`
