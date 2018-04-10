@@ -35,4 +35,4 @@ fi
 echo "Building ..."
 
 buildfiles=`find buildfiles -name "*.cpp.o" | paste -sd " " -`
-$compiler -O2 -std=c++14 -lyaml-cpp -lcurl -lpthread -g -o bin/ccp4m src/main.cpp $buildfiles
+$compiler -O2 -std=c++14 -g -o bin/ccp4m src/main.cpp $buildfiles -lyaml-cpp -lcurl -lpthread

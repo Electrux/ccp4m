@@ -138,7 +138,7 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 	}
 	else {
 		compile_str = compiler + " -shared " + data.compile_flags + " -std=" + data.lang + data.std + " "
-				+ inc_flags + " " + lib_flags + " -o buildfiles/lib" + data.builds[ data_i ].name + ".so " + main_src + " " + build_files_str;
+				+ inc_flags + " -o buildfiles/lib" + data.builds[ data_i ].name + ".so " + main_src + " " + build_files_str + " " + lib_flags;
 	}
 
 	if( !main_src.empty() ) {
