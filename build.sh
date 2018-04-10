@@ -12,7 +12,8 @@ if ! [[ -z "${COMPILER}" ]]; then
 fi
 
 compiler_version=`$compiler --version`
-echo "Using compiler: $compiler, version: $compiler_version"
+c_vers=`gcc --version`
+echo "Using compiler: $compiler, version: $c_vars"
 
 echo "Creating directories ..."
 
