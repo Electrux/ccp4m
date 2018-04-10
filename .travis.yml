@@ -6,8 +6,8 @@ matrix:
       compiler: gcc
       apt:
         sources: ['ubuntu-toolchain-r-test']
-        packages: ['g++-7']
-      env: COMPILER='g++-7' BUILD_TYPE='Release'
+        packages: ['g++-6']
+      env: COMPILER='g++-6' BUILD_TYPE='Release'
     - os: osx
       osx_image: xcode9.3beta
       compiler: clang
