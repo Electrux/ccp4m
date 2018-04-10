@@ -13,7 +13,7 @@ fi
 
 compiler_version=`$compiler --version`
 c_vers=`gcc --version`
-echo "Using compiler: $compiler, version: $c_vars"
+echo "Using compiler: $compiler, version: $c_vers"
 
 echo "Creating directories ..."
 
