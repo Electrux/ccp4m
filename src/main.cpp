@@ -24,7 +24,9 @@ int main( int argc, char ** argv )
 
 	if( args.size() > 1 && args[ 1 ] == "clean" ) {
 		Display( "\n" );
-		return Core::AutoClean( args );
+		int res = Core::AutoClean( args );
+		Display( "\n" );
+		return res;
 	}
 
 	std::string logfile = Env::CCP4M_LOG_DIR + "/" + Core::GetCurrDateTime() + ".log";
@@ -34,14 +36,14 @@ int main( int argc, char ** argv )
 		return 1;
 	}
 
+	Display( "\n" );
+
 	if( !Core::InitCore() )
 		return Exit( 1 );
 
 	Vars::Initialize();
 
 	int err_code = 0;
-
-	Display( "\n" );
 
 	if( args.size() < 2 ) {
 		Helps::Usage( args );
