@@ -22,7 +22,7 @@ mkdir -p "bin"
 
 find src -name "*.cpp" | grep -v "tests" | grep -v "main.cpp" | while read -r src; do
 	echo "Compiling: $compiler -O2 -std=c++14 -c $src -o buildfiles/$src.o"
-	$compiler -O2 -std=c++11 -c $src -o buildfiles/$src.o
+	$compiler -O2 -std=c++14 -c $src -o buildfiles/$src.o
 	if ! [[ $? == 0 ]]; then
 		break
 	fi
