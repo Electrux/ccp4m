@@ -67,6 +67,10 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 		std::string compile_str = compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
 			+ inc_flags + " -c " + src + " -o buildfiles/" + src + ".o";
 
+		if( Core::arch == Core::BSD ) {
+			compile_str += " -I/usr/local/include";
+		}
+
 		is_any_single_file_compiled = true;
 
 		bool thread_found = false;
@@ -166,6 +170,11 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 		Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{fc}Building " + caps_lang + " binary{0}:   {sc}buildfiles/" + data.builds[ data_i ].name + " {0}...\n" );
 		std::string compile_str = compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
 			+ inc_flags + " -g -o buildfiles/" + data.builds[ data_i ].name + " " + main_src + " " + build_files_str + " " + lib_flags;
+
+		if( Core::arch == Core::BSD ) {
+			compile_str += " -I/usr/local/include -L/usr/local/lib";
+		}
+
 		std::string err;
 		int ret_val = Exec::ExecuteCommand( compile_str, & err );
 		if( ret_val != 0 ) {

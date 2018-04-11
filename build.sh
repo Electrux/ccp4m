@@ -21,8 +21,8 @@ mkdir -p "buildfiles/src/Project"
 mkdir -p "bin"
 
 find src -name "*.cpp" | grep -v "tests" | grep -v "main.cpp" | while read -r src; do
-	echo "Compiling: $compiler -O2 -std=c++14 -c $src -o buildfiles/$src.o"
-	$compiler -O2 -std=c++14 -c $src -o buildfiles/$src.o
+	echo "Compiling: $compiler -O2 -std=c++14 -c $src -o buildfiles/$src.o -I/usr/local/include"
+	$compiler -O2 -std=c++14 -c $src -o buildfiles/$src.o  -I/usr/local/include
 	if ! [[ $? == 0 ]]; then
 		break
 	fi
@@ -35,4 +35,4 @@ fi
 echo "Building ..."
 
 buildfiles=`find buildfiles -name "*.cpp.o" | paste -sd " " -`
-$compiler -O2 -std=c++14 -g -o bin/ccp4m src/main.cpp $buildfiles -lyaml-cpp -lcurl -lpthread
+$compiler -O2 -std=c++14 -g -o bin/ccp4m src/main.cpp $buildfiles -I/usr/local/include -L/usr/local/lib -lyaml-cpp -lcurl -lpthread

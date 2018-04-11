@@ -64,6 +64,10 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 		std::string compile_str = compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
 			+ inc_flags + " -c " + src + " -o buildfiles/" + src + ".o";
 
+		if( Core::arch == Core::BSD ) {
+			compile_str += " -I/usr/local/include";
+		}
+
 		bool thread_found = false;
 
 		while( !thread_found ) {
@@ -139,6 +143,10 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 	else {
 		compile_str = compiler + " -shared " + data.compile_flags + " -std=" + data.lang + data.std + " "
 				+ inc_flags + " -o buildfiles/lib" + data.builds[ data_i ].name + ".so " + main_src + " " + build_files_str + " " + lib_flags;
+
+		if( Core::arch == Core::BSD ) {
+			compile_str += " -I/usr/local/include -L/usr/local/lib";
+		}
 	}
 
 	if( !main_src.empty() ) {
