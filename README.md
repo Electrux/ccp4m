@@ -10,5 +10,6 @@ You will be required to install the dependencies manually, which are: **yaml-cpp
 Once build.sh generates the binary, it can be copied over to **/usr/local/bin** to run the program directly from any directory.
 
 For Debian based distros, install the dependencies using the following command:
-
-**sudo apt-get install libboost-all-dev libyaml-cpp-dev libcurl3 libcurl4-openssl-dev curl**
+```
+sudo apt-get install libboost-all-dev libyaml-cpp-dev libcurl3 libcurl4-openssl-dev curl
+```
