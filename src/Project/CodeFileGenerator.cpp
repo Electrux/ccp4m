@@ -21,7 +21,16 @@ int Project::GenerateIncludeFile( ProjectConfig & pconf, const std::string & fil
 
 	std::string && license_str = License::FetchLicenseForFile( pconf.GetData().license );
 
-	std::string caps_file = Str::ToUpper( file );
+	std::string file_w_uscore = file;
+
+	for( auto it = file_w_uscore.begin() + 1; it != file_w_uscore.end(); ++it ) {
+		if( * it >= 'A' && * it <= 'Z' && !std::ispunct( * ( it - 1 ) ) ) {
+			it = file_w_uscore.insert( it, '_' );
+			++it;
+		}
+	}
+
+	std::string caps_file = Str::ToUpper( file_w_uscore );
 	std::replace( caps_file.begin(), caps_file.end(), '/', '_' );
 	std::replace( caps_file.begin(), caps_file.end(), '.', '_' );
 	std::replace( caps_file.begin(), caps_file.end(), ' ', '_' );
@@ -87,7 +96,16 @@ int Project::GenerateSourceFile( ProjectConfig & pconf, const std::string & file
 
 	pconf.SaveFile( Env::CCP4M_PROJECT_CONFIG_FILE );
 
-	std::string caps_file = Str::ToUpper( file );
+	std::string file_w_uscore = file;
+
+	for( auto it = file_w_uscore.begin() + 1; it != file_w_uscore.end(); ++it ) {
+		if( * it >= 'A' && * it <= 'Z' && !std::ispunct( * ( it - 1 ) ) ) {
+			it = file_w_uscore.insert( it, '_' );
+			++it;
+		}
+	}
+
+	std::string caps_file = Str::ToUpper( file_w_uscore );
 	std::replace( caps_file.begin(), caps_file.end(), '/', '_' );
 	std::replace( caps_file.begin(), caps_file.end(), '.', '_' );
 	std::replace( caps_file.begin(), caps_file.end(), ' ', '_' );
