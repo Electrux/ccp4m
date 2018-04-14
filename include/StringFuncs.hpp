@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 
 namespace Str
 {
@@ -13,6 +14,8 @@ namespace Str
 	std::string ToLower( const std::string & str );
 
 	std::string ToUpper( const std::string & str );
+
+	int FetchArgs( const std::vector< std::string > & args, std::map< std::string, std::string > & argmap, int from );
 }
 
 #endif // STRING_FUNCS_HPP

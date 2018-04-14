@@ -8,16 +8,19 @@
 	before using or altering the project.
 */
 
-#ifndef PROJECT_CREATE_NEW_HPP
-#define PROJECT_CREATE_NEW_HPP
+#ifndef PROJECT_ADD_HPP
+#define PROJECT_ADD_HPP
 
 #include <vector>
 #include <string>
-#include <map>
+
+#include "Config.hpp"
 
 namespace Project
 {
-	int New( const std::vector< std::string > & args );
+	int AddFiles( ProjectConfig & pconf, const std::vector< std::string > & args );
+
+	int AddProjectInfo( ProjectConfig & pconf, const std::vector< std::string > & args );
 }
 
-#endif // PROJECT_CREATE_NEW_HPP
+#endif // PROJECT_ADD_HPP

@@ -53,6 +53,8 @@ public:
 	void AddLibrary( const Library & lib );
 	void AddBuild( const Build & build );
 
+	std::string GetDefaultMainFile();
+
 	ProjectData & GetData();
 
 	bool GetDefaultAuthor();
@@ -63,8 +65,7 @@ public:
 
 	bool SaveFile( const std::string & file );
 
-	void DisplayAll();
-
+	void DisplayAll( const std::string & dir = "" );
 };
 
 #endif // PROJECT_CONFIG_HPP

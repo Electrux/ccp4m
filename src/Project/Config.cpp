@@ -51,6 +51,31 @@ template< typename T > std::vector< std::string > GetStringVector( T & t, const 
 	return res;
 }
 
+void ProjectConfig::AddLibrary( const Library & lib )
+{
+	if( !lib.name.empty() )
+		pdata.libs.push_back( lib );
+}
+
+void ProjectConfig::AddBuild( const Build & build )
+{
+	if( !build.name.empty() )
+		pdata.builds.push_back( build );
+}
+
+std::string ProjectConfig::GetDefaultMainFile()
+{
+	std::string res;
+	if( this->pdata.lang == "c" ) {
+		res = "#include <stdio.h>\n#include <stdlib.h>\n\nint main()\n{\n\treturn 0;\n}";
+	}
+	else {
+		res = "#include <iostream>\n\nint main()\n{\n\treturn 0;\n}";
+	}
+
+	return res;
+}
+
 ProjectData & ProjectConfig::GetData()
 {
 	return this->pdata;
@@ -89,7 +114,7 @@ bool ProjectConfig::GenerateDefaultConfig()
 	Core::logger.AddLogSection( "ProjectConfig" );
 	Core::logger.AddLogSection( "GenerateDefaultConfig" );
 
-	pdata.name = "DefaultProject";
+	pdata.name = "UntitledProject";
 	pdata.version = "0.1";
 	pdata.lang = "c++";
 	pdata.std = "14";
@@ -97,17 +122,13 @@ bool ProjectConfig::GenerateDefaultConfig()
 
 	pdata.license = License::LICENSES[ License::DEFAULT_LICENSE ];
 
-	auto v = Vars::GetSingleton();
-	v->AddVar( "license", License::FetchLicenseFormalName( pdata.license ) );
-	v->AddVar( "name", pdata.name );
-
-	if( !License::UpdateProjectLicenseFile( pdata.license ) )
-			return Core::ReturnVar( 1 );
-
 	Build build;
-	build.name = "DefaultProject";
+	build.name = "DefaultBuild";
 	build.type = "bin";
 	build.main_src = "src/main.cpp";
+	build.srcs.push_back( "src/(.*).cpp" );
+
+	pdata.builds.push_back( build );
 
 	return Core::ReturnVar( true );
 }
@@ -263,39 +284,44 @@ bool ProjectConfig::SaveFile( const std::string & file )
 	return Core::ReturnVar( false );
 }
 
-void ProjectConfig::DisplayAll()
+void ProjectConfig::DisplayAll( const std::string & dir )
 {
-	Display( "{by}------------------------------------------------\n\n" );
-	Display( "{bm}Name: {bg}" + pdata.name + "\n" );
-	Display( "{bm}Version: {bg}" + pdata.version + "\n" );
-	Display( "{bm}Lang: {bg}" + pdata.lang + "\n" );
-	Display( "{bm}Std: {bg}" + pdata.std + "\n" );
-	Display( "{bm}Compile_Flags: {bg}" + pdata.compile_flags + "\n\n" );
-	Display( "{bm}License: {bg}" + pdata.license + "\n\n" );
+	Display( "{by}-------------------------------------------------\n\n" );
 
-	Display( "{by}Libs:\n" );
+	Display( "{sc}=> {bm}Author{0}: {bg}" + pdata.author.name + " {0}< {bg}" + pdata.author.email + " {0}>\n" );
+	if( !dir.empty() )
+		Display( "{sc}=> {bm}Directory{0}: {bg}" + dir + "\n" );
+	Display( "{sc}=> {bm}Name{0}: {bg}" + pdata.name + "\n" );
+	Display( "{sc}=> {bm}Version{0}: {bg}" + pdata.version + "\n" );
+	Display( "{sc}=> {bm}Lang{0}: {bg}" + pdata.lang + "\n" );
+	Display( "{sc}=> {bm}Std{0}: {bg}" + pdata.std + "\n" );
+	Display( "{sc}=> {bm}Compile_Flags{0}: {bg}" + pdata.compile_flags + "\n\n" );
+	Display( "{sc}=> {bm}License{0}: {bg}" + pdata.license + "\n\n" );
+
+	Display( "{sc}=> {bm}Libs{0}:\n" );
 
 	for( auto lib : pdata.libs ) {
-		Display( "\t{bm}Name: {bg}" + lib.name + "\n" );
-		Display( "\t{bm}Version: {bg}" + lib.version + "\n" );
-		Display( "\t{bm}Inc_Flags: {bg}" + lib.inc_flags + "\n" );
-		Display( "\t{bm}Lib_Flags: {bg}" + lib.lib_flags + "\n\n" );
+		Display( "{sc}===> {bm}Name{0}: {bg}" + lib.name + "\n" );
+		Display( "{sc}===> {bm}Version{0}: {bg}" + lib.version + "\n" );
+		Display( "{sc}===> {bm}Inc_Flags{0}: {bg}" + lib.inc_flags + "\n" );
+		Display( "{sc}===> {bm}Lib_Flags{0}: {bg}" + lib.lib_flags + "\n\n" );
 	}
 
 	Display( "\n" );
 
-	Display( "{by}Builds:\n" );
+	Display( "{sc}=> {bm}Builds{0}:\n" );
 
 	for( auto build : pdata.builds ) {
-		Display( "\t{bm}Name: {bg}" + build.name + "\n" );
-		Display( "{bm}Type: {bg}" + build.type + "\n" );
-		Display( "{bm}Build Type: {bg}" + build.build_type + "\n" );
-		Display( "\t{bm}Main source: {bg}" + build.main_src + "\n" );
-		Display( "\t{bm}Other sources:\n" );
+		Display( "{sc}===> {bm}Name{0}: {bg}" + build.name + "\n" );
+		Display( "{sc}===> {bm}Type{0}: {bg}" + build.type + "\n" );
+		if( build.type == "lib" )
+			Display( "{sc}===> {bm}Build Type{0}: {bg}" + build.build_type + "\n" );
+		Display( "{sc}===> {bm}Main source{0}: {bg}" + build.main_src + "\n" );
+		Display( "{sc}===> {bm}Other sources{0}:\n" );
 		for( auto s : build.srcs ) {
-			Display( "\t\t{bg}" + s + "\n" );
+			Display( "{sc}=====> {bg}" + s + "\n" );
 		}
 	}
 
-	Display( "\n{by}--------------------------------------------------{0}\n\n");
+	Display( "\n{by}--------------------------------------------------{0}");
 }

@@ -56,13 +56,14 @@ std::string License::FetchLicense( const License::ID & id )
 	std::string license_sys_loc = Env::CCP4M_LICENSE_DIR + "/" + LICENSES[ id ] + ".txt";
 
 	// check if license file already exists
-	Display( "{fc}Fetching copy of license{0}: {sc}" + LICENSES[ id ] + " {0}... " );
+	Display( "{fc}Fetching copy of license{0}: {sc}" + LICENSES[ id ] + " {0}..." );
 	if( NW::DownloadFile( license_web_loc, license_sys_loc ) != 0 ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Failed to fetch a copy of license: " + LICENSES[ id ] );
+		Display( "{r} Failed\n" );
 		Display( "\n{r}Failed to fetch a copy of license{0}: {sc}" + LICENSES[ id ] + "{0}\n" );
 		return Core::ReturnVar( std::string() );
 	}
-	Display( "\n" );
+	Display( "{g} Success\n" );
 
 	std::string license_str = FS::ReadFile( license_sys_loc );
 
@@ -110,13 +111,14 @@ std::string License::FetchLicenseForFile( const License::ID & id )
 	std::string license_sys_loc = Env::CCP4M_LICENSE_DIR + "/mini_license_for_file.txt";
 
 	// check if license file already exists
-	Display( "{fc}Fetching copy of {sc}mini {fc}license{0}: {sc}" + LICENSES[ id ] + " {0}... " );
+	Display( "{fc}Fetching copy of {sc}mini {fc}license{0}: {sc}" + LICENSES[ id ] + " {0}..." );
 	if( NW::DownloadFile( license_web_loc, license_sys_loc ) != 0 ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Failed to fetch a copy of mini license: " + LICENSES[ id ] );
+		Display( "{r} Failed\n" );
 		Display( "\n{r}Failed to fetch a copy of {sc}mini {fc}license{0}: {sc}" + LICENSES[ id ] + "{0}\n" );
 		return Core::ReturnVar( "" );
 	}
-	Display( "\n" );
+	Display( "{g} Success\n" );
 
 	std::string license_str = FS::ReadFile( license_sys_loc, "\t" );
 
@@ -134,17 +136,10 @@ std::string License::FetchLicenseForFile( const License::ID & id )
 
 std::string License::FetchLicenseForFile( const std::string & name )
 {
-	int loc = -1;
-
 	for( int i = 0; i < LICENSES.size(); ++i ) {
 		if( LICENSES[ i ] == name ) {
-			loc = i;
-			break;
+			return FetchLicenseForFile( ( ID )i );
 		}
-	}
-
-	if( loc != -1 ) {
-		return FetchLicenseForFile( ( ID )loc );
 	}
 
 	return "";
@@ -152,8 +147,6 @@ std::string License::FetchLicenseForFile( const std::string & name )
 
 std::string License::FetchLicenseFormalName( const std::string & license )
 {
-	int loc = -1;
-
 	for( int i = 0; i < LICENSES.size(); ++i ) {
 		if( LICENSES[ i ] == license ) {
 			return LICENSES_FORMAL[ i ];

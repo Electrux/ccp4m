@@ -158,12 +158,6 @@ bool Core::InitCore()
 
 bool Core::InitLogger( const std::string & file )
 {
-	// Without the 2 function calls below, compilation may or may not work,
-	// probably because if this unit compiles first, logger's constructor is called which doesn't know
-	// the value of DEFAULT_XXXX_FORMAT yet
-	logger.SetTimeFormat( DEFAULT_TIMEDATE_FORMAT );
-	logger.SetLogFormat( DEFAULT_LOG_FORMAT );
-
 	logger.SetMaxLogsPerIteration( 25 );
 
 	logger.SetLogLevel( LogLevels::ALL );
@@ -201,15 +195,15 @@ int Core::AutoClean( const std::vector< std::string > & args )
 			Display( "{bg}Log directory is clean{0}\n" );
 		}
 		else {
-			Display( "{fc}Removing {sc}" + std::to_string( logfiles.size() ) + "{fc} log files {0}...\n" );
+			Display( "{fc}Removing {sc}" + std::to_string( logfiles.size() ) + "{fc} log files {0}..." );
 			for( auto f : logfiles ) {
 				if( !FS::DeleteFile( f ) ) {
+					Display( "{r} Failed\n" );
 					Display( "{fc}Error in deleting log file: {r}" + f + "{0}\n" );
 					return ReturnVar( 1 );
 				}
 			}
-
-			Display( "{fc}Successfully deleted the log files{0}\n" );
+			Display( "{g} Success\n" );
 		}
 
 		logfiles.clear();
@@ -224,15 +218,15 @@ int Core::AutoClean( const std::vector< std::string > & args )
 			Display( "{bg}License directory is clean{0}\n" );
 		}
 		else {
-			Display( "{fc}Removing {sc}" + std::to_string( licfiles.size() ) + "{fc} license files {0}...\n" );
+			Display( "{fc}Removing {sc}" + std::to_string( licfiles.size() ) + "{fc} license files {0}..." );
 			for( auto f : licfiles ) {
 				if( !FS::DeleteFile( f ) ) {
+					Display( "{r} Failed\n" );
 					Display( "{fc}Error in deleting license file: {r}" + f + "{0}\n" );
 					return ReturnVar( 1 );
 				}
 			}
-
-			Display( "{fc}Successfully deleted the license files{0}\n" );
+			Display( "{g} Success\n" );
 		}
 	}
 

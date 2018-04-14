@@ -13,6 +13,8 @@
 #include "../include/Project/BuildBinary.hpp"
 #include "../include/Project/BuildLibrary.hpp"
 #include "../include/Project/CodeFileGenerator.hpp"
+#include "../include/Project/CreateNew.hpp"
+#include "../include/Project/Add.hpp"
 
 #include "../include/ProjectManager.hpp"
 
@@ -25,7 +27,7 @@ int Project::Handle( const std::vector< std::string > & args )
 		err_code = 0;
 	}
 	else if( args[ 2 ] == "new" ) {
-		//err_code = Project::New( args );
+		err_code = Project::New( args );
 	}
 	else if( args[ 2 ] == "build" ) {
 		err_code = Build( args );
@@ -95,7 +97,7 @@ int Project::Build( const std::vector< std::string > & args )
 
 		if( j == -1 ) {
 			Core::logger.AddLogString( LogLevels::ALL, "Used build name: " + which_build + " but it does not exist in builds list in config" );
-			Display( "{fc}Unable to find build: {sc}" + which_build + "{fc}. Exiting. {br}" + UTF::CROSS + "{0}\n" );
+			Display( "{fc}Unable to find build: {sc}" + which_build + "{fc}, exiting {br}" + UTF::CROSS + "{0}\n" );
 			return Core::ReturnVar( 1 );
 		}
 
@@ -124,16 +126,6 @@ int Project::Build( const std::vector< std::string > & args )
 	return Core::ReturnVar( 0 );
 }
 
-int Project::New( const std::vector< std::string > & args )
-{
-	Core::logger.AddLogSection( "Project" );
-	Core::logger.AddLogSection( "New" );
-
-	
-
-	return Core::ReturnVar( 0 );
-}
-
 int Project::Add( const std::vector< std::string > & args )
 {
 	Core::logger.AddLogSection( "Project" );
@@ -147,21 +139,15 @@ int Project::Add( const std::vector< std::string > & args )
 	}
 
 	if( args.size() < 4 ) {
-		Core::logger.AddLogString( LogLevels::ALL, "No parameter ( source / header ) specified to set" );
-		Display( "{fc}No parameter specified to set. Use a parameter{0}: {sc}inc{0} / {sc}src{0} ...\n" );
-		return Core::ReturnVar( 1 );
-	}
-
-	if( args.size() < 5 ) {
-		Core::logger.AddLogString( LogLevels::ALL, "No value to the parameter ( source / header ) specified" );
-		Display( "{fc}No value to the parameter specified. Format is{0}: {sc}" + args[ 0 ] + " project set < parameter > < value > < optional: build_name >{0}\n" );
-		Display( "{tc}\tNote{0}: {sc}Use double quotes to enclose a space separated string in the value field{0}, {r}although that is highly discouraged{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "No parameter ( source / header / build / lib ) specified to set" );
+		Display( "{fc}No parameter specified to set. Use a parameter{0}: {sc}inc{0} / {sc}src{0} / {sc}build{0} / {sc}lib{0} ...\n" );
 		return Core::ReturnVar( 1 );
 	}
 
 	ProjectConfig pconf;
 
 	pconf.LoadFile( Env::CCP4M_PROJECT_CONFIG_FILE );
+	Display( "\n" );
 
 	if( pconf.GetData().name.empty() ) {
 		Core::logger.AddLogString( LogLevels::ALL, "No project name! Unable to continue." );
@@ -169,46 +155,15 @@ int Project::Add( const std::vector< std::string > & args )
 		return Core::ReturnVar( 1 );
 	}
 
-	std::string ext;
-	if( args[ 3 ] == "src" ) {
-		if( pconf.GetData().lang == "c++" )
-			ext = ".cpp";
-		else
-			ext = ".c";
-	}
-	else if( args[ 3 ] == "inc" ) {
-		if( pconf.GetData().lang == "c++" )
-			ext = ".hpp";
-		else
-			ext = ".h";
-	}
-	std::string file = ( args[ 3 ] == "src" ? "src/" : "include/" ) + args[ 4 ] + ext;
+	if( args[ 3 ] == "src" || args[ 3 ] == "inc" )
+		return Core::ReturnVar( Project::AddFiles( pconf, args ) );
 
-	if( FS::LocExists( file ) ) {
-		Core::logger.AddLogString( LogLevels::ALL, "File: " + file + " already exists" );
-		Display( "{fc}File{0}: {r}" + file + "{fc} already exists{0}\n" );
-		return Core::ReturnVar( 1 );
-	}
+	if( args[ 3 ] == "build" || args[ 3 ] == "src" )
+		return Core::ReturnVar( Project::AddProjectInfo( pconf, args ) );
 
-	int which_build = -1;
-	if( args.size() > 5 ) {
-		for( int i = 0; i < pconf.GetData().builds.size(); ++i ) {
-			if( pconf.GetData().builds[ i ].name == args[ 5 ] )
-				which_build = i;
-		}
-
-		if( which_build == -1 ) {
-			Core::logger.AddLogString( LogLevels::ALL, "Used build name: " + args[ 5 ] + " but it does not exist in builds list in config" );
-			Display( "{fc}Unable to find build: {sc}" + args[ 5 ] + "{fc}. Exiting. {br}" + UTF::CROSS + "{0}\n" );
-			return Core::ReturnVar( 1 );
-		}
-	}
-
-	if( args[ 3 ] == "src" ) {
-		return Core::ReturnVar( Project::GenerateSourceFile( pconf, args[ 4 ] + ext, which_build ) );
-	}
-
-	return Core::ReturnVar( Project::GenerateIncludeFile( pconf, args[ 4 ] + ext, which_build ) );
+	Core::logger.AddLogString( LogLevels::ALL, "Invalid parameter " + args[ 3 ] + " specified to set" );
+	Display( "{fc}Invalid parameter {sc}" + args[ 3 ] + "{fc} provided, correct possible parameters are{0}: {sc}inc{0} / {sc}src{0} / {sc}build{0} / {sc}lib{0}\n" );
+	return Core::ReturnVar( 1 );
 }
 
 int Project::Set( const std::vector< std::string > & args )

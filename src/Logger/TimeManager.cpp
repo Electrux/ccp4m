@@ -51,9 +51,8 @@ std::string TimeManager::ReplaceSpecifierByTime( const std::time_t * time, const
 	return "";
 }
 
-TimeManager::TimeManager()
+TimeManager::TimeManager() : format( GetDefaultTimeDateFormat() )
 {
-	this->format = DEFAULT_TIMEDATE_FORMAT;
 }
 
 void TimeManager::SetFormat( const std::string & formatstr )
