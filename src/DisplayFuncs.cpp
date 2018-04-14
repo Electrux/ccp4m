@@ -33,8 +33,10 @@ void DisplayOneLiner( std::string data, bool store_log )
 {
 	MoveBack( LAST_ONE_LINER_SIZE );
 
-	if( data.empty() )
+	if( data.empty() ) {
+		LAST_ONE_LINER_SIZE = 0;
 		return;
+	}
 
 	LAST_ONE_LINER_SIZE = Vars::ReplaceVars( data );
 
