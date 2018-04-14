@@ -107,6 +107,12 @@ int Str::FetchArgs( const std::vector< std::string > & args, std::map< std::stri
 		key.clear();
 	}
 
+	if( !key.empty() ) {
+		Core::logger.AddLogString( LogLevels::ALL, "Invalid syntax used - A Parameter does not have any value associated with it" );
+		Display( "{fc}Invalid argument syntax used{0}: {fc}Parameter{0}: {r}" + key + " {fc}does not have any value associated with it{0}\n" );
+		return Core::ReturnVar( 1 );
+	}
+
 	Core::logger.AddLogString( LogLevels::ALL, "Successfully fetched " + std::to_string( argmap.size() ) + " arguments" );
 	return Core::ReturnVar( 0 );
 }
