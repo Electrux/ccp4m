@@ -295,7 +295,7 @@ void ProjectConfig::DisplayAll( const std::string & dir )
 	Display( "{sc}=> {bm}Version{0}: {bg}" + pdata.version + "\n" );
 	Display( "{sc}=> {bm}Lang{0}: {bg}" + pdata.lang + "\n" );
 	Display( "{sc}=> {bm}Std{0}: {bg}" + pdata.std + "\n" );
-	Display( "{sc}=> {bm}Compile_Flags{0}: {bg}" + pdata.compile_flags + "\n\n" );
+	Display( "{sc}=> {bm}Compile_Flags{0}: {bg}" + pdata.compile_flags + "\n" );
 	Display( "{sc}=> {bm}License{0}: {bg}" + pdata.license + "\n\n" );
 
 	Display( "{sc}=> {bm}Libs{0}:\n" );
