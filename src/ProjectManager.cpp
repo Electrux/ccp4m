@@ -193,7 +193,7 @@ int Project::Set( const std::vector< std::string > & args )
 
 	ProjectConfig pconf;
 
-	pconf.LoadFile( Env::CCP4M_PROJECT_CONFIG_FILE );
+	pconf.LoadFile( Env::CCP4M_PROJECT_CONFIG_FILE, false );
 
 	if( pconf.GetData().name.empty() ) {
 		Core::logger.AddLogString( LogLevels::ALL, "No project name! Unable to continue." );
@@ -228,10 +228,10 @@ int Project::Set( const std::vector< std::string > & args )
 			return Core::ReturnVar( 1 );
 		}
 
+		Display( "\n" );
+
 		if( !License::UpdateProjectLicenseFile( args[ 4 ] ) )
 			return Core::ReturnVar( 1 );
-
-		Display( "\n" );
 
 		old_var = pconf.GetData().license;
 		pconf.GetData().license = args[ 4 ];

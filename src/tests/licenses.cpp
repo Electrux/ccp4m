@@ -31,5 +31,6 @@ int main( int argc, char ** argv )
 
 	std::string lic = License::FetchLicense( License::gnulessergpl2_1 );
 
+	Display( "{fc}License String{0}: {sc}" + lic + "{0}\n" );
 	return Exit( err_code );
 }

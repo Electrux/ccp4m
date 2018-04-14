@@ -51,15 +51,13 @@ void Vars::Initialize()
 	auto v = GetSingleton();
 
 	// Nothing to do for now :(
-	/*
+
 	v->AddVar( "CCP4M_DIR", Env::CCP4M_DIR );
 	v->AddVar( "CCP4M_CONFIG_FILE", Env::CCP4M_CONFIG_FILE );
 	v->AddVar( "CCP4M_LICENSE_DIR", Env::CCP4M_LICENSE_DIR );
 	v->AddVar( "CCP4M_LOG_DIR", Env::CCP4M_LOG_DIR );
 
 	v->AddVar( "CCP4M_PROJECT_CONFIG_FILE", Env::CCP4M_PROJECT_CONFIG_FILE );
-	v->AddVar( "LICENSE_URL", Env::LICENSE_URL );
-	*/
 
 	Core::logger.AddLogSection( "Vars" );
 	Core::logger.AddLogSection( "Initialize" );

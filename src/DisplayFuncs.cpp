@@ -18,8 +18,6 @@ void Display( std::string data )
 	if( data.empty() )
 		return;
 
-	int subtract = 0;
-
 	Vars::ReplaceVars( data );
 
 	for( auto it = data.begin(); it != data.end(); ++it )

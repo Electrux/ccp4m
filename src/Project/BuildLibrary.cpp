@@ -68,6 +68,8 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 			compile_str += " -I/usr/local/include";
 		}
 
+		is_any_single_file_compiled = true;
+
 		bool thread_found = false;
 
 		while( !thread_found ) {

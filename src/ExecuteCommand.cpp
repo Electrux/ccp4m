@@ -1,9 +1,6 @@
 #include <cstdio>
 #include <vector>
 #include <string>
-#include <array>
-#include <thread>
-#include <future>
 
 #include "../include/Core.hpp"
 #include "../include/Environment.hpp"
@@ -23,16 +20,12 @@ int Exec::ExecuteCommand( const std::string & cmd, std::string * err )
 
 	Core::logger.AddLogString( LogLevels::ALL, "Executing: " + cmd );
 
-	FILE * pipe = popen( cmd.c_str(), "r" );
-	if( !pipe ) {
-		Core::logger.AddLogString( LogLevels::ALL, "Failed to open external command pipe" );
-		return Core::ReturnVar( -1 );
-	}
+	int res = std::system( cmdfinal.c_str() );
 
 	if( err != nullptr && FS::LocExists( Core::TMP_FILE ) )
 		* err = FS::ReadFile( Core::TMP_FILE );
 
-	return Core::ReturnVar( pclose( pipe ) );
+	return Core::ReturnVar( res );
 }
 
 void Exec::MultithreadedExecute( const std::string & cmd, int thread, const std::string & src )

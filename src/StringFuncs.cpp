@@ -78,7 +78,6 @@ int Str::FetchArgs( const std::vector< std::string > & args, std::map< std::stri
 		return Core::ReturnVar( 2 );
 	}
 
-	bool expect_arg = false;
 	std::string key;
 
 	argmap.clear();
@@ -91,7 +90,6 @@ int Str::FetchArgs( const std::vector< std::string > & args, std::map< std::stri
 				Display( "{fc}Faulty parameters are{0}: {r}" + key + " {fc}and{0}: {r}" + arg->substr( 2 ) + "{0}\n" );
 				return Core::ReturnVar( 1 );
 			}
-			expect_arg = true;
 			key = arg->substr( 2 );
 			continue;
 		}

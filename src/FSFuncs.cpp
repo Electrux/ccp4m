@@ -37,7 +37,6 @@ bool FS::CreateDir( const std::string & dir, bool check_exists )
 	if( check_exists && LocExists( dir ) )
 		return true;
 
-	int ctr = 0;
 	std::string fdir;
 
 	Core::logger.AddLogSection( "FS" );
@@ -175,13 +174,13 @@ std::vector< std::string > FS::GetFilesInDir( const std::string & loc, const std
 		fdir += "/";
 
 	DIR * dir;
-	struct dirent * ent;
 
 	std::string dir_to_open = fdir.empty() ? "." : fdir;
 
 	std::vector< std::string > res;
 
 	if( ( dir = opendir( dir_to_open.c_str() ) ) != NULL ) {
+		struct dirent * ent;
 		while( ( ent = readdir( dir ) ) != NULL ) {
 			if( strcmp( ent->d_name, "." ) == 0 || strcmp( ent->d_name, ".." ) == 0 )
 				continue;
