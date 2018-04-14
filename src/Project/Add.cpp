@@ -84,9 +84,9 @@ int Project::AddProjectInfo( ProjectConfig & pconf, const std::vector< std::stri
 	Core::logger.AddLogSection( "Project" );
 	Core::logger.AddLogSection( "AddProjectInfo" );
 
-	if( args.size() < 6 ) {
+	if( args.size() < 5 ) {
 		Core::logger.AddLogString( LogLevels::ALL, "No project name specified" );
-		Display( "\n{fc}No project name specified{0}. {fc}Use the format{0}: {sc}" + args[ 0 ] + " project add {0}{{ build {0}/ {sc}lib {0}}{sc} {0}< {sc}name {0}>\n" );
+		Display( "\n{fc}No project name specified{0}. {fc}Use the format{0}: {sc}" + args[ 0 ] + " project add {0}{{ {sc}build {0}/ {sc}lib {0}}{sc} {0}< {sc}name {0}>\n" );
 		return Core::ReturnVar( 1 );
 	}
 
