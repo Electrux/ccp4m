@@ -12,7 +12,7 @@
 
 #include "../../include/Project/CodeFileGenerator.hpp"
 
-int Project::GenerateIncludeFile( ProjectConfig & pconf, const std::string & file, const int which_build )
+int Project::GenerateIncludeFile( ProjectConfig & pconf, const std::string & file )
 {
 	Core::logger.AddLogSection( "Project" );
 	Core::logger.AddLogSection( "GenerateIncludeFile" );

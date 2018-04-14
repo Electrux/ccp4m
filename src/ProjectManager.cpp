@@ -245,7 +245,7 @@ int Project::Set( const std::vector< std::string > & args )
 	pconf.SaveFile( Env::CCP4M_PROJECT_CONFIG_FILE );
 
 	Core::logger.AddLogString( LogLevels::ALL, "Altered option: " + args[ 3 ] + " from: " + old_var + " to: " + args[ 4 ] );
-	Display( "{fc}Altering successful{0}\n" );
+	Display( "\n{fc}Altering successful{0}\n" );
 
 	return Core::ReturnVar( 0 );
 }

@@ -76,7 +76,7 @@ int Project::AddFiles( ProjectConfig & pconf, const std::vector< std::string > &
 		return Core::ReturnVar( Project::GenerateSourceFile( pconf, args[ 4 ] + ext, which_build ) );
 	}
 
-	return Core::ReturnVar( Project::GenerateIncludeFile( pconf, args[ 4 ] + ext, which_build ) );
+	return Core::ReturnVar( Project::GenerateIncludeFile( pconf, args[ 4 ] + ext ) );
 }
 
 int Project::AddProjectInfo( ProjectConfig & pconf, const std::vector< std::string > & args )
@@ -138,7 +138,9 @@ int Project::AddProjectInfo( ProjectConfig & pconf, const std::vector< std::stri
 		if( build.type == "lib" )
 			build.build_type = argmap.find( "build_type" ) != argmap.end() ? argmap[ "build_type" ] : "static";
 
-		build.main_src = argmap.find( "main_src" ) != argmap.end() ? argmap[ "main_src" ] : "src/main.cpp";
+		std::string default_main = pconf.GetData().lang == "c++" ? "src/main.cpp" : "src/main.c";
+
+		build.main_src = argmap.find( "main_src" ) != argmap.end() ? argmap[ "main_src" ] : default_main;
 
 		if( argmap.find( "exclude" ) != argmap.end() )
 			build.exclude = Str::Delimit( argmap[ "exclude" ], ',' );

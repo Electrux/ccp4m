@@ -122,6 +122,13 @@ int Project::New( const std::vector< std::string > & args )
 		build.main_src = argmap[ "build.main_src" ];
 	}
 
+	if( pconf.GetData().lang == "c" ) {
+		pconf.GetData().builds[ 0 ].main_src = "src/main.c";
+		pconf.GetData().builds[ 0 ].srcs[ 0 ] = "src/(.*).c";
+		if( argmap.find( "std" ) == argmap.end() )
+			pconf.GetData().std = "11";
+	}
+
 	pconf.DisplayAll( project_dir );
 
 	Display( "\n" );

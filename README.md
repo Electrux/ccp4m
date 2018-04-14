@@ -1,13 +1,78 @@
 # CCP4M-Final
 This is the new CCP4M and will be the edition which I will work on.
 
-[![Build Status](https://travis-ci.org/Electrux/CCP4M-Final.svg?branch=master)](https://travis-ci.org/Electrux/CCP4M-Final)
+[![MacOS Build Status](https://travis-ci.org/Electrux/CCP4M-Final.svg?branch=master)](https://travis-ci.org/Electrux/CCP4M-Final)
 
 There is a **build.sh** shell script to build the project on your system if there is no release binary for your system or you want the latest git commit version.
 
 You will be required to install the dependencies manually, which are: **yaml-cpp**, and **libcurl**/**curl**.
 
 Once build.sh generates the binary, it can be copied over to **/usr/local/bin** to run the program directly from any directory.
+
+## Instructions
+
+ **Note:** All the flag based parameters ( ones starting with '--' ) in any command are optional.
+
+### Creating a new project
+To create a new project, the following command is used.
+```
+ccp4m project new test --lang c++ --version 0.1 --std 14 --author.name YourName --author.email YourEmail@emailprovider.com --build.name TestBuild --build.type bin --dir test
+```
+
+### Building a project
+To build a project, the following command is used. Optionally, the build name can be provided to build a specific target. If not provided, it will build all the targets.
+```
+ccp4m project build < optional: target build >
+```
+
+### Executing a project
+To run a project, the following command is used. You need to give a build target as a parameter so that it knows what to run.
+```
+ccp4m project run < target build >
+```
+
+### Setting/Changing options in configuration
+To change a configuration, the following command is used.
+```
+ccp4m project set < parameter > < value >
+```
+The **parameter** can be one of the following for now ( give me suggestions for more please ):
+
+	name - Project Name
+	version - Project Version
+	license - Project License
+	std - Project Standard
+	compile_flags - Project Compile Flags
+
+### Adding additional things
+Additional items ( libraries, build targets, includes, and source files ) can be added.
+
+#### Includes
+```
+ccp4m project add inc < include file name >
+```
+Include file name can contain directory as well ( but should not contain extension ).
+
+#### Sources
+```
+ccp4m project add src < source file name > < optional: target build >
+```
+Target build, if provided, will be the one for which the source file is valid ( depending on regex used for other sources in a build ).
+
+#### Builds
+```
+ccp4m project add build < build name > --type < bin/lib > --main_src < main source for this build > --exclude < comma separated list of sources to exclude > --srcs < comma separated list of sources to include ( other than main source ) >
+```
+Note that if main source is not provided, it will be taken as *src/main.c(pp)* by default.
+Also, if the type is *lib*, an extra parameter **--build_type** may be provided whose value is either *statc* or *dynamic*, by default it is static.
+
+#### Libraries
+```
+ccp4m project add lib < library name > --version < version > --inc_flags < include flags ( space separated ) > --lib_flags < library flags ( space separated ) >
+```
+By default, version is *0*, include flags and library flags are *empty*.
+
+## End - Instructions
 
 For Debian based distros, install the dependencies using the following command:
 ```

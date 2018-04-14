@@ -5,7 +5,7 @@
 
 namespace Project
 {
-	int GenerateIncludeFile( ProjectConfig & pconf, const std::string & file, const int which_build );
+	int GenerateIncludeFile( ProjectConfig & pconf, const std::string & file );
 
 	int GenerateSourceFile( ProjectConfig & pconf, const std::string & file, const int which_build );
 }
