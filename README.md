@@ -1,7 +1,7 @@
 # CCP4M-Final
 This is the new CCP4M and will be the edition which I will work on.
 
-[![MacOS Build Status](https://travis-ci.org/Electrux/CCP4M-Final.svg?branch=master)](https://travis-ci.org/Electrux/CCP4M-Final)
+[![MacOS Build Status](https://travis-ci.org/Electrux/CCP4M-Final.svg?branch=master)](https://travis-ci.org/Electrux/CCP4M-Final) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d646fd7232004db58611b4eacfd5f691)](https://www.codacy.com/app/Electrux/CCP4M-Final?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Electrux/CCP4M-Final&amp;utm_campaign=Badge_Grade)
 
 There is a **build.sh** shell script to build the project on your system if there is no release binary for your system or you want the latest git commit version.
 
