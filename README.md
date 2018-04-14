@@ -72,7 +72,7 @@ ccp4m project add lib < library name > --version < version > --inc_flags < inclu
 ```
 By default, version is *0*, include flags and library flags are *empty*.
 
-## End - Instructions
+## Dependencies
 
 For Debian based distros, install the dependencies using the following command:
 ```
