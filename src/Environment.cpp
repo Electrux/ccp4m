@@ -78,7 +78,7 @@ std::vector< std::string > Env::GetEnvPathVec()
 
 	Core::logger.AddLogString( LogLevels::ALL, "Fetching PATH variable" );
 
-	auto res = Str::Delimit( GetEnvVar( "PATH" ), ':' );
+	auto && res = Str::Delimit( GetEnvVar( "PATH" ), ':' );
 
 	Core::logger.AddLogString( LogLevels::ALL, "Fetched " + std::to_string( res.size() ) + " paths" );
 

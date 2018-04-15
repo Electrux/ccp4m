@@ -20,7 +20,7 @@ int Exit( int err_code )
 
 int main( int argc, char ** argv )
 {
-	auto args = Str::DoublePtrToVector( argc, ( const char ** & )argv );
+	auto && args = Str::DoublePtrToVector( argc, ( const char ** & )argv );
 
 	if( args.size() > 1 && args[ 1 ] == "clean" ) {
 		Display( "\n" );

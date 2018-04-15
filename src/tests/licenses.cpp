@@ -29,7 +29,7 @@ int main( int argc, char ** argv )
 
 	int err_code = 0;
 
-	std::string lic = License::FetchLicense( License::gnulessergpl2_1 );
+	std::string && lic = License::FetchLicense( License::gnulessergpl2_1 );
 
 	Display( "{fc}License String{0}: {sc}" + lic + "{0}\n" );
 	return Exit( err_code );
