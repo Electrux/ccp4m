@@ -28,7 +28,7 @@ ccp4m project build < optional: target build >
 ### Executing a project
 To run a project, the following command is used. You need to give a build target as a parameter so that it knows what to run.
 ```
-ccp4m project run < target build >
+ccp4m project run < target build > < arguments for the executable binary >
 ```
 
 ### Setting/Changing options in configuration
@@ -43,6 +43,20 @@ The **parameter** can be one of the following for now ( give me suggestions for 
 	license - Project License
 	std - Project Standard
 	compile_flags - Project Compile Flags
+
+### Cleaning directories
+
+#### Cleaning project directories
+The project directory is purged of the buildfiles, lib, and bin directories using the following command.
+```
+ccp4m project clean
+```
+
+#### Cleaning CCP4M directories
+The ~/.ccp4m directory can be cleared of logs and downloaded license files using the following command.
+```
+ccp4m clean
+```
 
 ### Adding additional things
 Additional items ( libraries, build targets, includes, and source files ) can be added.

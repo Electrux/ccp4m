@@ -300,7 +300,11 @@ int Project::Run( const std::vector< std::string > & args )
 		return Core::ReturnVar( 1 );
 	}
 
-	return Core::ReturnVar( std::system( ( "bin/" + build.name ).c_str() ) );
+	std::string newargs;
+	for( int i = 4; i < args.size(); ++i )
+		newargs += args[ i ] + " ";
+
+	return Core::ReturnVar( std::system( ( "bin/" + build.name + " " + newargs ).c_str() ) );
 }
 
 int Project::Clean()
