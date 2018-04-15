@@ -49,13 +49,16 @@ int main( int argc, char ** argv )
 		Helps::Usage( args );
 		return Exit( 0 );
 	}
-
-	if( args[ 1 ] == "help" ) {
+	else if( args[ 1 ] == "help" ) {
 		Helps::Usage( args );
 		err_code = 0;
 	}
-
-	if( args[ 1 ] == "project" ) {
+	else if( args[ 1 ] == "--version" || args[ 1 ] == "version" ) {
+		Display( "{fc}Running Version{0}: {sc}" + std::to_string( Core::VERSION_PRIMARY ) + "{0}.{sc}" +
+			std::to_string( Core::VERSION_SECONDARY ) + "{0}.{sc}" + std::to_string( Core::VERSION_MINOR ) + "{0}\n" );
+		err_code = 0;
+	}
+	else if( args[ 1 ] == "project" ) {
 		err_code = Project::Handle( args );
 	}
 	else {
