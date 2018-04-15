@@ -158,7 +158,7 @@ int Project::Add( const std::vector< std::string > & args )
 	if( args[ 3 ] == "src" || args[ 3 ] == "inc" )
 		return Core::ReturnVar( Project::AddFiles( pconf, args ) );
 
-	if( args[ 3 ] == "build" || args[ 3 ] == "src" )
+	if( args[ 3 ] == "build" || args[ 3 ] == "lib" )
 		return Core::ReturnVar( Project::AddProjectInfo( pconf, args ) );
 
 	Core::logger.AddLogString( LogLevels::ALL, "Invalid parameter " + args[ 3 ] + " specified to set" );

@@ -55,7 +55,7 @@ ccp4m project clean
 #### Cleaning CCP4M directories
 The ~/.ccp4m directory can be cleared of logs and downloaded license files using the following command.
 ```
-ccp4m clean
+ccp4m clean < optional: log / license >
 ```
 
 ### Adding additional things
