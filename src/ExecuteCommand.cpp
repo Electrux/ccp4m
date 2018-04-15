@@ -22,8 +22,10 @@ int Exec::ExecuteCommand( const std::string & cmd, std::string * err )
 
 	int res = std::system( cmdfinal.c_str() );
 
-	if( err != nullptr && FS::LocExists( Core::TMP_FILE ) )
+	if( err != nullptr && FS::LocExists( Core::TMP_FILE ) ) {
 		* err = FS::ReadFile( Core::TMP_FILE );
+		FS::DeleteFile( Core::TMP_FILE );
+	}
 
 	return Core::ReturnVar( res );
 }
