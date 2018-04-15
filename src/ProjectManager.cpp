@@ -85,6 +85,8 @@ int Project::Build( const std::vector< std::string > & args )
 		return Core::ReturnVar( 1 );
 	}
 
+	Display( "\n{fc}Project version{0}: {sc}" + pconf.GetData().version + "{0}\n" );
+
 	// User specified which build to use
 	if( args.size() > 3 ) {
 		std::string which_build = args[ 3 ];
