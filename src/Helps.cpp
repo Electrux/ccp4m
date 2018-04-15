@@ -9,7 +9,7 @@ void Helps::Usage( const std::vector< std::string > & args )
 {
 	Display( "{fc}Usage:\n" );
 
-	Display( "\t{sc}" + args[ 0 ] + "{tc} {{ project / package / clean / help }\n\n" );
+	Display( "\t{sc}" + args[ 0 ] + "{tc} {{ project / package / clean / help / (--)version }\n\n" );
 
 	Display( "{fc}Use {sc}" + args[ 0 ] + "{tc} < arg > help {fc}for more information{0}\n" );
 }
