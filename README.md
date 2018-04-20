@@ -112,3 +112,5 @@ For Debian based distros, install the dependencies using the following command:
 ```
 sudo apt-get install libboost-all-dev libyaml-cpp-dev libcurl3 libcurl4-openssl-dev curl
 ```
+
+For Arch based distros, install the **base-devel** package and **yaml-cpp** package. That should be enough.

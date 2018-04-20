@@ -14,7 +14,7 @@ const std::string Env::CCP4M_LOG_DIR = Env::CCP4M_DIR + "/logs";
 
 const std::string Env::CCP4M_PROJECT_CONFIG_FILE = "ccp4m.yaml";
 
-const std::string Env::LICENSE_URL = "https://raw.githubusercontent.com/Electrux/CCP4M-Final/master/Licenses/";
+const std::string Env::LICENSE_URL = "https://raw.githubusercontent.com/Electrux/CCP4M-Licenses/master/";
 
 std::string Env::GetEnvVar( const std::string & key )
 {
