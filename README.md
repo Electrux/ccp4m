@@ -1,13 +1,28 @@
-# CCP4M-Final
+# ccp4m
 This is the new CCP4M and will be the edition which I will work on.
 
 [![MacOS Build Status](https://travis-ci.org/Electrux/CCP4M-Final.svg?branch=master)](https://travis-ci.org/Electrux/CCP4M-Final) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d646fd7232004db58611b4eacfd5f691)](https://www.codacy.com/app/Electrux/CCP4M-Final?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Electrux/CCP4M-Final&amp;utm_campaign=Badge_Grade)
+
+## Installation
 
 There is a **build.sh** shell script to build the project on your system if there is no release binary for your system or you want the latest git commit version.
 
 You will be required to install the dependencies manually, which are: **yaml-cpp**, and **libcurl**/**curl**.
 
 Once build.sh generates the binary, it can be copied over to **/usr/local/bin** to run the program directly from any directory.
+
+### For Arch users
+
+The software is available on the AUR under the name **ccp4m**.
+
+### Dependencies
+
+For Debian based distros, install the dependencies using the following command:
+```
+sudo apt-get install libboost-all-dev libyaml-cpp-dev libcurl3 libcurl4-openssl-dev curl
+```
+
+For Arch based distros, install the **curl** package and **yaml-cpp** package. That should be enough.
 
 ## Instructions
 
@@ -105,12 +120,3 @@ ccp4m project add lib < library name > --version < version > --inc_flags < inclu
 By default, version is *0*, include flags and library flags are *empty*.
 
 [![asciicast](https://asciinema.org/a/176323.png)](https://asciinema.org/a/176323)
-
-## Dependencies
-
-For Debian based distros, install the dependencies using the following command:
-```
-sudo apt-get install libboost-all-dev libyaml-cpp-dev libcurl3 libcurl4-openssl-dev curl
-```
-
-For Arch based distros, install the **base-devel** package and **yaml-cpp** package. That should be enough.
