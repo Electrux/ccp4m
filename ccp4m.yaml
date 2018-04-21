@@ -1,5 +1,5 @@
 name: CCP4M
-version: 0.5.2
+version: 0.5.3
 lang: c++
 std: 14
 compile_flags: -O2
