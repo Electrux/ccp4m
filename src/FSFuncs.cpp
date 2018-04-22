@@ -126,6 +126,42 @@ bool FS::CreateFile( const std::string & loc, const std::string & contents )
 	return Core::ReturnVar( true );
 }
 
+bool FS::CreateFileVectorContents( const std::string & loc, const std::vector< std::string > & contents )
+{
+	Core::logger.AddLogSection( "FS" );
+	Core::logger.AddLogSection( "CreateFileVectorContents" );
+
+	auto last_slash = loc.rfind( '/' );
+	if( last_slash != std::string::npos ) {
+		std::string dir = loc.substr( 0, last_slash );
+		if( !LocExists( dir ) && !CreateDir( dir ) ) {
+			Core::logger.AddLogString( LogLevels::ALL, "Unable to access/create directory: " + dir + " for file: " + loc );
+			return Core::ReturnVar( false );
+		}
+	}
+
+	if( loc.empty() ) {
+		Core::logger.AddLogString( LogLevels::ALL, "Filename is empty" );
+		return Core::ReturnVar( false );
+	}
+
+	std::fstream file;
+	file.open( loc, std::ios::out );
+
+	if( !file ) {
+		Core::logger.AddLogString( LogLevels::ALL, "Unable to create and open file: " + loc );
+		return Core::ReturnVar( false );
+	}
+
+	for( auto & c : contents )
+		file << c;
+
+	file.close();
+
+	Core::logger.AddLogString( LogLevels::ALL, "Successfully created file: " + loc + " with contents spanning " + std::to_string( contents.size() ) + " bytes" );
+	return Core::ReturnVar( true );
+}
+
 bool FS::CreateFileIfNotExists( const std::string & loc, const std::string & contents )
 {
 	Core::logger.AddLogSection( "FS" );
@@ -229,7 +265,26 @@ std::string FS::ReadFile( const std::string & filename, const std::string & pref
 		res += prefix_per_line + temp + "\n";
 
 	file.close();
+	return res;
+}
 
+std::vector< std::string > FS::ReadFileVector( const std::string & filename, const std::string & prefix_per_line )
+{
+	std::fstream file;
+
+	file.open( filename, std::ios::in );
+
+	std::vector< std::string > res;
+
+	if( !file )
+		return res;
+
+	std::string temp;
+
+	while( std::getline( file, temp ) )
+		res.push_back( prefix_per_line + temp + "\n" );
+
+	file.close();
 	return res;
 }
 

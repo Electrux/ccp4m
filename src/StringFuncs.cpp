@@ -114,3 +114,17 @@ int Str::FetchArgs( const std::vector< std::string > & args, std::map< std::stri
 	Core::logger.AddLogString( LogLevels::ALL, "Successfully fetched " + std::to_string( argmap.size() ) + " arguments" );
 	return Core::ReturnVar( 0 );
 }
+
+bool Str::Replace( std::string & str, const std::string & from, const std::string & to )
+{
+	if( from.empty() )
+		return false;
+
+	size_t start_pos = 0;
+	while( ( start_pos = str.find( from, start_pos ) ) != std::string::npos ) {
+		str.replace( start_pos, from.length(), to );
+		start_pos += to.length();
+	}
+
+	return true;
+}

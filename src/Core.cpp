@@ -239,5 +239,6 @@ int Core::AutoClean( const std::vector< std::string > & args )
 		return ReturnVar( 1 );
 	}
 
+	Display( "{fc}Successfully cleaned{0}\n" );
 	return ReturnVar( 0 );
 }

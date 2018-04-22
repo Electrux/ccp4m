@@ -16,6 +16,8 @@ namespace Str
 	std::string ToUpper( const std::string & str );
 
 	int FetchArgs( const std::vector< std::string > & args, std::map< std::string, std::string > & argmap, int from );
+
+	bool Replace( std::string & str, const std::string & from, const std::string & to );
 }
 
 #endif // STRING_FUNCS_HPP

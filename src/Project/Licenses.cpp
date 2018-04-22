@@ -7,6 +7,7 @@
 #include "../../include/FSFuncs.hpp"
 #include "../../include/Network.hpp"
 #include "../../include/Vars.hpp"
+#include "../../include/StringFuncs.hpp"
 #include "../../include/DisplayFuncs.hpp"
 
 #include "../../include/Project/Licenses.hpp"
@@ -173,5 +174,54 @@ bool License::UpdateProjectLicenseFile( const std::string & license, bool really
 			return Core::ReturnVar( false );
 	}
 
+	return Core::ReturnVar( true );
+}
+
+bool License::UpdateProjectSourceFiles( const std::string & old_license, const std::string & new_license, const std::string & lang )
+{
+	Core::logger.AddLogSection( "License" );
+	Core::logger.AddLogSection( "UpdateProjectSourceFiles" );
+
+	std::string regex_ext = lang == "c++" ? "(h|hpp|cpp)" : "(h|c)";
+
+	auto files = FS::GetFilesInDir( ".", std::regex( "(include|src)/(.*)." + regex_ext ) );
+
+	int alter_count = 0;
+
+	for( auto & f : files ) {
+		auto && content = FS::ReadFileVector( f );
+		if( content[ 0 ] != "\n" && content[ 0 ].find( "/*" ) == std::string::npos )
+			continue;
+
+		bool found = false;
+
+		std::string formalname_old = FetchLicenseFormalName( old_license );
+		std::string formalname_new = FetchLicenseFormalName( new_license );
+
+		Core::logger.AddLogString( LogLevels::ALL, "Altering license from: " + formalname_old + " to: " + formalname_new + " in file: " + f );
+
+		for( int i = 0; i < 10; ++i ) {
+			if( i >= content.size() )
+				break;
+
+			if( content[ i ].find( formalname_old ) != std::string::npos ) {
+				Core::logger.AddLogString( LogLevels::ALL, "Altering on line: " + std::to_string( i ) + " with contents: " + content[ i ] );
+				Str::Replace( content[ i ], formalname_old, formalname_new );
+				found = true;
+			}
+		}
+
+		if( !found )
+			continue;
+
+		if( !FS::CreateFileVectorContents( f, content ) ) {
+			Core::logger.AddLogString( LogLevels::ALL, "Unable to create updated file: " + f );
+			Display( "{fc}Unable to alter license in file{0}: {r}" + f + "{0}\n" );
+			return Core::ReturnVar( false );
+		}
+		++alter_count;
+	}
+
+	Core::logger.AddLogString( LogLevels::ALL, "Altered license in " + std::to_string( alter_count ) + " files" );
 	return Core::ReturnVar( true );
 }
