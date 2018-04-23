@@ -91,6 +91,18 @@ int Project::New( const std::vector< std::string > & args )
 		}
 	}
 
+	if( argmap.find( "license" ) != argmap.end() ) {
+		if( std::find( License::LICENSES.begin(), License::LICENSES.end(), argmap[ "license" ] ) == License::LICENSES.end() ) {
+			Core::logger.AddLogString( LogLevels::ALL, "Unknown license specified: " + args[ 4 ] );
+			Display( "{fc}Unknown license {r}" + argmap[ "license" ] + "{fc} specified, possible options are{0}:\n" );
+			for( auto & lic : License::LICENSES )
+				Display( "{sc}\t" + lic + "{0}\n" );
+			return Core::ReturnVar( 1 );
+		}
+		Core::logger.AddLogString( LogLevels::ALL, "Project license: " + argmap[ "license" ] );
+		pconf.GetData().license = argmap[ "license" ];
+	}
+
 	if( argmap.find( "author.name" ) != argmap.end() ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Project author name: " + argmap[ "author.name" ] );
 		pconf.GetData().author.name = argmap[ "author.name" ];
