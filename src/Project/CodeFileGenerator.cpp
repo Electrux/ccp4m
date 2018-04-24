@@ -23,11 +23,16 @@ int Project::GenerateIncludeFile( ProjectConfig & pconf, const std::string & fil
 
 	std::string file_w_uscore = file;
 
+	bool is_prev_caps = false;
+
 	for( auto it = file_w_uscore.begin() + 1; it != file_w_uscore.end(); ++it ) {
-		if( * it >= 'A' && * it <= 'Z' && !std::ispunct( * ( it - 1 ) ) ) {
+		if( * it >= 'A' && * it <= 'Z' && !is_prev_caps && !std::ispunct( * ( it - 1 ) ) ) {
 			it = file_w_uscore.insert( it, '_' );
 			++it;
+			is_prev_caps = true;
+			continue;
 		}
+		is_prev_caps = false;
 	}
 
 	std::string caps_file = Str::ToUpper( file_w_uscore );
@@ -98,11 +103,16 @@ int Project::GenerateSourceFile( ProjectConfig & pconf, const std::string & file
 
 	std::string file_w_uscore = file;
 
+	bool is_prev_caps = false;
+
 	for( auto it = file_w_uscore.begin() + 1; it != file_w_uscore.end(); ++it ) {
-		if( * it >= 'A' && * it <= 'Z' && !std::ispunct( * ( it - 1 ) ) ) {
+		if( * it >= 'A' && * it <= 'Z' && !is_prev_caps && !std::ispunct( * ( it - 1 ) ) ) {
 			it = file_w_uscore.insert( it, '_' );
 			++it;
+			is_prev_caps = true;
+			continue;
 		}
+		is_prev_caps = false;
 	}
 
 	std::string caps_file = Str::ToUpper( file_w_uscore );
