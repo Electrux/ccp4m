@@ -1,7 +1,7 @@
 # ccp4m
 This is the new CCP4M and will be the edition which I will work on.
 
-[![MacOS Build Status](https://travis-ci.org/Electrux/CCP4M-Final.svg?branch=master)](https://travis-ci.org/Electrux/CCP4M-Final) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d646fd7232004db58611b4eacfd5f691)](https://www.codacy.com/app/Electrux/CCP4M-Final?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Electrux/CCP4M-Final&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.org/Electrux/ccp4m.svg?branch=master)](https://travis-ci.org/Electrux/ccp4m) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d646fd7232004db58611b4eacfd5f691)](https://www.codacy.com/app/Electrux/CCP4M-Final?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Electrux/ccp4m&amp;utm_campaign=Badge_Grade)
 
 ## Installation
 
