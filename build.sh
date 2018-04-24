@@ -20,15 +20,16 @@ mkdir -p "buildfiles/src/Logger"
 mkdir -p "buildfiles/src/Project"
 mkdir -p "bin"
 
-find src -name "*.cpp" | grep -v "tests" | grep -v "main.cpp" | while read -r src; do
-	echo "Compiling: $src ..."
-	$compiler -O2 -std=c++14 -c $src -o buildfiles/$src.o  -I/usr/local/include
+find src -name "*.cpp" | grep -v "tests" | grep -v "main.cpp" | while read -r src_file; do
+	echo "Compiling: $src_file ..."
+	$compiler -O2 -std=c++14 -c $src_file -o buildfiles/$src_file.o -I/usr/local/include
 	if ! [[ $? == 0 ]]; then
 		break
 	fi
 done
 
 if ! [[ $? == 0 ]]; then
+	echo "Error in compiling sources, will not continue"
 	exit $?
 fi
 
