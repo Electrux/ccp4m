@@ -11,7 +11,7 @@
 
 #include "../../include/Project/BuildLibrary.hpp"
 
-int Project::BuildLibrary( const ProjectData & data, const int data_i )
+int Project::BuildLibrary( const ProjectData & data, const int data_i, const bool disp_cmds_only )
 {
 	Core::logger.AddLogSection( "Project" );
 	Core::logger.AddLogSection( "BuildLibrary" );
@@ -32,8 +32,44 @@ int Project::BuildLibrary( const ProjectData & data, const int data_i )
 	if( !Common::CreateSourceDirs( files ) )
 		return Core::ReturnVar( 1 );
 
-	Core::logger.AddLogString( LogLevels::ALL, "Building target: " + data.builds[ data_i ].name + " with " + std::to_string( total_sources ) + " sources" );
+	if( disp_cmds_only ) {
+		std::string build_files_str;
+		Display( "{fc}Build commands are{0} ...\n\n" );
+		for( auto src : files ) {
+			build_files_str += "buildfiles/" + src + ".o ";
+			std::string compile_str = compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
+				+ inc_flags + " -c " + src + " -o buildfiles/" + src + ".o";
+			if( Core::arch == Core::BSD ) {
+				compile_str += " -I/usr/local/include";
+			}
+			Display( "{sc}" + compile_str + "{0}\n" );
+		}
+		if( !main_src.empty() ) {
+			std::string ext = data.builds[ data_i ].build_type == "static" ? ".a" : ".so";
+			std::string lib_type = data.builds[ data_i ].build_type;
+			std::string compile_str;
 
+			if( lib_type == "static" ) {
+				compile_str = "ar rcs buildfiles/lib" + data.builds[ data_i ].name + ext + " " + main_src + " " + build_files_str;
+			}
+			else {
+				compile_str = compiler + " -shared " + data.compile_flags + " -std=" + data.lang + data.std + " "
+						+ inc_flags + " -o buildfiles/lib" + data.builds[ data_i ].name + ".so " + main_src + " " + build_files_str + " " + lib_flags;
+
+				if( Core::arch == Core::BSD ) {
+					compile_str += " -I/usr/local/include -L/usr/local/lib";
+				}
+			}
+
+			if( Core::arch == Core::BSD ) {
+				compile_str += " -I/usr/local/include -L/usr/local/lib";
+			}
+			Display( "\n{sc}" + compile_str + "{0}\n" );
+		}
+		return Core::ReturnVar( 0 );
+	}
+
+	Core::logger.AddLogString( LogLevels::ALL, "Building target: " + data.builds[ data_i ].name + " with " + std::to_string( total_sources ) + " sources" );
 	Display( "\n{fc}Building target {sc}" + data.builds[ data_i ].name + " {fc}with {sc}" + std::to_string( total_sources ) + " {fc}sources {0}...\n\n" );
 
 	std::string build_files_str;

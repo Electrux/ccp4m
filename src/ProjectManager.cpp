@@ -88,8 +88,10 @@ int Project::Build( const std::vector< std::string > & args )
 	Display( "\n{fc}Project version{0}: {sc}" + pconf.GetData().version + "{0}\n" );
 
 	// User specified which build to use
-	if( args.size() > 3 ) {
+	if( args.size() > 3 && args[ 3 ].substr( 0, 2 ) != "--" ) {
 		std::string which_build = args[ 3 ];
+
+		bool disp_cmds_only = args.size() > 4 && args[ 4 ] == "--cmds_only";
 
 		int j = -1;
 		for( int i = 0; i < pconf.GetData().builds.size(); ++i ) {
@@ -104,22 +106,24 @@ int Project::Build( const std::vector< std::string > & args )
 		}
 
 		if( pconf.GetData().builds[ j ].type == "bin" ) {
-			if( Project::BuildBinary( pconf.GetData(), j ) != 0 )
+			if( Project::BuildBinary( pconf.GetData(), j, disp_cmds_only ) != 0 )
 				return Core::ReturnVar( 1 );
 		}
 		else if( pconf.GetData().builds[ j ].type == "lib" ) {
-			if( Project::BuildLibrary( pconf.GetData(), j ) != 0 )
+			if( Project::BuildLibrary( pconf.GetData(), j, disp_cmds_only ) != 0 )
 				return Core::ReturnVar( 1 );
 		}
 	}
 	else { // User didnt specify a build therefore build everything
+		bool disp_cmds_only = args.size() > 3 && args[ 3 ] == "--cmds_only";
+
 		for( int i = 0; i < pconf.GetData().builds.size(); ++i ) {
 			if( pconf.GetData().builds[ i ].type == "bin" ) {
-				if( Project::BuildBinary( pconf.GetData(), i ) != 0 )
+				if( Project::BuildBinary( pconf.GetData(), i, disp_cmds_only ) != 0 )
 					return Core::ReturnVar( 1 );
 			}
 			else if( pconf.GetData().builds[ i ].type == "lib" ) {
-				if( Project::BuildLibrary( pconf.GetData(), i ) != 0 )
+				if( Project::BuildLibrary( pconf.GetData(), i, disp_cmds_only ) != 0 )
 					return Core::ReturnVar( 1 );
 			}
 		}

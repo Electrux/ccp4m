@@ -12,7 +12,7 @@
 
 #include "../../include/Project/BuildBinary.hpp"
 
-int Project::BuildBinary( const ProjectData & data, const int data_i )
+int Project::BuildBinary( const ProjectData & data, const int data_i, const bool disp_cmds_only )
 {
 	Core::logger.AddLogSection( "Project" );
 	Core::logger.AddLogSection( "BuildBinary" );
@@ -28,13 +28,37 @@ int Project::BuildBinary( const ProjectData & data, const int data_i )
 
 	int total_sources = files.size() + ( int )!main_src.empty();
 
-	Core::logger.AddLogString( LogLevels::ALL, "Compiling " + std::to_string( total_sources ) + " sources with main_src as: " + main_src );
+	if( !disp_cmds_only )
+		Core::logger.AddLogString( LogLevels::ALL, "Compiling " + std::to_string( total_sources ) + " sources with main_src as: " + main_src );
 
 	if( !Common::CreateSourceDirs( files ) )
 		return Core::ReturnVar( 1 );
 
-	Core::logger.AddLogString( LogLevels::ALL, "Building target: " + data.builds[ data_i ].name );
+	if( disp_cmds_only ) {
+		std::string build_files_str;
+		Display( "{fc}Build commands are{0} ...\n\n" );
+		for( auto src : files ) {
+			build_files_str += "buildfiles/" + src + ".o ";
+			std::string compile_str = compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
+				+ inc_flags + " -c " + src + " -o buildfiles/" + src + ".o";
+			if( Core::arch == Core::BSD ) {
+				compile_str += " -I/usr/local/include";
+			}
+			Display( "{sc}" + compile_str + "{0}\n" );
+		}
+		if( !main_src.empty() ) {
+			std::string compile_str = compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
+				+ inc_flags + " -g -o buildfiles/" + data.builds[ data_i ].name + " " + main_src + " " + build_files_str + " " + lib_flags;
 
+			if( Core::arch == Core::BSD ) {
+				compile_str += " -I/usr/local/include -L/usr/local/lib";
+			}
+			Display( "\n{sc}" + compile_str + "{0}\n" );
+		}
+		return Core::ReturnVar( 0 );
+	}
+
+	Core::logger.AddLogString( LogLevels::ALL, "Building target: " + data.builds[ data_i ].name );
 	Display( "\n{fc}Building target {sc}" + data.builds[ data_i ].name + " {fc}with {sc}" + std::to_string( total_sources ) + " {fc}sources {0}...\n\n" );
 
 	std::string build_files_str;
