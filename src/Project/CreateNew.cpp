@@ -120,9 +120,9 @@ int Project::New( const std::vector< std::string > & args )
 		build.name = argmap[ "build.name" ];
 	}
 	if( argmap.find( "build.type" ) != argmap.end() ) {
-		if( argmap[ "build.type" ] != "bin" && argmap[ "build.type" ] != "lib" ) {
+		if( argmap[ "build.type" ] != "bin" && argmap[ "build.type" ] != "lib" && argmap[ "build.type" ] != "test" ) {
 			Display( "{fc}Paramter{0}: {sc}build{0}.{sc}type {fc}can only have a value either {sc}bin {fc}or {sc}lib{0}, {fc}provided value{0}: {r}" + argmap[ "std" ] + "{0}\n" );
-			Display( "{fc}Ignoring it {0}...\n" );
+			Display( "{fc}Ignoring it {0}...\n\n" );
 		}
 		else {
 			Core::logger.AddLogString( LogLevels::ALL, "Project build type: " + argmap[ "build.type" ] );
@@ -162,10 +162,19 @@ int Project::New( const std::vector< std::string > & args )
 		return Core::ReturnVar( 1 );
 	}
 	Display( "{g} Success\n" );
+
 	Display( "{sc}=> {fc}" + project_dir + "src {0}..." );
 	if( !FS::CreateDir( project_dir + "src" ) ) {
 		Display( "{r} Failed{0}\n" );
 		Display( "{sc}=> {fc}Unable to create project directory{0}: {r}" + project_dir + "src {0}, {fc}will not continue{0}\n" );
+		return Core::ReturnVar( 1 );
+	}
+	Display( "{g} Success\n\n" );
+
+	Display( "{sc}=> {fc}" + project_dir + "tests {0}..." );
+	if( !FS::CreateDir( project_dir + "tests" ) ) {
+		Display( "{r} Failed{0}\n" );
+		Display( "{sc}=> {fc}Unable to create project directory{0}: {r}" + project_dir + "tests {0}, {fc}will not continue{0}\n" );
 		return Core::ReturnVar( 1 );
 	}
 	Display( "{g} Success\n\n" );

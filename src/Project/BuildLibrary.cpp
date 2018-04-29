@@ -66,9 +66,9 @@ int Project::BuildLibrary( const Config::ProjectData & data, const int data_i, c
 
 		bool are_all_latest = true;
 
-		if( FS::LocExists( "lib/" + data.builds[ data_i ].name + ext ) ) {
+		if( FS::LocExists( "lib/lib" + data.builds[ data_i ].name + ext ) ) {
 			for( auto src : cvars.files ) {
-				if( !FS::IsFileLatest( "lib/" + data.builds[ data_i ].name + ext, src ) )
+				if( !FS::IsFileLatest( "lib/lib" + data.builds[ data_i ].name + ext, src ) )
 					are_all_latest = false;
 			}
 		}
@@ -77,8 +77,8 @@ int Project::BuildLibrary( const Config::ProjectData & data, const int data_i, c
 		}
 
 		// Check if there already exists a build whose modification time is newer than main source and / or
-		if( !is_any_single_file_compiled && are_all_latest && FS::IsFileLatest( "lib/" + data.builds[ data_i ].name + ext, cvars.main_src ) &&
-			FS::IsFileLatest( "lib/" + data.builds[ data_i ].name + ext, "ccp4m.yaml" ) ) {
+		if( !is_any_single_file_compiled && are_all_latest && FS::IsFileLatest( "lib/lib" + data.builds[ data_i ].name + ext, cvars.main_src ) &&
+			FS::IsFileLatest( "lib/lib" + data.builds[ data_i ].name + ext, "ccp4m.yaml" ) ) {
 
 			Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{bg}Project is already up to date{0}\n" );
 			return Core::ReturnVar( 0 );

@@ -254,6 +254,8 @@ bool ProjectConfig::SaveFile( const std::string & file )
 
 		o << YAML::Key << "name" << YAML::Value << build.name;
 		o << YAML::Key << "type" << YAML::Value << build.type;
+		if( build.type == "lib" )
+			o << YAML::Key << "build_type" << YAML::Value << build.build_type;
 		o << YAML::Key << "main_src" << YAML::Value << build.main_src;
 		o << YAML::Key << "other_src" << YAML::Value;
 		o << YAML::BeginSeq;

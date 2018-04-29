@@ -101,24 +101,25 @@ int Project::GenerateSourceFile( ProjectConfig & pconf, const std::string & file
 
 	pconf.SaveFile( Env::CCP4M_PROJECT_CONFIG_FILE );
 
-	std::string file_w_uscore = file;
+	std::string src_data = "/*\n" + license_str + "*/\n\n";
 
-	bool is_prev_caps = false;
-
-	for( auto it = file_w_uscore.begin() + 1; it != file_w_uscore.end(); ++it ) {
-		if( * it >= 'A' && * it <= 'Z' && !is_prev_caps && !std::ispunct( * ( it - 1 ) ) ) {
-			it = file_w_uscore.insert( it, '_' );
-			++it;
-			is_prev_caps = true;
-			continue;
-		}
-		is_prev_caps = false;
+	if( !FS::CreateFile( final_file, src_data ) ) {
+		Display( "\n{fc}Failed to create source file{0}: {r}" + final_file + "{0}\n" );
+		return Core::ReturnVar( 1 );
 	}
 
-	std::string caps_file = Str::ToUpper( file_w_uscore );
-	std::replace( caps_file.begin(), caps_file.end(), '/', '_' );
-	std::replace( caps_file.begin(), caps_file.end(), '.', '_' );
-	std::replace( caps_file.begin(), caps_file.end(), ' ', '_' );
+	Display( "\n{fc}Successfully created source file{0}: {g}" + final_file + "{0}\n" );
+	return Core::ReturnVar( 0 );
+}
+
+int Project::GenerateTestFile( ProjectConfig & pconf, const std::string & file )
+{
+	Core::logger.AddLogSection( "Project" );
+	Core::logger.AddLogSection( "GenerateTestFile" );
+
+	std::string final_file = "tests/" + file;
+
+	std::string && license_str = License::FetchLicenseForFile( pconf.GetData().license );
 
 	std::string src_data = "/*\n" + license_str + "*/\n\n";
 

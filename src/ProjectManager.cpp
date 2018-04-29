@@ -173,7 +173,7 @@ int Project::Add( const std::vector< std::string > & args )
 		return Core::ReturnVar( 1 );
 	}
 
-	if( args[ 3 ] == "src" || args[ 3 ] == "inc" )
+	if( args[ 3 ] == "src" || args[ 3 ] == "inc" || args[ 3 ] == "test" )
 		return Core::ReturnVar( Project::AddFiles( pconf, args ) );
 
 	if( args[ 3 ] == "build" || args[ 3 ] == "lib" )

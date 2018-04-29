@@ -37,20 +37,30 @@ int Project::AddFiles( ProjectConfig & pconf, const std::vector< std::string > &
 		return Core::ReturnVar( 1 );
 	}
 
+	std::string file;
 	std::string ext;
 	if( args[ 3 ] == "src" ) {
 		if( pconf.GetData().lang == "c++" )
 			ext = ".cpp";
 		else
 			ext = ".c";
+		file = "src/";
 	}
 	else if( args[ 3 ] == "inc" ) {
 		if( pconf.GetData().lang == "c++" )
 			ext = ".hpp";
 		else
 			ext = ".h";
+		file = "include/";
 	}
-	std::string file = ( args[ 3 ] == "src" ? "src/" : "include/" ) + args[ 4 ] + ext;
+	else if( args[ 3 ] == "test" ) {
+		if( pconf.GetData().lang == "c++" )
+			ext = ".cpp";
+		else
+			ext = ".c";
+		file = "tests/";
+	}
+	file += args[ 4 ] + ext;
 
 	if( FS::LocExists( file ) ) {
 		Core::logger.AddLogString( LogLevels::ALL, "File: " + file + " already exists" );
@@ -74,6 +84,9 @@ int Project::AddFiles( ProjectConfig & pconf, const std::vector< std::string > &
 
 	if( args[ 3 ] == "src" ) {
 		return Core::ReturnVar( Project::GenerateSourceFile( pconf, args[ 4 ] + ext, which_build ) );
+	}
+	else if( args[ 3 ] == "test" ) {
+		return Core::ReturnVar( Project::GenerateTestFile( pconf, args[ 4 ] + ext ) );
 	}
 
 	return Core::ReturnVar( Project::GenerateIncludeFile( pconf, args[ 4 ] + ext ) );
