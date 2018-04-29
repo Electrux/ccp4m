@@ -71,7 +71,7 @@ int Project::Build( const std::vector< std::string > & args )
 		return Core::ReturnVar( 1 );
 	}
 
-	Display( "{fc}Creating build directories {0}...\n" );
+	Display( "{fc}Creating build directories {0}...\n\n" );
 
 	if( !FS::CreateDir( "buildfiles" ) || !FS::CreateDir( "lib" ) || !FS::CreateDir( "bin" ) || !FS::CreateDir( "testbin" ) ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Unable to create necessary project build directories" );
