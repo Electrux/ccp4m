@@ -18,7 +18,7 @@ void Helps::Project( const std::vector< std::string > & args )
 {
 	Display( "{fc}Usage:\n" );
 
-	Display( "\t{sc}" + args[ 0 ] + " project {tc}{{ new / build / add / set / run / clean / FLAG_OPTS }\n\n" );
+	Display( "\t{sc}" + args[ 0 ] + " project {tc}{{ new / build / add / set / run / test / clean }\n\n" );
 
 	Display( "\t\t{fc}Arguments are:\n" );
 
