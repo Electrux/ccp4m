@@ -18,6 +18,8 @@ namespace Project
 
 	int Run( const std::vector< std::string > & args );
 
+	int Test( const std::vector< std::string > & args );
+
 	int Clean();
 }
 

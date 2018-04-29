@@ -51,13 +51,13 @@ template< typename T > std::vector< std::string > GetStringVector( T & t, const 
 	return res;
 }
 
-void ProjectConfig::AddLibrary( const Library & lib )
+void ProjectConfig::AddLibrary( const Config::Library & lib )
 {
 	if( !lib.name.empty() )
 		pdata.libs.push_back( lib );
 }
 
-void ProjectConfig::AddBuild( const Build & build )
+void ProjectConfig::AddBuild( const Config::Build & build )
 {
 	if( !build.name.empty() )
 		pdata.builds.push_back( build );
@@ -76,7 +76,7 @@ std::string ProjectConfig::GetDefaultMainFile()
 	return res;
 }
 
-ProjectData & ProjectConfig::GetData()
+Config::ProjectData & ProjectConfig::GetData()
 {
 	return this->pdata;
 }
@@ -122,7 +122,7 @@ bool ProjectConfig::GenerateDefaultConfig()
 
 	pdata.license = License::LICENSES[ License::DEFAULT_LICENSE ];
 
-	Build build;
+	Config::Build build;
 	build.name = "DefaultBuild";
 	build.type = "bin";
 	build.main_src = "src/main.cpp";
@@ -172,7 +172,7 @@ bool ProjectConfig::LoadFile( const std::string & file, bool update_license )
 	v->AddVar( "author", pdata.author.name );
 
 	for( auto libdata : conf[ "libs" ] ) {
-		Library lib;
+		Config::Library lib;
 
 		lib.name = v->Replace( GetString( libdata, "name" ) );
 		lib.version = v->Replace( GetString( libdata, "version" ) );
@@ -183,7 +183,7 @@ bool ProjectConfig::LoadFile( const std::string & file, bool update_license )
 	}
 
 	for( auto builddata : conf[ "builds" ] ) {
-		Build build;
+		Config::Build build;
 
 		build.name = v->Replace( GetString( builddata, "name" ) );
 		build.type = v->Replace( GetString( builddata, "type" ) );

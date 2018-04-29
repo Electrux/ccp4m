@@ -5,7 +5,7 @@
 
 namespace Project
 {
-	int BuildLibrary( const ProjectData & data, const int data_i, const bool disp_cmds_only = false );
+	int BuildLibrary( const Config::ProjectData & data, const int data_i, const bool disp_cmds_only = false );
 }
 
 #endif // BUILD_LIBRARY_HPP

@@ -109,7 +109,7 @@ int Project::AddProjectInfo( ProjectConfig & pconf, const std::vector< std::stri
 			}
 		}
 
-		Library lib;
+		Config::Library lib;
 
 		lib.name = name;
 		lib.version = argmap.find( "version" ) != argmap.end() ? argmap[ "version" ] : "0";
@@ -130,7 +130,7 @@ int Project::AddProjectInfo( ProjectConfig & pconf, const std::vector< std::stri
 			}
 		}
 
-		Build build;
+		Config::Build build;
 
 		build.name = name;
 		build.type = argmap.find( "type" ) != argmap.end() ? argmap[ "type" ] : "bin";

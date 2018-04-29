@@ -10,7 +10,7 @@
 
 #include "../../include/Project/BuildCommon.hpp"
 
-void Common::GetFlags( const ProjectData & data, std::string & inc_flags, std::string & lib_flags )
+void Common::GetFlags( const Config::ProjectData & data, std::string & inc_flags, std::string & lib_flags )
 {
 	inc_flags = "";
 	lib_flags = "";
@@ -44,7 +44,7 @@ bool Common::CreateSourceDirs( const std::vector< std::string > & srcs )
 	return Core::ReturnVar( true );
 }
 
-void Common::GetVars( const ProjectData & data, int data_i, CompileVars & cvars )
+void Common::GetVars( const Config::ProjectData & data, int data_i, CompileVars & cvars )
 {
 	cvars.main_src = data.builds[ data_i ].main_src;
 
@@ -71,10 +71,11 @@ void Common::GetVars( const ProjectData & data, int data_i, CompileVars & cvars 
 	GetFlags( data, cvars.inc_flags, cvars.lib_flags );
 }
 
-void Common::DisplayBuildCommands( const ProjectData & data, const int data_i, const CompileVars & cvars, const BuildType & build_type )
+void Common::DisplayBuildCommands( const Config::ProjectData & data, const int data_i, const CompileVars & cvars, const BuildType & build_type )
 {
 	std::string build_files_str;
 	Display( "\n{fc}Build commands for target{0}: {sc}" + data.builds[ data_i ].name + "{fc} are{0} ...\n\n" );
+
 	for( auto src : cvars.files ) {
 		build_files_str += "buildfiles/" + src + ".o ";
 		std::string compile_str = cvars.compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
@@ -84,6 +85,7 @@ void Common::DisplayBuildCommands( const ProjectData & data, const int data_i, c
 		}
 		Display( "{tc}" + compile_str + "{0}\n" );
 	}
+
 	if( !cvars.main_src.empty() ) {
 		std::string compile_str;
 		if( build_type == BuildType::BIN || build_type == BuildType::TEST ) {
@@ -109,8 +111,8 @@ void Common::DisplayBuildCommands( const ProjectData & data, const int data_i, c
 	}
 }
 
-int Common::CompileSources( const ProjectData & data, const int data_i, const CompileVars & cvars, std::string & build_files_str, const BuildType build_type, const bool disp_cmds_only,
-		bool & is_any_single_file_compiled, int & ctr )
+int Common::CompileSources( const Config::ProjectData & data, const int data_i, const CompileVars & cvars, std::string & build_files_str, const BuildType build_type,
+	const bool disp_cmds_only, bool & is_any_single_file_compiled, int & ctr )
 {
 	Core::logger.AddLogSection( "Common" );
 	Core::logger.AddLogSection( "CompileSources" );

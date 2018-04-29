@@ -1,3 +1,13 @@
+/*
+	Copyright (c) 2018, Electrux
+	All rights reserved.
+	Using the BSD 3-Clause license for the project,
+	main LICENSE file resides in project's root directory.
+	
+	Please read that file and understand the license terms
+	before using or altering the project.
+*/
+
 #include <vector>
 #include <string>
 #include <array>
@@ -10,12 +20,12 @@
 #include "../../include/Project/Config.hpp"
 #include "../../include/Project/BuildCommon.hpp"
 
-#include "../../include/Project/BuildBinary.hpp"
+#include "../../include/Project/BuildTest.hpp"
 
-int Project::BuildBinary( const Config::ProjectData & data, const int data_i, const bool disp_cmds_only )
+int Project::BuildTest( const Config::ProjectData & data, const int data_i, const bool disp_cmds_only )
 {
 	Core::logger.AddLogSection( "Project" );
-	Core::logger.AddLogSection( "BuildBinary" );
+	Core::logger.AddLogSection( "BuildTest" );
 
 	Common::CompileVars cvars;
 
@@ -30,7 +40,7 @@ int Project::BuildBinary( const Config::ProjectData & data, const int data_i, co
 	bool is_any_single_file_compiled = false;
 	std::string build_files_str;
 
-	int ret = Common::CompileSources( data, data_i, cvars, build_files_str, Common::BuildType::BIN, disp_cmds_only, is_any_single_file_compiled, ctr );
+	int ret = Common::CompileSources( data, data_i, cvars, build_files_str, Common::BuildType::TEST, disp_cmds_only, is_any_single_file_compiled, ctr );
 
 	// ret is less than zero when disp_cmds_only is true
 	if( ret < 0 )
@@ -50,9 +60,9 @@ int Project::BuildBinary( const Config::ProjectData & data, const int data_i, co
 
 		bool are_all_latest = true;
 
-		if( FS::LocExists( "bin/" + data.builds[ data_i ].name ) ) {
+		if( FS::LocExists( "testbin/" + data.builds[ data_i ].name ) ) {
 			for( auto src : cvars.files ) {
-				if( !FS::IsFileLatest( "bin/" + data.builds[ data_i ].name, src ) )
+				if( !FS::IsFileLatest( "testbin/" + data.builds[ data_i ].name, src ) )
 					are_all_latest = false;
 			}
 		}
@@ -61,14 +71,14 @@ int Project::BuildBinary( const Config::ProjectData & data, const int data_i, co
 		}
 
 		// Check if there already exists a build whose modification time is newer than main source and / or
-		if( !is_any_single_file_compiled && are_all_latest && FS::IsFileLatest( "bin/" + data.builds[ data_i ].name, cvars.main_src ) &&
-			FS::IsFileLatest( "bin/" + data.builds[ data_i ].name, "ccp4m.yaml" ) ) {
+		if( !is_any_single_file_compiled && are_all_latest && FS::IsFileLatest( "testbin/" + data.builds[ data_i ].name, cvars.main_src ) &&
+			FS::IsFileLatest( "testbin/" + data.builds[ data_i ].name, "ccp4m.yaml" ) ) {
 
 			Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{bg}Project is already up to date{0}\n" );
 			return Core::ReturnVar( 0 );
 		}
 
-		Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{fc}Building " + cvars.caps_lang + " binary{0}:   {sc}buildfiles/" + data.builds[ data_i ].name + " {0}...\n" );
+		Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{fc}Building " + cvars.caps_lang + " test binary{0}:   {sc}buildfiles/" + data.builds[ data_i ].name + " {0}...\n" );
 		std::string compile_str = cvars.compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
 			+ cvars.inc_flags + " -g -o buildfiles/" + data.builds[ data_i ].name + " " + cvars.main_src + " " + build_files_str + " " + cvars.lib_flags;
 
@@ -84,8 +94,8 @@ int Project::BuildBinary( const Config::ProjectData & data, const int data_i, co
 			return Core::ReturnVar( ret_val );
 		}
 
-		Display( "\n{fc}Moving {sc}buildfiles/" + data.builds[ data_i ].name + "{fc} to {sc}bin/" + data.builds[ data_i ].name + " {0}...\n" );
-		std::string cmd = "mv buildfiles/" + data.builds[ data_i ].name + " bin/";
+		Display( "\n{fc}Moving {sc}buildfiles/" + data.builds[ data_i ].name + "{fc} to {sc}testbin/" + data.builds[ data_i ].name + " {0}...\n" );
+		std::string cmd = "mv buildfiles/" + data.builds[ data_i ].name + " testbin/";
 		ret_val = Exec::ExecuteCommand( cmd, & err );
 		if( ret_val != 0 ) {
 			if( !err.empty() )

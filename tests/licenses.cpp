@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "../../include/FSFuncs.hpp"
-#include "../../include/DisplayFuncs.hpp"
-#include "../../include/Core.hpp"
-#include "../../include/Environment.hpp"
-#include "../../include/Vars.hpp"
-#include "../../include/Project/Licenses.hpp"
+#include "../include/FSFuncs.hpp"
+#include "../include/DisplayFuncs.hpp"
+#include "../include/Core.hpp"
+#include "../include/Environment.hpp"
+#include "../include/Vars.hpp"
+#include "../include/Project/Licenses.hpp"
 
 int Exit( int err_code )
 {
@@ -13,7 +13,7 @@ int Exit( int err_code )
 	return err_code;
 }
 
-int main( int argc, char ** argv )
+int main()
 {
 	std::string logfile = Env::CCP4M_LOG_DIR + "/" + Core::GetCurrDateTime() + ".log";
 	FS::CreateFileIfNotExists( logfile );
@@ -31,6 +31,8 @@ int main( int argc, char ** argv )
 
 	std::string && lic = License::FetchLicense( License::gnulessergpl2_1 );
 
-	Display( "{fc}License String{0}: {sc}" + lic + "{0}\n" );
+	if( lic.empty() )
+		err_code = 1;
+
 	return Exit( err_code );
 }

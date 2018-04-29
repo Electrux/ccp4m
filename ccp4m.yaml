@@ -29,8 +29,8 @@ builds:
     exclude:
       - src/tests/(.*).cpp
   - name: ccp4m_test_licenses
-    type: bin
-    main_src: src/tests/licenses.cpp
+    type: test
+    main_src: tests/licenses.cpp
     other_src:
       - src/(.*).cpp
     exclude:

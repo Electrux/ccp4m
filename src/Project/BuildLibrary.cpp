@@ -11,7 +11,7 @@
 
 #include "../../include/Project/BuildLibrary.hpp"
 
-int Project::BuildLibrary( const ProjectData & data, const int data_i, const bool disp_cmds_only )
+int Project::BuildLibrary( const Config::ProjectData & data, const int data_i, const bool disp_cmds_only )
 {
 	Core::logger.AddLogSection( "Project" );
 	Core::logger.AddLogSection( "BuildLibrary" );

@@ -25,16 +25,16 @@ namespace Common
 		TEST,
 	};
 
-	void GetFlags( const ProjectData & data, std::string & inc_flags, std::string & lib_flags );
+	void GetFlags( const Config::ProjectData & data, std::string & inc_flags, std::string & lib_flags );
 
 	bool CreateSourceDirs( const std::vector< std::string > & srcs );
 
-	void GetVars( const ProjectData & data, int data_i, CompileVars & cvars );
+	void GetVars( const Config::ProjectData & data, int data_i, CompileVars & cvars );
 
-	void DisplayBuildCommands( const ProjectData & data, const int data_i, const CompileVars & cvars, const BuildType & build_type );
+	void DisplayBuildCommands( const Config::ProjectData & data, const int data_i, const CompileVars & cvars, const BuildType & build_type );
 
-	int CompileSources( const ProjectData & data, const int data_i, const CompileVars & cvars, std::string & build_files_str, const BuildType build_type, const bool disp_cmds_only,
-		bool & is_any_single_file_compiled, int & ctr );
+	int CompileSources( const Config::ProjectData & data, const int data_i, const CompileVars & cvars, std::string & build_files_str, const BuildType build_type,
+		const bool disp_cmds_only, bool & is_any_single_file_compiled, int & ctr );
 }
 
 #endif // BUILD_COMMON_HPP

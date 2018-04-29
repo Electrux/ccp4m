@@ -4,58 +4,61 @@
 #include <string>
 #include <vector>
 
-struct Library
+namespace Config
 {
-	std::string name;
-	std::string version;
-	std::string inc_flags;
-	std::string lib_flags;
-};
+	struct Library
+	{
+		std::string name;
+		std::string version;
+		std::string inc_flags;
+		std::string lib_flags;
+	};
 
-struct Build
-{
-	std::string name;
-	std::string type;
-	std::string build_type;
-	std::vector< std::string > srcs;
-	std::string main_src;
-	std::vector< std::string > exclude;
-};
+	struct Build
+	{
+		std::string name;
+		std::string type;
+		std::string build_type;
+		std::vector< std::string > srcs;
+		std::string main_src;
+		std::vector< std::string > exclude;
+	};
 
-struct Author
-{
-	std::string name;
-	std::string email;
-};
+	struct Author
+	{
+		std::string name;
+		std::string email;
+	};
 
-struct ProjectData
-{
-	std::string name;
-	Author author;
+	struct ProjectData
+	{
+		std::string name;
+		Author author;
 
-	std::string version;
-	std::string lang;
-	std::string std;
-	std::string compile_flags;
+		std::string version;
+		std::string lang;
+		std::string std;
+		std::string compile_flags;
 
-	std::string license;
+		std::string license;
 
-	std::vector< Library > libs;
-	std::vector< Build > builds;
-};
+		std::vector< Library > libs;
+		std::vector< Build > builds;
+	};
+}
 
 class ProjectConfig
 {
-	ProjectData pdata;
+	Config::ProjectData pdata;
 
 public:
 
-	void AddLibrary( const Library & lib );
-	void AddBuild( const Build & build );
+	void AddLibrary( const Config::Library & lib );
+	void AddBuild( const Config::Build & build );
 
 	std::string GetDefaultMainFile();
 
-	ProjectData & GetData();
+	Config::ProjectData & GetData();
 
 	bool GetDefaultAuthor();
 
