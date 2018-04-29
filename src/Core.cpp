@@ -17,8 +17,8 @@
 #include "../include/Core.hpp"
 
 const int Core::VERSION_PRIMARY = 0;
-const int Core::VERSION_SECONDARY = 5;
-const int Core::VERSION_MINOR = 3;
+const int Core::VERSION_SECONDARY = 6;
+const int Core::VERSION_MINOR = 0;
 
 Core::Arch Core::arch =
 #ifdef __linux__
