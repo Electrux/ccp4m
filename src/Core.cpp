@@ -121,6 +121,8 @@ bool Core::InitCore()
 		// ( std::string ) done exclusively because linux won't work without it :(
 		if( conf[ "name" ] )
 			v->AddVar( "author", v->Replace( ( std::string )conf[ "name" ].as< std::string >() ) );
+		if( conf[ "email" ] )
+			v->AddVar( "email", v->Replace( ( std::string )conf[ "email" ].as< std::string >() ) );
 		return ReturnVar( true );
 	}
 

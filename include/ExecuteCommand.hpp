@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include <mutex>
+#include <atomic>
 
 namespace Exec
 {
@@ -15,13 +15,12 @@ namespace Exec
 			std::string err;
 			std::string src;
 		};
-
-		extern std::vector< Result > threadinfo;
+		extern std::atomic< int > threadctr;
 	}
 
 	int ExecuteCommand( const std::string & cmd, std::string * err = nullptr );
 
-	void MultithreadedExecute( const std::string & cmd, int thread, const std::string & src );
+	Internal::Result MultithreadedExecute( const std::string & cmd, const std::string & src );
 }
 
 #endif // EXECUTE_COMMAND_HPP

@@ -1,5 +1,7 @@
 #include <vector>
 #include <string>
+#include <future>
+#include <iostream>
 
 #include "../../include/Core.hpp"
 #include "../../include/FSFuncs.hpp"
@@ -130,12 +132,8 @@ int Common::CompileSources( const Config::ProjectData & data, const int data_i, 
 	Core::logger.AddLogString( LogLevels::ALL, "Building target: " + data.builds[ data_i ].name );
 	Display( "\n{fc}Building target {sc}" + data.builds[ data_i ].name + " {fc}with {sc}" + std::to_string( total_sources ) + " {fc}sources {0}...\n\n" );
 
-	int cores = std::thread::hardware_concurrency() / 2;
-	std::vector< std::thread > allthreads;
-
-	for( int i = 0; i < cores; ++i ) {
-		Exec::Internal::threadinfo.push_back( { std::numeric_limits< int >::min(), "", "" } );
-	}
+	int cores = std::thread::hardware_concurrency();
+	std::vector< std::future< Exec::Internal::Result > > futures;
 
 	Display( "{fc}Using cores{0}: {sc}" + std::to_string( cores ) + "{0}\n\n" );
 
@@ -160,70 +158,46 @@ int Common::CompileSources( const Config::ProjectData & data, const int data_i, 
 
 		is_any_single_file_compiled = true;
 
-		bool thread_found = false;
-
-		while( !thread_found ) {
-
-			for( auto & i : Exec::Internal::threadinfo ) {
-				if( i.res != std::numeric_limits< int >::min() && i.res != -1 ) {
-					if( i.res != 0 ) {
-						Display( "{fc}Error in source{0}: {sc}" + i.src + " {0}:\n" + i.err );
-						for( auto & thread : allthreads )
-							thread.join();
-						return Core::ReturnVar( i.res );
-					}
-					if( !i.err.empty() ) {
-						Display( "{fc}Warning in source{0}: {sc}" + i.src + " {0}:\n" + i.err );
-					}
-					i.res = std::numeric_limits< int >::min();
-					i.err.clear();
+		while( Exec::Internal::threadctr >= cores ) {
+			for( auto it = futures.begin(); it != futures.end(); ) {
+				if( it->wait_for( std::chrono::seconds( 0 ) ) != std::future_status::ready ) {
+					++it;
+					continue;
 				}
-			}
-
-			for( int i = 0; i < cores; ++i ) {
-				if( Exec::Internal::threadinfo[ i ].res == std::numeric_limits< int >::min() ) {
-					Display( "{tc}[" + std::to_string( percent ) + "%]\t{fc}Compiling " + cvars.caps_lang + " object{0}:  {sc}buildfiles/" + src + ".o {0}...\n" );
-					allthreads.emplace_back( Exec::MultithreadedExecute, compile_str, i, src );
-					thread_found = true;
-					Exec::Internal::threadinfo[ i ].res = -1;
-					break;
+				auto r = it->get();
+				it = futures.erase( it );
+				if( r.res != 0 ) {
+					Display( "{fc}Error in source{0}: {sc}" + r.src + " {0}:\n" + r.err );
+					for( auto & d : futures )
+						d.wait();
+					return Core::ReturnVar( r.res );
 				}
+				if( !r.err.empty() ) {
+					Display( "{fc}Warning in source{0}: {sc}" + r.src + " {0}:\n" + r.err );
+				}
+				break;
 			}
 		}
 
+		Display( "{tc}[" + std::to_string( percent ) + "%]\t{fc}Compiling " + cvars.caps_lang + " object{0}:  {sc}buildfiles/" + src + ".o {0}...\n" );
 		++ctr;
+		++Exec::Internal::threadctr;
+		futures.push_back( std::async( std::launch::async, Exec::MultithreadedExecute, compile_str, src ) );
 	}
 
-	bool all_done = false;
-
-	while( !all_done ) {
-		all_done = true;
-		for( auto & i : Exec::Internal::threadinfo ) {
-			if( i.res == -1 ) {
-				all_done = false;
-				continue;
-			}
-			if( i.res != std::numeric_limits< int >::min() ) {
-				if( i.res != 0 ) {
-					Display( "{fc}Error in source{0}: {sc}" + i.src + " {0}:\n" + i.err );
-					for( auto & thread : allthreads )
-						thread.join();
-					return Core::ReturnVar( i.res );
-				}
-				if( !i.err.empty() ) {
-					Display( "{fc}Warning in source{0}: {sc}" + i.src + " {0}:\n" + i.err );
-				}
-				i.res = std::numeric_limits< int >::min();
-				i.err.clear();
-				all_done = false;
-			}
+	for( auto it = futures.begin(); it != futures.end(); ) {
+		auto r = it->get();
+		it = futures.erase( it );
+		if( r.res != 0 ) {
+			Display( "{fc}Error in source{0}: {sc}" + r.src + " {0}:\n" + r.err );
+			for( auto & d : futures )
+				d.wait();
+			return Core::ReturnVar( r.res );
+		}
+		if( !r.err.empty() ) {
+			Display( "{fc}Warning in source{0}: {sc}" + r.src + " {0}:\n" + r.err );
 		}
 	}
-
-	for( auto & thread : allthreads )
-		thread.join();
-
-	Exec::Internal::threadinfo.clear();
 
 	return Core::ReturnVar( 0 );
 }
