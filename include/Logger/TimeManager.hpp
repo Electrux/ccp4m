@@ -1,5 +1,5 @@
-#ifndef TIMEMANAGER_HPP
-#define TIMEMANAGER_HPP
+#ifndef LOGGER_TIMEMANAGER_HPP
+#define LOGGER_TIMEMANAGER_HPP
 
 #include <string>
 #include <ctime>
@@ -68,4 +68,4 @@ public:
 	std::string GetFormattedDateTime( const std::time_t * const_time = nullptr );
 };
 
-#endif // TIMEMANAGER_HPP
+#endif // LOGGER_TIMEMANAGER_HPP

@@ -1,5 +1,5 @@
-#ifndef CODE_FILE_GENERATOR_HPP
-#define CODE_FILE_GENERATOR_HPP
+#ifndef PROJECT_CODE_FILE_GENERATOR_HPP
+#define PROJECT_CODE_FILE_GENERATOR_HPP
 
 #include "Config.hpp"
 
@@ -12,4 +12,4 @@ namespace Project
 	int GenerateTestFile( ProjectConfig & pconf, const std::string & file );
 }
 
-#endif // CODE_FILE_GENERATOR_HPP
+#endif // PROJECT_CODE_FILE_GENERATOR_HPP

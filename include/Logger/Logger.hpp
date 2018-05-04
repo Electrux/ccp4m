@@ -1,5 +1,5 @@
-#ifndef LOGGER_HPP
-#define LOGGER_HPP
+#ifndef LOGGER_LOGGER_HPP
+#define LOGGER_LOGGER_HPP
 
 #include <string>
 #include <vector>
@@ -91,4 +91,4 @@ public:
 	std::string GetTimeFormat();
 };
 
-#endif // LOGGER_HPP
+#endif // LOGGER_LOGGER_HPP

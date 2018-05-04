@@ -1,5 +1,5 @@
-#ifndef STRINGFUNCS_HPP
-#define STRINGFUNCS_HPP
+#ifndef LOGGER_STRINGFUNCS_HPP
+#define LOGGER_STRINGFUNCS_HPP
 
 #include <string>
 
@@ -7,4 +7,4 @@ void ReplaceInString( std::string & str, const std::string & from, const std::st
 
 std::vector< std::string > DelimitString( const std::string & str, const char delim = ' ' );
 
-#endif // STRINGFUNCS_HPP
+#endif // LOGGER_STRINGFUNCS_HPP

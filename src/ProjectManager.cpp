@@ -401,6 +401,19 @@ int Project::Clean()
 		return Core::ReturnVar( 1 );
 	}
 
+	Display( "{sc}=> {fc}Removing testbin directory {0}... " );
+	Core::logger.AddLogString( LogLevels::ALL, "Removing testbin directory" );
+
+	if( FS::DeleteDir( "testbin" ) ) {
+		Display( "{g}Success{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Successful" );
+	}
+	else {
+		Display( "{r}Failed{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Failed deleting directory: testbin" );
+		return Core::ReturnVar( 1 );
+	}
+
 	Display( "{sc}=> {fc}Removing library directory {0}... " );
 	Core::logger.AddLogString( LogLevels::ALL, "Removing library directory" );
 

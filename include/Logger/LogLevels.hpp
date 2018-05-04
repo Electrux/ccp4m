@@ -1,5 +1,5 @@
-#ifndef LOGLEVELS_HPP
-#define LOGLEVELS_HPP
+#ifndef LOGGER_LOGLEVELS_HPP
+#define LOGGER_LOGLEVELS_HPP
 
 #include <string>
 
@@ -26,4 +26,4 @@ const std::string LOGLEVELSTR[ ( int )LogLevels::LAST ] = {
 	"All",
 };
 
-#endif // LOGLEVELS_HPP
+#endif // LOGGER_LOGLEVELS_HPP

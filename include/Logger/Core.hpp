@@ -1,5 +1,5 @@
-#ifndef ERRORS_HPP
-#define ERRORS_HPP
+#ifndef LOGGER_CORE_HPP
+#define LOGGER_CORE_HPP
 
 #include <string>
 
@@ -30,4 +30,4 @@ Errors SetLastError( const Errors & err, const std::string & err_str );
 Errors GetLastError();
 std::string GetLastErrorStr();
 
-#endif // ERRORS_HPP
+#endif // LOGGER_CORE_HPP

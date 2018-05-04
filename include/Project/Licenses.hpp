@@ -1,5 +1,5 @@
-#ifndef LICENSES_HPP
-#define LICENSES_HPP
+#ifndef PROJECT_LICENSES_HPP
+#define PROJECT_LICENSES_HPP
 
 #include <vector>
 #include <string>
@@ -43,4 +43,4 @@ namespace License
 	bool UpdateProjectSourceFiles( const std::string & old_license, const std::string & license, const std::string & lang );
 }
 
-#endif // LICENSES_HPP
+#endif // PROJECT_LICENSES_HPP

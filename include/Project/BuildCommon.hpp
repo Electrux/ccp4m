@@ -1,5 +1,5 @@
-#ifndef BUILD_COMMON_HPP
-#define BUILD_COMMON_HPP
+#ifndef PROJECT_BUILD_COMMON_HPP
+#define PROJECT_BUILD_COMMON_HPP
 
 #include <vector>
 #include <string>
@@ -37,4 +37,4 @@ namespace Common
 		const bool disp_cmds_only, bool & is_any_single_file_compiled, int & ctr );
 }
 
-#endif // BUILD_COMMON_HPP
+#endif // PROJECT_BUILD_COMMON_HPP
