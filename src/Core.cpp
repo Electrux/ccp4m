@@ -184,9 +184,7 @@ bool Core::EndLogger()
 std::string Core::GetCurrDateTime()
 {
 	TimeManager tm;
-
 	tm.SetFormat( Core::FILE_TIME_FORMAT );
-
 	return tm.GetFormattedDateTime();
 }
 
@@ -213,8 +211,6 @@ int Core::AutoClean( const std::vector< std::string > & args )
 		}
 
 		logfiles.clear();
-
-		Display( "\n" );
 	}
 
 	if( args.size() < 3 || args[ 2 ] == "license" ) {
@@ -236,8 +232,26 @@ int Core::AutoClean( const std::vector< std::string > & args )
 		}
 	}
 
-	if( args.size() > 2 && args[ 2 ] != "log" && args[ 2 ] != "license" ) {
-		Display( "{fc}Incorrect parameter specified{0}. {fc}Valid options are{0}: {sc}log {fc}and{sc} license{0}\n" );
+	if( args.size() < 3 || args[ 2 ] == "config" ) {
+		const std::string & cfgfile = Env::CCP4M_CONFIG_FILE;
+		if( !FS::LocExists( cfgfile ) ) {
+			Display( "{bg}Configuration file is clean{0}\n" );
+		}
+		else {
+			Display( "{fc}Removing {sc}ccp4m.yaml{fc} file {0}..." );
+			if( !FS::DeleteFile( cfgfile ) ) {
+				Display( "{r} Failed\n" );
+				Display( "{fc}Error in deleting configuration file: {r}" + cfgfile + "{0}\n" );
+				return ReturnVar( 1 );
+			}
+			Display( "{g} Success\n" );
+		}
+
+		Display( "\n" );
+	}
+
+	if( args.size() > 2 && args[ 2 ] != "log" && args[ 2 ] != "license" && args[ 2 ] != "config" ) {
+		Display( "{fc}Incorrect parameter specified{0}. {fc}Valid options are{0}: {sc}log{0}, {sc}config{0}, {fc}and{sc} license{0}\n" );
 		return ReturnVar( 1 );
 	}
 

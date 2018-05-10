@@ -62,8 +62,8 @@ void Vars::Initialize()
 	Core::logger.AddLogSection( "Vars" );
 	Core::logger.AddLogSection( "Initialize" );
 	Core::logger.AddLogString( LogLevels::ALL, "Vars initialized successfully" );
-	Core::logger.RemoveLastLogSection();
-	Core::logger.RemoveLastLogSection();
+
+	Core::ReturnVoid();
 }
 
 // To avoid using static replace function which will cause a lot of overhead if the function is called many times.
