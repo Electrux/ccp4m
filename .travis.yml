@@ -23,6 +23,7 @@ install:
   - printf 'travis\ntravis@travis.org' | bin/ccp4m
 script:
   - bin/ccp4m project build
+  - bin/ccp4m project test
 after_script:
-  - bin/ccp4m clean
   - bin/ccp4m project clean
+  - bin/ccp4m clean
