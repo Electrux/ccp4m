@@ -38,8 +38,7 @@ int main( int argc, char ** argv )
 
 	Display( "\n" );
 
-	if( !Core::InitCore() )
-		return Exit( 1 );
+	if( !Core::InitCore() ) return Exit( 1 );
 
 	Vars::Initialize();
 
@@ -55,7 +54,7 @@ int main( int argc, char ** argv )
 	}
 	else if( args[ 1 ] == "--version" || args[ 1 ] == "version" ) {
 		Display( "{fc}Running Version{0}: {sc}" + std::to_string( Core::VERSION_PRIMARY ) + "{0}.{sc}" +
-			std::to_string( Core::VERSION_SECONDARY ) + "{0}.{sc}" + std::to_string( Core::VERSION_MINOR ) + "{0}\n" );
+			 std::to_string( Core::VERSION_SECONDARY ) + "{0}.{sc}" + std::to_string( Core::VERSION_MINOR ) + "{0}\n" );
 		err_code = 0;
 	}
 	else if( args[ 1 ] == "project" ) {

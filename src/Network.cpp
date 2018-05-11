@@ -88,11 +88,9 @@ static size_t curl_write_func( void *ptr, size_t size, size_t nmemb, void *strea
 
 int progress_func( void* ptr, double totdl, double cdl, double totup, double cup )
 {
-	if( totdl <= 0.0 )
-		return 0;
+	if( totdl <= 0.0 ) return 0;
 
 	double percentdown = ( cdl / totdl ) * 100;
-
 	std::string percent = std::to_string( percentdown ) + "%";
 
 	DisplayOneLiner( "{bg}[ {bc}" + percent + " {bg}]{0}" );

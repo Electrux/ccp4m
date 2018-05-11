@@ -15,8 +15,7 @@
 
 bool FS::LocExists( const std::string & loc )
 {
-	if( loc.empty() )
-		return true;
+	if( loc.empty() ) return true;
 
 	struct stat info;
 
@@ -27,15 +26,14 @@ bool FS::LocExists( const std::string & loc )
 		Core::logger.AddLogString( LogLevels::ALL, "Location: " + loc + " exists" );
 		return Core::ReturnVar( true );
 	}
- 
+
 	Core::logger.AddLogString( LogLevels::ALL, "Location: " + loc + " does not exist" );
 	return Core::ReturnVar( false );
 }
 
 bool FS::CreateDir( const std::string & dir, bool check_exists )
 {
-	if( check_exists && LocExists( dir ) )
-		return true;
+	if( check_exists && LocExists( dir ) ) return true;
 
 	std::string fdir;
 
@@ -117,8 +115,7 @@ bool FS::CreateFile( const std::string & loc, const std::string & contents )
 		return Core::ReturnVar( false );
 	}
 
-	if( !contents.empty() )
-		file << contents;
+	if( !contents.empty() ) file << contents;
 
 	file.close();
 
@@ -153,8 +150,7 @@ bool FS::CreateFileVectorContents( const std::string & loc, const std::vector< s
 		return Core::ReturnVar( false );
 	}
 
-	for( auto & c : contents )
-		file << c;
+	for( auto & c : contents ) file << c;
 
 	file.close();
 
@@ -185,8 +181,7 @@ bool FS::CreateFileIfNotExists( const std::string & loc, const std::string & con
 		return Core::ReturnVar( false );
 	}
 
-	if( !contents.empty() )
-		file << contents;
+	if( !contents.empty() ) file << contents;
 
 	file.close();
 
@@ -202,12 +197,10 @@ std::vector< std::string > FS::GetFilesInDir( const std::string & loc, const std
 
 	if( !fdir.empty() && * fdir.begin() == '.' ) {
 		fdir.erase( fdir.begin() );
-		if( !fdir.empty() && * fdir.begin() == '/' )
-			fdir.erase( fdir.begin() );
+		if( !fdir.empty() && * fdir.begin() == '/' ) fdir.erase( fdir.begin() );
 	}
 
-	if( fdir.size() > 0 && * ( fdir.end() - 1 ) != '/' )
-		fdir += "/";
+	if( fdir.size() > 0 && * ( fdir.end() - 1 ) != '/' ) fdir += "/";
 
 	DIR * dir;
 
@@ -218,10 +211,8 @@ std::vector< std::string > FS::GetFilesInDir( const std::string & loc, const std
 	if( ( dir = opendir( dir_to_open.c_str() ) ) != NULL ) {
 		struct dirent * ent;
 		while( ( ent = readdir( dir ) ) != NULL ) {
-			if( strcmp( ent->d_name, "." ) == 0 || strcmp( ent->d_name, ".." ) == 0 )
-				continue;
-			if( strncmp( ent->d_name, ".", strlen( "." ) ) == 0 )
-				continue;
+			if( strcmp( ent->d_name, "." ) == 0 || strcmp( ent->d_name, ".." ) == 0 ) continue;
+			if( strncmp( ent->d_name, ".", strlen( "." ) ) == 0 ) continue;
 
 			std::string loc_name = fdir.empty() ? ent->d_name : fdir + ent->d_name;
 
@@ -230,9 +221,7 @@ std::vector< std::string > FS::GetFilesInDir( const std::string & loc, const std
 				res.insert( res.end(), tempres.begin(), tempres.end() );
 				continue;
 			}
-			if( std::regex_match( loc_name, regex ) && !RegexVectorMatch( loc_name, except ) ) {
-				res.push_back( loc_name );
-			}
+			if( std::regex_match( loc_name, regex ) && !RegexVectorMatch( loc_name, except ) ) res.push_back( loc_name );
 		}
 	}
 
@@ -242,8 +231,7 @@ std::vector< std::string > FS::GetFilesInDir( const std::string & loc, const std
 bool FS::RegexVectorMatch( const std::string & loc_name, const std::vector< std::string > & vec )
 {
 	for( auto & v : vec ) {
-		if( std::regex_match( loc_name, std::regex( v ) ) )
-			return true;
+		if( std::regex_match( loc_name, std::regex( v ) ) ) return true;
 	}
 
 	return false;
@@ -255,14 +243,12 @@ std::string FS::ReadFile( const std::string & filename, const std::string & pref
 
 	file.open( filename, std::ios::in );
 
-	if( !file )
-		return "";
+	if( !file ) return "";
 
 	std::string res;
 	std::string temp;
 
-	while( std::getline( file, temp ) )
-		res += prefix_per_line + temp + "\n";
+	while( std::getline( file, temp ) ) res += prefix_per_line + temp + "\n";
 
 	file.close();
 	return res;
@@ -276,13 +262,11 @@ std::vector< std::string > FS::ReadFileVector( const std::string & filename, con
 
 	std::vector< std::string > res;
 
-	if( !file )
-		return res;
+	if( !file ) return res;
 
 	std::string temp;
 
-	while( std::getline( file, temp ) )
-		res.push_back( prefix_per_line + temp + "\n" );
+	while( std::getline( file, temp ) ) res.push_back( prefix_per_line + temp + "\n" );
 
 	file.close();
 	return res;
@@ -293,8 +277,7 @@ bool FS::IsFileLatest( const std::string & file1, const std::string & file2 )
 	Core::logger.AddLogSection( "FS" );
 	Core::logger.AddLogSection( "IsFileLatest" );
 
-	if( !LocExists( file1 ) )
-		return Core::ReturnVar( false );
+	if( !LocExists( file1 ) ) return Core::ReturnVar( false );
 
 	struct stat info1, info2;
 
@@ -330,17 +313,14 @@ bool FS::IsFileLatest( const std::string & file1, const std::string & file2 )
 
 	auto last_slash = file2.rfind( '/' );
 	std::string dir;
-	if( last_slash != std::string::npos ) {
-		dir = file2.substr( 0, last_slash );
-	}
+	if( last_slash != std::string::npos ) dir = file2.substr( 0, last_slash );
 
 	while( std::getline( f2, line ) ) {
 		if( std::regex_search( line, match, inc_regex ) ) {
 			struct stat temp_info;
 			std::string m = dir + "/" + std::string( match[ 1 ] );
 
-			if( stat( m.c_str(), & temp_info ) != 0 )
-				continue;
+			if( stat( m.c_str(), & temp_info ) != 0 ) continue;
 
 			if( !LocExists( m ) ) {
 				Core::logger.AddLogString( LogLevels::ALL, "Unable to access/create directory: " + dir + " for file: " + file1 );
@@ -350,7 +330,6 @@ bool FS::IsFileLatest( const std::string & file1, const std::string & file2 )
 
 			if( temp_info.st_mtime >= info1.st_mtime ) {
 				Core::logger.AddLogString( LogLevels::ALL, "Match file: " + m + " is newer than File1: " + file1 );
-
 				f2.close();
 				return Core::ReturnVar( false );
 			}
@@ -372,7 +351,6 @@ bool FS::DeleteFile( const std::string & file )
 
 bool FS::DeleteDir( const std::string & dir )
 {
-	if( !LocExists( dir ) )
-		return true;
+	if( !LocExists( dir ) ) return true;
 	return std::system( ( "rm -rf " + dir ).c_str() ) == 0 ? true : false;
 }

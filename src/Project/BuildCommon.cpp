@@ -17,10 +17,8 @@ void Common::GetFlags( const Config::ProjectData & data, std::string & inc_flags
 	inc_flags = "";
 	lib_flags = "";
 	for( auto lib : data.libs ) {
-		if( !lib.inc_flags.empty() )
-			inc_flags += lib.inc_flags + " ";
-		if( !lib.lib_flags.empty() )
-			lib_flags += lib.lib_flags + " ";
+		if( !lib.inc_flags.empty() ) inc_flags += lib.inc_flags + " ";
+		if( !lib.lib_flags.empty() ) lib_flags += lib.lib_flags + " ";
 	}
 }
 
@@ -51,24 +49,18 @@ void Common::GetVars( const Config::ProjectData & data, int data_i, CompileVars 
 	cvars.main_src = data.builds[ data_i ].main_src;
 
 	std::vector< std::string > excludefiles = data.builds[ data_i ].exclude;
-	if( !cvars.main_src.empty() )
-		excludefiles.push_back( cvars.main_src );
+	if( !cvars.main_src.empty() ) excludefiles.push_back( cvars.main_src );
 
 	for( auto src : data.builds[ data_i ].srcs ) {
 		std::vector< std::string > tempfiles;
-		if( excludefiles.empty() )
-			tempfiles = FS::GetFilesInDir( ".", std::regex( src ) );
-		else
-			tempfiles = FS::GetFilesInDir( ".", std::regex( src ), excludefiles );
+		tempfiles = excludefiles.empty() ? FS::GetFilesInDir( ".", std::regex( src ) ) : FS::GetFilesInDir( ".", std::regex( src ), excludefiles );
 		cvars.files.insert( cvars.files.end(), tempfiles.begin(), tempfiles.end() );
 	}
 
 	cvars.caps_lang = data.lang == "c++" ? "CXX" : "C";
 
-	if( data.lang == "c++" )
-		Core::SetVarArch( cvars.compiler, { "g++", "clang++", "clang++" } );
-	else
-		Core::SetVarArch( cvars.compiler, { "gcc", "clang", "clang" } );
+	if( data.lang == "c++" ) Core::SetVarArch( cvars.compiler, { "g++", "clang++", "clang++" } );
+	else Core::SetVarArch( cvars.compiler, { "gcc", "clang", "clang" } );
 
 	GetFlags( data, cvars.inc_flags, cvars.lib_flags );
 }
@@ -82,9 +74,7 @@ void Common::DisplayBuildCommands( const Config::ProjectData & data, const int d
 		build_files_str += "buildfiles/" + src + ".o ";
 		std::string compile_str = cvars.compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
 			+ cvars.inc_flags + " -c " + src + " -o buildfiles/" + src + ".o";
-		if( Core::arch == Core::BSD ) {
-			compile_str += " -I/usr/local/include";
-		}
+		if( Core::arch == Core::BSD ) compile_str += " -I/usr/local/include";
 		Display( "{tc}" + compile_str + "{0}\n" );
 	}
 
@@ -98,17 +88,11 @@ void Common::DisplayBuildCommands( const Config::ProjectData & data, const int d
 			std::string ext = data.builds[ data_i ].build_type == "static" ? ".a" : ".so";
 			std::string lib_type = data.builds[ data_i ].build_type;
 
-			if( lib_type == "static" ) {
-				compile_str = "ar rcs buildfiles/lib" + data.builds[ data_i ].name + ext + " " + cvars.main_src + " " + build_files_str;
-			}
-			else {
-				compile_str = cvars.compiler + " -shared " + data.compile_flags + " -std=" + data.lang + data.std + " "
-						+ cvars.inc_flags + " -o buildfiles/lib" + data.builds[ data_i ].name + ".so " + cvars.main_src + " " + build_files_str + " " + cvars.lib_flags;
-			}
+			if( lib_type == "static" ) compile_str = "ar rcs buildfiles/lib" + data.builds[ data_i ].name + ext + " " + cvars.main_src + " " + build_files_str;
+			else compile_str = cvars.compiler + " -shared " + data.compile_flags + " -std=" + data.lang + data.std + " "
+				     + cvars.inc_flags + " -o buildfiles/lib" + data.builds[ data_i ].name + ".so " + cvars.main_src + " " + build_files_str + " " + cvars.lib_flags;
 		}
-		if( Core::arch == Core::BSD )
-			compile_str += " -I/usr/local/include -L/usr/local/lib";
-
+		if( Core::arch == Core::BSD ) compile_str += " -I/usr/local/include -L/usr/local/lib";
 		Display( "\n{tc}" + compile_str + "{0}\n" );
 	}
 }
@@ -119,8 +103,7 @@ int Common::CompileSources( const Config::ProjectData & data, const int data_i, 
 	Core::logger.AddLogSection( "Common" );
 	Core::logger.AddLogSection( "CompileSources" );
 
-	if( !CreateSourceDirs( cvars.files ) )
-		return Core::ReturnVar( 1 );
+	if( !CreateSourceDirs( cvars.files ) ) return Core::ReturnVar( 1 );
 
 	if( disp_cmds_only ) {
 		DisplayBuildCommands( data, data_i, cvars, build_type );
@@ -152,9 +135,7 @@ int Common::CompileSources( const Config::ProjectData & data, const int data_i, 
 		std::string compile_str = cvars.compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
 			+ cvars.inc_flags + " -c " + src + " -o buildfiles/" + src + ".o";
 
-		if( Core::arch == Core::BSD ) {
-			compile_str += " -I/usr/local/include";
-		}
+		if( Core::arch == Core::BSD ) compile_str += " -I/usr/local/include";
 
 		is_any_single_file_compiled = true;
 
@@ -168,13 +149,10 @@ int Common::CompileSources( const Config::ProjectData & data, const int data_i, 
 				it = futures.erase( it );
 				if( r.res != 0 ) {
 					Display( "{fc}Error in source{0}: {sc}" + r.src + " {0}:\n" + r.err );
-					for( auto & d : futures )
-						d.wait();
+					for( auto & d : futures ) d.wait();
 					return Core::ReturnVar( r.res );
 				}
-				if( !r.err.empty() ) {
-					Display( "{fc}Warning in source{0}: {sc}" + r.src + " {0}:\n" + r.err );
-				}
+				if( !r.err.empty() ) Display( "{fc}Warning in source{0}: {sc}" + r.src + " {0}:\n" + r.err );
 				break;
 			}
 		}
@@ -190,13 +168,10 @@ int Common::CompileSources( const Config::ProjectData & data, const int data_i, 
 		it = futures.erase( it );
 		if( r.res != 0 ) {
 			Display( "{fc}Error in source{0}: {sc}" + r.src + " {0}:\n" + r.err );
-			for( auto & d : futures )
-				d.wait();
+			for( auto & d : futures ) d.wait();
 			return Core::ReturnVar( r.res );
 		}
-		if( !r.err.empty() ) {
-			Display( "{fc}Warning in source{0}: {sc}" + r.src + " {0}:\n" + r.err );
-		}
+		if( !r.err.empty() ) Display( "{fc}Warning in source{0}: {sc}" + r.src + " {0}:\n" + r.err );
 	}
 
 	return Core::ReturnVar( 0 );

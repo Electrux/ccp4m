@@ -33,11 +33,8 @@ int Project::BuildLibrary( const Config::ProjectData & data, const int data_i, c
 	int ret = Common::CompileSources( data, data_i, cvars, build_files_str, Common::BuildType::LIB, disp_cmds_only, is_any_single_file_compiled, ctr );
 
 	// ret is less than zero when disp_cmds_only is true
-	if( ret < 0 )
-		return Core::ReturnVar( 0 );
-
-	if( ret != 0 )
-		return Core::ReturnVar( ret );
+	if( ret < 0 ) return Core::ReturnVar( 0 );
+	if( ret != 0 ) return Core::ReturnVar( ret );
 
 	std::string ext = data.builds[ data_i ].build_type == "static" ? ".a" : ".so";
 	std::string lib_type = data.builds[ data_i ].build_type;
@@ -50,9 +47,7 @@ int Project::BuildLibrary( const Config::ProjectData & data, const int data_i, c
 		compile_str = cvars.compiler + " -shared " + data.compile_flags + " -std=" + data.lang + data.std + " "
 				+ cvars.inc_flags + " -o buildfiles/lib" + data.builds[ data_i ].name + ".so " + cvars.main_src + " " + build_files_str + " " + cvars.lib_flags;
 
-		if( Core::arch == Core::BSD ) {
-			compile_str += " -I/usr/local/include -L/usr/local/lib";
-		}
+		if( Core::arch == Core::BSD ) compile_str += " -I/usr/local/include -L/usr/local/lib";
 	}
 
 	if( !cvars.main_src.empty() ) {
@@ -68,8 +63,7 @@ int Project::BuildLibrary( const Config::ProjectData & data, const int data_i, c
 
 		if( FS::LocExists( "lib/lib" + data.builds[ data_i ].name + ext ) ) {
 			for( auto src : cvars.files ) {
-				if( !FS::IsFileLatest( "lib/lib" + data.builds[ data_i ].name + ext, src ) )
-					are_all_latest = false;
+				if( !FS::IsFileLatest( "lib/lib" + data.builds[ data_i ].name + ext, src ) ) are_all_latest = false;
 			}
 		}
 		else {
@@ -78,19 +72,17 @@ int Project::BuildLibrary( const Config::ProjectData & data, const int data_i, c
 
 		// Check if there already exists a build whose modification time is newer than main source and / or
 		if( !is_any_single_file_compiled && are_all_latest && FS::IsFileLatest( "lib/lib" + data.builds[ data_i ].name + ext, cvars.main_src ) &&
-			FS::IsFileLatest( "lib/lib" + data.builds[ data_i ].name + ext, "ccp4m.yaml" ) ) {
-
+		    FS::IsFileLatest( "lib/lib" + data.builds[ data_i ].name + ext, "ccp4m.yaml" ) ) {
 			Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{bg}Project is already up to date{0}\n" );
 			return Core::ReturnVar( 0 );
 		}
 		Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{fc}Building " + cvars.caps_lang + " " + lib_type + " library{0}:   {sc}buildfiles/lib" +
-			data.builds[ data_i ].name + ext + " {0}...\n" );
+			 data.builds[ data_i ].name + ext + " {0}...\n" );
 
 		std::string err;
 		int ret_val = Exec::ExecuteCommand( compile_str, & err );
 		if( ret_val != 0 ) {
-			if( !err.empty() )
-				Display( "{fc}Error{0}:\n{r}" + err );
+			if( !err.empty() ) Display( "{fc}Error{0}:\n{r}" + err );
 			return Core::ReturnVar( ret_val );
 		}
 
@@ -98,8 +90,7 @@ int Project::BuildLibrary( const Config::ProjectData & data, const int data_i, c
 		std::string cmd = "mv buildfiles/lib" + data.builds[ data_i ].name + ext + " lib/";
 		ret_val = Exec::ExecuteCommand( cmd, & err );
 		if( ret_val != 0 ) {
-			if( !err.empty() )
-				Display( "{fc}Error{0}: {r}" + err );
+			if( !err.empty() ) Display( "{fc}Error{0}: {r}" + err );
 			return Core::ReturnVar( ret_val );
 		}
 	}

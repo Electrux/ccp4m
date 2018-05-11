@@ -23,8 +23,7 @@ int Project::BuildBinary( const Config::ProjectData & data, const int data_i, co
 
 	int total_sources = cvars.files.size() + ( int )!cvars.main_src.empty();
 
-	if( !disp_cmds_only )
-		Core::logger.AddLogString( LogLevels::ALL, "Compiling " + std::to_string( total_sources ) + " sources with main_src as: " + cvars.main_src );
+	if( !disp_cmds_only ) Core::logger.AddLogString( LogLevels::ALL, "Compiling " + std::to_string( total_sources ) + " sources with main_src as: " + cvars.main_src );
 
 	int ctr = 1;
 	bool is_any_single_file_compiled = false;
@@ -33,11 +32,8 @@ int Project::BuildBinary( const Config::ProjectData & data, const int data_i, co
 	int ret = Common::CompileSources( data, data_i, cvars, build_files_str, Common::BuildType::BIN, disp_cmds_only, is_any_single_file_compiled, ctr );
 
 	// ret is less than zero when disp_cmds_only is true
-	if( ret < 0 )
-		return Core::ReturnVar( 0 );
-
-	if( ret != 0 )
-		return Core::ReturnVar( ret );
+	if( ret < 0 ) return Core::ReturnVar( 0 );
+	if( ret != 0 ) return Core::ReturnVar( ret );
 
 	if( !cvars.main_src.empty() ) {
 		if( !FS::LocExists( cvars.main_src ) ) {
@@ -52,8 +48,7 @@ int Project::BuildBinary( const Config::ProjectData & data, const int data_i, co
 
 		if( FS::LocExists( "bin/" + data.builds[ data_i ].name ) ) {
 			for( auto src : cvars.files ) {
-				if( !FS::IsFileLatest( "bin/" + data.builds[ data_i ].name, src ) )
-					are_all_latest = false;
+				if( !FS::IsFileLatest( "bin/" + data.builds[ data_i ].name, src ) ) are_all_latest = false;
 			}
 		}
 		else {
@@ -62,8 +57,7 @@ int Project::BuildBinary( const Config::ProjectData & data, const int data_i, co
 
 		// Check if there already exists a build whose modification time is newer than main source and / or
 		if( !is_any_single_file_compiled && are_all_latest && FS::IsFileLatest( "bin/" + data.builds[ data_i ].name, cvars.main_src ) &&
-			FS::IsFileLatest( "bin/" + data.builds[ data_i ].name, "ccp4m.yaml" ) ) {
-
+		    FS::IsFileLatest( "bin/" + data.builds[ data_i ].name, "ccp4m.yaml" ) ) {
 			Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{bg}Project is already up to date{0}\n" );
 			return Core::ReturnVar( 0 );
 		}
@@ -72,15 +66,12 @@ int Project::BuildBinary( const Config::ProjectData & data, const int data_i, co
 		std::string compile_str = cvars.compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
 			+ cvars.inc_flags + " -g -o buildfiles/" + data.builds[ data_i ].name + " " + cvars.main_src + " " + build_files_str + " " + cvars.lib_flags;
 
-		if( Core::arch == Core::BSD ) {
-			compile_str += " -I/usr/local/include -L/usr/local/lib";
-		}
+		if( Core::arch == Core::BSD ) compile_str += " -I/usr/local/include -L/usr/local/lib";
 
 		std::string err;
 		int ret_val = Exec::ExecuteCommand( compile_str, & err );
 		if( ret_val != 0 ) {
-			if( !err.empty() )
-				Display( "{fc}Error{0}:\n{r}" + err );
+			if( !err.empty() ) Display( "{fc}Error{0}:\n{r}" + err );
 			return Core::ReturnVar( ret_val );
 		}
 
@@ -88,8 +79,7 @@ int Project::BuildBinary( const Config::ProjectData & data, const int data_i, co
 		std::string cmd = "mv buildfiles/" + data.builds[ data_i ].name + " bin/";
 		ret_val = Exec::ExecuteCommand( cmd, & err );
 		if( ret_val != 0 ) {
-			if( !err.empty() )
-				Display( "{fc}Error{0}: {r}" + err );
+			if( !err.empty() ) Display( "{fc}Error{0}: {r}" + err );
 			return Core::ReturnVar( ret_val );
 		}
 	}

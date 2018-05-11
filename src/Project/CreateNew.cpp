@@ -3,7 +3,7 @@
 	All rights reserved.
 	Using the BSD 3-Clause license for the project,
 	main LICENSE file resides in project's root directory.
-	
+
 	Please read that file and understand the license terms
 	before using or altering the project.
 */
@@ -38,17 +38,14 @@ int Project::New( const std::vector< std::string > & args )
 
 	std::map< std::string, std::string > argmap;
 	int res = 0;
-	if( ( res = Str::FetchArgs( args, argmap, 4 ) ) != 0 ) {
-		return Core::ReturnVar( res );
-	}
+	if( ( res = Str::FetchArgs( args, argmap, 4 ) ) != 0 ) return Core::ReturnVar( res );
 
 	std::string project_dir;
 
 	if( argmap.find( "dir" ) != argmap.end() ) {
 		project_dir = argmap[ "dir" ];
 		Env::ReplaceTildeWithHome( project_dir );
-		if( * ( project_dir.end() - 1 ) != '/' )
-			project_dir += "/";
+		if( * ( project_dir.end() - 1 ) != '/' ) project_dir += "/";
 	}
 
 	if( FS::LocExists( project_dir + Env::CCP4M_PROJECT_CONFIG_FILE ) ) {
@@ -69,8 +66,7 @@ int Project::New( const std::vector< std::string > & args )
 
 	if( argmap.find( "lang" ) != argmap.end() ) {
 		argmap[ "lang" ] = Str::ToLower( argmap[ "lang" ] );
-		if( argmap[ "lang" ] == "cpp" )
-			argmap[ "lang" ] = "c++";
+		if( argmap[ "lang" ] == "cpp" ) argmap[ "lang" ] = "c++";
 		Core::logger.AddLogString( LogLevels::ALL, "Project language: " + argmap[ "lang" ] );
 		pconf.GetData().lang = argmap[ "lang" ];
 	}
@@ -95,8 +91,7 @@ int Project::New( const std::vector< std::string > & args )
 		if( std::find( License::LICENSES.begin(), License::LICENSES.end(), argmap[ "license" ] ) == License::LICENSES.end() ) {
 			Core::logger.AddLogString( LogLevels::ALL, "Unknown license specified: " + args[ 4 ] );
 			Display( "{fc}Unknown license {r}" + argmap[ "license" ] + "{fc} specified, possible options are{0}:\n" );
-			for( auto & lic : License::LICENSES )
-				Display( "{sc}\t" + lic + "{0}\n" );
+			for( auto & lic : License::LICENSES ) Display( "{sc}\t" + lic + "{0}\n" );
 			return Core::ReturnVar( 1 );
 		}
 		Core::logger.AddLogString( LogLevels::ALL, "Project license: " + argmap[ "license" ] );
@@ -137,8 +132,7 @@ int Project::New( const std::vector< std::string > & args )
 	if( pconf.GetData().lang == "c" ) {
 		pconf.GetData().builds[ 0 ].main_src = "src/main.c";
 		pconf.GetData().builds[ 0 ].srcs[ 0 ] = "src/(.*).c";
-		if( argmap.find( "std" ) == argmap.end() )
-			pconf.GetData().std = "11";
+		if( argmap.find( "std" ) == argmap.end() ) pconf.GetData().std = "11";
 	}
 
 	pconf.DisplayAll( project_dir );

@@ -98,9 +98,8 @@ int Project::Build( const std::vector< std::string > & args )
 		bool disp_cmds_only = args.size() > 4 && args[ 4 ] == "--cmds_only";
 
 		int j = -1;
-		for( int i = 0; i < pconf.GetData().builds.size(); ++i ) {
-			if( pconf.GetData().builds[ i ].name == which_build )
-				j = i;
+		for( size_t i = 0; i < pconf.GetData().builds.size(); ++i ) {
+			if( pconf.GetData().builds[ i ].name == which_build ) j = i;
 		}
 
 		if( j == -1 ) {
@@ -110,33 +109,27 @@ int Project::Build( const std::vector< std::string > & args )
 		}
 
 		if( pconf.GetData().builds[ j ].type == "bin" ) {
-			if( Project::BuildBinary( pconf.GetData(), j, disp_cmds_only ) != 0 )
-				return Core::ReturnVar( 1 );
+			if( Project::BuildBinary( pconf.GetData(), j, disp_cmds_only ) != 0 ) return Core::ReturnVar( 1 );
 		}
 		else if( pconf.GetData().builds[ j ].type == "test" ) {
-			if( Project::BuildTest( pconf.GetData(), j, disp_cmds_only ) != 0 )
-				return Core::ReturnVar( 1 );
+			if( Project::BuildTest( pconf.GetData(), j, disp_cmds_only ) != 0 ) return Core::ReturnVar( 1 );
 		}
 		else if( pconf.GetData().builds[ j ].type == "lib" ) {
-			if( Project::BuildLibrary( pconf.GetData(), j, disp_cmds_only ) != 0 )
-				return Core::ReturnVar( 1 );
+			if( Project::BuildLibrary( pconf.GetData(), j, disp_cmds_only ) != 0 ) return Core::ReturnVar( 1 );
 		}
 	}
 	else { // User didnt specify a build therefore build everything
 		bool disp_cmds_only = args.size() > 3 && args[ 3 ] == "--cmds_only";
 
-		for( int i = 0; i < pconf.GetData().builds.size(); ++i ) {
+		for( size_t i = 0; i < pconf.GetData().builds.size(); ++i ) {
 			if( pconf.GetData().builds[ i ].type == "bin" ) {
-				if( Project::BuildBinary( pconf.GetData(), i, disp_cmds_only ) != 0 )
-					return Core::ReturnVar( 1 );
+				if( Project::BuildBinary( pconf.GetData(), i, disp_cmds_only ) != 0 ) return Core::ReturnVar( 1 );
 			}
 			else if( pconf.GetData().builds[ i ].type == "test" ) {
-				if( Project::BuildTest( pconf.GetData(), i, disp_cmds_only ) != 0 )
-					return Core::ReturnVar( 1 );
+				if( Project::BuildTest( pconf.GetData(), i, disp_cmds_only ) != 0 ) return Core::ReturnVar( 1 );
 			}
 			else if( pconf.GetData().builds[ i ].type == "lib" ) {
-				if( Project::BuildLibrary( pconf.GetData(), i, disp_cmds_only ) != 0 )
-					return Core::ReturnVar( 1 );
+				if( Project::BuildLibrary( pconf.GetData(), i, disp_cmds_only ) != 0 ) return Core::ReturnVar( 1 );
 			}
 		}
 	}
@@ -173,11 +166,8 @@ int Project::Add( const std::vector< std::string > & args )
 		return Core::ReturnVar( 1 );
 	}
 
-	if( args[ 3 ] == "src" || args[ 3 ] == "inc" || args[ 3 ] == "test" )
-		return Core::ReturnVar( Project::AddFiles( pconf, args ) );
-
-	if( args[ 3 ] == "build" || args[ 3 ] == "lib" )
-		return Core::ReturnVar( Project::AddProjectInfo( pconf, args ) );
+	if( args[ 3 ] == "src" || args[ 3 ] == "inc" || args[ 3 ] == "test" ) return Core::ReturnVar( Project::AddFiles( pconf, args ) );
+	if( args[ 3 ] == "build" || args[ 3 ] == "lib" ) return Core::ReturnVar( Project::AddProjectInfo( pconf, args ) );
 
 	Core::logger.AddLogString( LogLevels::ALL, "Invalid parameter " + args[ 3 ] + " specified to set" );
 	Display( "{fc}Invalid parameter {sc}" + args[ 3 ] + "{fc} provided, correct possible parameters are{0}: {sc}inc{0} / {sc}src{0} / {sc}build{0} / {sc}lib{0}\n" );
@@ -246,11 +236,9 @@ int Project::Set( const std::vector< std::string > & args )
 			return Core::ReturnVar( 1 );
 		}
 
-		if( !License::UpdateProjectLicenseFile( args[ 4 ] ) )
-			return Core::ReturnVar( 1 );
+		if( !License::UpdateProjectLicenseFile( args[ 4 ] ) ) return Core::ReturnVar( 1 );
 
-		if( !License::UpdateProjectSourceFiles( pconf.GetData().license, args[ 4 ], pconf.GetData().lang ) )
-			return Core::ReturnVar( 1 );
+		if( !License::UpdateProjectSourceFiles( pconf.GetData().license, args[ 4 ], pconf.GetData().lang ) ) return Core::ReturnVar( 1 );
 
 		old_var = pconf.GetData().license;
 		pconf.GetData().license = args[ 4 ];
@@ -292,7 +280,7 @@ int Project::Run( const std::vector< std::string > & args )
 
 	int which = -1;
 
-	for( int i = 0; i < pconf.GetData().builds.size(); ++i ) {
+	for( size_t i = 0; i < pconf.GetData().builds.size(); ++i ) {
 		if( pconf.GetData().builds[ i ].name == args[ 3 ] ) {
 			which = i;
 			break;
@@ -320,8 +308,7 @@ int Project::Run( const std::vector< std::string > & args )
 	}
 
 	std::string newargs;
-	for( int i = 4; i < args.size(); ++i )
-		newargs += args[ i ] + " ";
+	for( size_t i = 4; i < args.size(); ++i ) newargs += args[ i ] + " ";
 
 	return Core::ReturnVar( std::system( ( "bin/" + build.name + " " + newargs ).c_str() ) );
 }
@@ -345,8 +332,7 @@ int Project::Test( const std::vector< std::string > & args )
 
 	int succ = 0, fail = 0;
 	for( auto & build : pconf.GetData().builds ) {
-		if( build.type != "test" )
-			continue;
+		if( build.type != "test" ) continue;
 
 		if( !FS::LocExists( "testbin/" + build.name ) ) {
 			Display( "{fc}The test case {sc}" + build.name + "{fc} is not already built, build it first using{0}: {tc}" + args[ 0 ] + " project build{0}\n" );
@@ -355,8 +341,7 @@ int Project::Test( const std::vector< std::string > & args )
 		}
 
 		std::string newargs;
-		for( int i = 4; i < args.size(); ++i )
-			newargs += args[ i ] + " ";
+		for( size_t i = 4; i < args.size(); ++i ) newargs += args[ i ] + " ";
 
 		Display( "{fc}Testing case{0}: {sc}" + build.name + "{0} ... " );
 		int ret = std::system( ( "testbin/" + build.name + " " + newargs + " 2>&1 > /dev/null" ).c_str() );
@@ -442,6 +427,5 @@ int Project::Clean()
 
 	Display( "\n{fc}Successfully cleaned directory{0}\n" );
 	Core::logger.AddLogString( LogLevels::ALL, "Successfully cleaned directory" );
-
 	return Core::ReturnVar( 0 );
 }

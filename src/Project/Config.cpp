@@ -16,16 +16,12 @@
 // Helper function to avoid crash for YAML-CPP
 template< typename T > std::string GetString( T & t, const std::string & v )
 {
-	if( t[ v ] )
-		return t[ v ].template as< std::string >();
-
+	if( t[ v ] ) return t[ v ].template as< std::string >();
 	return "";
 }
 template< typename T > std::string GetString( T & t, const std::string & v, const std::string & v2 )
 {
-	if( t[ v ] && t[ v ][ v2 ] )
-		return t[ v ][ v2 ].template as< std::string >();
-
+	if( t[ v ] && t[ v ][ v2 ] ) return t[ v ][ v2 ].template as< std::string >();
 	return "";
 }
 template< typename T > std::vector< std::string > GetStringVector( T & t, const std::string & v )
@@ -53,25 +49,20 @@ template< typename T > std::vector< std::string > GetStringVector( T & t, const 
 
 void ProjectConfig::AddLibrary( const Config::Library & lib )
 {
-	if( !lib.name.empty() )
-		pdata.libs.push_back( lib );
+	if( !lib.name.empty() ) pdata.libs.push_back( lib );
 }
 
 void ProjectConfig::AddBuild( const Config::Build & build )
 {
-	if( !build.name.empty() )
-		pdata.builds.push_back( build );
+	if( !build.name.empty() ) pdata.builds.push_back( build );
 }
 
 std::string ProjectConfig::GetDefaultMainFile()
 {
 	std::string res;
-	if( this->pdata.lang == "c" ) {
-		res = "#include <stdio.h>\n#include <stdlib.h>\n\nint main()\n{\n\treturn 0;\n}";
-	}
-	else {
-		res = "#include <iostream>\n\nint main()\n{\n\treturn 0;\n}";
-	}
+
+	if( this->pdata.lang == "c" ) res = "#include <stdio.h>\n#include <stdlib.h>\n\nint main()\n{\n\treturn 0;\n}";
+	else res = "#include <iostream>\n\nint main()\n{\n\treturn 0;\n}";
 
 	return res;
 }
@@ -108,8 +99,7 @@ bool ProjectConfig::GetDefaultAuthor()
 
 bool ProjectConfig::GenerateDefaultConfig()
 {
-	if( !this->GetDefaultAuthor() )
-		return false;
+	if( !this->GetDefaultAuthor() ) return false;
 
 	Core::logger.AddLogSection( "ProjectConfig" );
 	Core::logger.AddLogSection( "GenerateDefaultConfig" );
@@ -135,8 +125,7 @@ bool ProjectConfig::GenerateDefaultConfig()
 
 bool ProjectConfig::LoadFile( const std::string & file, bool update_license )
 {
-	if( !FS::LocExists( file ) )
-		return false;
+	if( !FS::LocExists( file ) ) return false;
 
 	Core::logger.AddLogSection( "ProjectConfig" );
 	Core::logger.AddLogSection( "LoadFile" );
@@ -157,8 +146,7 @@ bool ProjectConfig::LoadFile( const std::string & file, bool update_license )
 
 	v->AddVar( "license", License::FetchLicenseFormalName( pdata.license ) );
 
-	if( !License::UpdateProjectLicenseFile( pdata.license, update_license ) )
-			return Core::ReturnVar( 1 );
+	if( !License::UpdateProjectLicenseFile( pdata.license, update_license ) ) return Core::ReturnVar( 1 );
 
 	pdata.author.name = v->Replace( GetString( conf, "author", "name" ) );
 	pdata.author.email = v->Replace( GetString( conf, "author", "email" ) );
@@ -189,7 +177,6 @@ bool ProjectConfig::LoadFile( const std::string & file, bool update_license )
 		build.type = v->Replace( GetString( builddata, "type" ) );
 		build.build_type = v->Replace( GetString( builddata, "build_type" ) );
 		build.main_src = v->Replace( GetString( builddata, "main_src" ) );
-
 		build.srcs = v->Replace( GetStringVector( builddata, "other_src" ) );
 		build.exclude = v->Replace( GetStringVector( builddata, "exclude" ) );
 
@@ -197,14 +184,12 @@ bool ProjectConfig::LoadFile( const std::string & file, bool update_license )
 	}
 
 	Core::logger.AddLogString( LogLevels::ALL, "Loaded configuration file successfully" );
-
 	return Core::ReturnVar( true );
 }
 
 bool ProjectConfig::SaveFile( const std::string & file )
 {
-	if( !FS::CreateFile( file ) )
-		return false;
+	if( !FS::CreateFile( file ) ) return false;
 
 	Core::logger.AddLogSection( "ProjectConfig" );
 	Core::logger.AddLogSection( "SaveFile" );
@@ -254,21 +239,16 @@ bool ProjectConfig::SaveFile( const std::string & file )
 
 		o << YAML::Key << "name" << YAML::Value << build.name;
 		o << YAML::Key << "type" << YAML::Value << build.type;
-		if( build.type == "lib" )
-			o << YAML::Key << "build_type" << YAML::Value << build.build_type;
+		if( build.type == "lib" ) o << YAML::Key << "build_type" << YAML::Value << build.build_type;
 		o << YAML::Key << "main_src" << YAML::Value << build.main_src;
 		o << YAML::Key << "other_src" << YAML::Value;
 		o << YAML::BeginSeq;
-		for( auto src : build.srcs ) {
-			o << src;
-		}
+		for( auto src : build.srcs ) o << src;
 		o << YAML::EndSeq;
 
 		o << YAML::Key << "exclude" << YAML::Value;
 		o << YAML::BeginSeq;
-		for( auto exc : build.exclude ) {
-			o << exc;
-		}
+		for( auto exc : build.exclude ) o << exc;
 		o << YAML::EndSeq;
 
 		o << YAML::EndMap;
@@ -291,8 +271,7 @@ void ProjectConfig::DisplayAll( const std::string & dir )
 	Display( "{by}-------------------------------------------------\n\n" );
 
 	Display( "{sc}=> {bm}Author{0}: {bg}" + pdata.author.name + " {0}< {bg}" + pdata.author.email + " {0}>\n" );
-	if( !dir.empty() )
-		Display( "{sc}=> {bm}Directory{0}: {bg}" + dir + "\n" );
+	if( !dir.empty() ) Display( "{sc}=> {bm}Directory{0}: {bg}" + dir + "\n" );
 	Display( "{sc}=> {bm}Name{0}: {bg}" + pdata.name + "\n" );
 	Display( "{sc}=> {bm}Version{0}: {bg}" + pdata.version + "\n" );
 	Display( "{sc}=> {bm}Lang{0}: {bg}" + pdata.lang + "\n" );
@@ -301,7 +280,6 @@ void ProjectConfig::DisplayAll( const std::string & dir )
 	Display( "{sc}=> {bm}License{0}: {bg}" + pdata.license + "\n\n" );
 
 	Display( "{sc}=> {bm}Libs{0}:\n" );
-
 	for( auto lib : pdata.libs ) {
 		Display( "{sc}===> {bm}Name{0}: {bg}" + lib.name + "\n" );
 		Display( "{sc}===> {bm}Version{0}: {bg}" + lib.version + "\n" );
@@ -312,17 +290,13 @@ void ProjectConfig::DisplayAll( const std::string & dir )
 	Display( "\n" );
 
 	Display( "{sc}=> {bm}Builds{0}:\n" );
-
 	for( auto build : pdata.builds ) {
 		Display( "{sc}===> {bm}Name{0}: {bg}" + build.name + "\n" );
 		Display( "{sc}===> {bm}Type{0}: {bg}" + build.type + "\n" );
-		if( build.type == "lib" )
-			Display( "{sc}===> {bm}Build Type{0}: {bg}" + build.build_type + "\n" );
+		if( build.type == "lib" ) Display( "{sc}===> {bm}Build Type{0}: {bg}" + build.build_type + "\n" );
 		Display( "{sc}===> {bm}Main source{0}: {bg}" + build.main_src + "\n" );
 		Display( "{sc}===> {bm}Other sources{0}:\n" );
-		for( auto s : build.srcs ) {
-			Display( "{sc}=====> {bg}" + s + "\n" );
-		}
+		for( auto s : build.srcs ) Display( "{sc}=====> {bg}" + s + "\n" );
 	}
 
 	Display( "\n{by}--------------------------------------------------{0}\n");

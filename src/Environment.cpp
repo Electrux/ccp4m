@@ -27,8 +27,7 @@ std::string Env::GetEnvVar( const std::string & key )
 
 	char * res = std::getenv( key.c_str() );
 
-	if( res != NULL )
-		ret = res;
+	if( res != NULL ) ret = res;
 
 	return Core::ReturnVar( ret );
 }

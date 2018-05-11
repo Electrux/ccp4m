@@ -71,12 +71,10 @@ std::string License::FetchLicense( const License::ID & id )
 	if( license_str.empty() ) {
 		Display( "\n{r}Failed to read license from file{0}: {sc}" + license_sys_loc + "{0}\n" );
 		Core::logger.AddLogString( LogLevels::ALL, "Failed to read license from file: " + license_sys_loc );
-
 		return Core::ReturnVar( std::string() );
 	}
 
 	Vars::ReplaceVars( license_str, false );
-
 	return Core::ReturnVar( license_str );
 }
 
@@ -84,17 +82,14 @@ std::string License::FetchLicense( const std::string & name )
 {
 	int loc = -1;
 
-	for( int i = 0; i < LICENSES.size(); ++i ) {
+	for( size_t i = 0; i < LICENSES.size(); ++i ) {
 		if( LICENSES[ i ] == name ) {
-			loc = i;
+			loc = ( int )i;
 			break;
 		}
 	}
 
-	if( loc != -1 ) {
-		return FetchLicense( ( ID )loc );
-	}
-
+	if( loc != -1 ) return FetchLicense( ( ID )loc );
 	return "";
 }
 
@@ -126,21 +121,17 @@ std::string License::FetchLicenseForFile( const License::ID & id )
 	if( license_str.empty() ) {
 		Display( "\n{r}Failed to read license from file{0}: {sc}" + license_sys_loc + "{0}\n" );
 		Core::logger.AddLogString( LogLevels::ALL, "Failed to read license from file: " + license_sys_loc );
-
 		return Core::ReturnVar( "" );
 	}
 
 	Vars::ReplaceVars( license_str, false );
-
 	return Core::ReturnVar( license_str );
 }
 
 std::string License::FetchLicenseForFile( const std::string & name )
 {
-	for( int i = 0; i < LICENSES.size(); ++i ) {
-		if( LICENSES[ i ] == name ) {
-			return FetchLicenseForFile( ( ID )i );
-		}
+	for( size_t i = 0; i < LICENSES.size(); ++i ) {
+		if( LICENSES[ i ] == name ) return FetchLicenseForFile( ( ID )i );
 	}
 
 	return "";
@@ -148,10 +139,8 @@ std::string License::FetchLicenseForFile( const std::string & name )
 
 std::string License::FetchLicenseFormalName( const std::string & license )
 {
-	for( int i = 0; i < LICENSES.size(); ++i ) {
-		if( LICENSES[ i ] == license ) {
-			return LICENSES_FORMAL[ i ];
-		}
+	for( size_t i = 0; i < LICENSES.size(); ++i ) {
+		if( LICENSES[ i ] == license ) return LICENSES_FORMAL[ i ];
 	}
 
 	return "";
@@ -170,8 +159,7 @@ bool License::UpdateProjectLicenseFile( const std::string & license, bool really
 	if( !FS::LocExists( "LICENSE" ) || ( really_update && FS::ReadFile( "LICENSE" ) != license_str ) ) {
 		Core::logger.AddLogString( LogLevels::ALL, "License file not found in project directory or is different than it should be. Creating a new one" );
 		Display( "{fc}Updating {sc}LICENSE {fc}file {0}...\n" );
-		if( !FS::CreateFile( "LICENSE", license_str ) )
-			return Core::ReturnVar( false );
+		if( !FS::CreateFile( "LICENSE", license_str ) ) return Core::ReturnVar( false );
 	}
 
 	return Core::ReturnVar( true );
@@ -190,8 +178,7 @@ bool License::UpdateProjectSourceFiles( const std::string & old_license, const s
 
 	for( auto & f : files ) {
 		auto && content = FS::ReadFileVector( f );
-		if( content[ 0 ] != "\n" && content[ 0 ].find( "/*" ) == std::string::npos )
-			continue;
+		if( content[ 0 ] != "\n" && content[ 0 ].find( "/*" ) == std::string::npos ) continue;
 
 		bool found = false;
 
@@ -200,9 +187,8 @@ bool License::UpdateProjectSourceFiles( const std::string & old_license, const s
 
 		Core::logger.AddLogString( LogLevels::ALL, "Altering license from: " + formalname_old + " to: " + formalname_new + " in file: " + f );
 
-		for( int i = 0; i < 10; ++i ) {
-			if( i >= content.size() )
-				break;
+		for( size_t i = 0; i < 10; ++i ) {
+			if( i >= content.size() ) break;
 
 			if( content[ i ].find( formalname_old ) != std::string::npos ) {
 				Core::logger.AddLogString( LogLevels::ALL, "Altering on line: " + std::to_string( i ) + " with contents: " + content[ i ] );
@@ -211,8 +197,7 @@ bool License::UpdateProjectSourceFiles( const std::string & old_license, const s
 			}
 		}
 
-		if( !found )
-			continue;
+		if( !found ) continue;
 
 		if( !FS::CreateFileVectorContents( f, content ) ) {
 			Core::logger.AddLogString( LogLevels::ALL, "Unable to create updated file: " + f );

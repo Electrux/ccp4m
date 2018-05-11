@@ -24,18 +24,13 @@ void Vars::AddVar( const std::string & key, const std::string & val )
 
 std::string Vars::GetVar( const std::string & key )
 {
-	if( this->vars.find( key ) != this->vars.end() )
-		return this->vars[ key ];
-
+	if( this->vars.find( key ) != this->vars.end() ) return this->vars[ key ];
 	return this->vars[ Core::ERR_STR ];
 }
 
 Vars * Vars::GetSingleton()
 {
-	if( Vars::v == nullptr )
-		Vars::v = new Vars;
-
-	return Vars::v;
+	return Vars::v == nullptr ? Vars::v = new Vars : Vars::v;
 }
 
 void Vars::DeleteSingleton()
@@ -88,42 +83,32 @@ int Vars::Replace( std::string & str, bool colors )
 			}
 
 			// Remove the ending brace
-			if( it != str.end() )
-				it = str.erase( it );
+			if( it != str.end() ) it = str.erase( it );
 
-			if( var.empty() )
-				continue;
+			if( var.empty() ) continue;
 
 			std::string val;
 
 			bool found_in_colors = false;
 
-			if( Core::COLORS.find( var ) != Core::COLORS.end() )
-				found_in_colors = true;
+			if( Core::COLORS.find( var ) != Core::COLORS.end() ) found_in_colors = true;
 
 			// Check if it is a part of color. If it is, check if color is enabled. If it is, set that color to val.
 			// Otherwise, continue since there is no point of checking in other places ( the use of colors is clearly
 			// disabled so just skip it completely, thereby saving log space because of Env::GetEnvVar ( especially in
 			// the use of DisplayOneLiner in NW::progress_func( ... ) ) )
-			if( colors )
-				val = Core::COLORS[ var ];
-			else if( found_in_colors )
-				continue;
+			if( colors ) val = Core::COLORS[ var ];
+			else if( found_in_colors ) continue;
 
-			if( val.empty() )
-				val = Env::GetEnvVar( var );
+			if( val.empty() ) val = Env::GetEnvVar( var );
+			if( val.empty() ) val = v->GetVar( var );
 
-			if( val.empty() )
-				val = v->GetVar( var );
-
-			if( val == Core::ERR_STR )
-				continue;
+			if( val == Core::ERR_STR ) continue;
 
 			it = str.insert( it, val.begin(), val.end() );
 			it += val.size();
 			// Do not add to size if a color is added because it is not a character on terminal
-			if( colors && found_in_colors )
-				continue;
+			if( colors && found_in_colors ) continue;
 
 			ctr += val.size();
 		}
@@ -144,9 +129,7 @@ std::string Vars::Replace( std::string && str, bool colors )
 
 std::vector< std::string > Vars::Replace( std::vector< std::string > && vec, bool colors )
 {
-	for( auto & str : vec )
-		this->Replace( str, colors );
-
+	for( auto & str : vec ) this->Replace( str, colors );
 	return vec;
 }
 

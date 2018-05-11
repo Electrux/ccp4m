@@ -11,10 +11,7 @@
 std::vector< std::string > Str::DoublePtrToVector( const int argc, const char ** & argv )
 {
 	std::vector< std::string > vec;
-
-	for( int i = 0; i < argc; ++i )
-		vec.push_back( argv[ i ] );
-
+	for( int i = 0; i < argc; ++i ) vec.push_back( argv[ i ] );
 	return vec;
 }
 
@@ -24,12 +21,10 @@ std::vector< std::string > Str::Delimit( const std::string & str, const char ch 
 	std::vector< std::string > vec;
 
 	for( auto c : str ) {
-		if( c == ' ' && ch != ' ' )
-			continue;
+		if( c == ' ' && ch != ' ' ) continue;
 
 		if( c == ch ) {
-			if( temp.empty() )
-				continue;
+			if( temp.empty() ) continue;
 			vec.push_back( temp );
 			temp.clear();
 			continue;
@@ -38,39 +33,30 @@ std::vector< std::string > Str::Delimit( const std::string & str, const char ch 
 		temp += c;
 	}
 
-	if( !temp.empty() )
-		vec.push_back( temp );
-
+	if( !temp.empty() ) vec.push_back( temp );
 	return vec;
 }
 
 std::string Str::ToLower( const std::string & str )
 {
 	std::string res;
-	for( auto c : str ) {
-		res += std::tolower( c );
-	}
-
+	for( auto c : str ) res += std::tolower( c );
 	return res;
 }
 
 std::string Str::ToUpper( const std::string & str )
 {
 	std::string res;
-	for( auto c : str ) {
-		res += std::toupper( c );
-	}
-
+	for( auto c : str ) res += std::toupper( c );
 	return res;
 }
 
-int Str::FetchArgs( const std::vector< std::string > & args, std::map< std::string, std::string > & argmap, int from )
+int Str::FetchArgs( const std::vector< std::string > & args, std::map< std::string, std::string > & argmap, size_t from )
 {
 	Core::logger.AddLogSection( "Project" );
 	Core::logger.AddLogSection( "FetchArgs" );
 
-	if( args.size() == from )
-		return Core::ReturnVar( 0 );
+	if( args.size() == from ) return Core::ReturnVar( 0 );
 
 	if( args.size() < from ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Argument size is: " + std::to_string( args.size() ) + " but initialize point is: " + std::to_string( from ) );
@@ -117,8 +103,7 @@ int Str::FetchArgs( const std::vector< std::string > & args, std::map< std::stri
 
 bool Str::Replace( std::string & str, const std::string & from, const std::string & to )
 {
-	if( from.empty() )
-		return false;
+	if( from.empty() ) return false;
 
 	size_t start_pos = 0;
 	while( ( start_pos = str.find( from, start_pos ) ) != std::string::npos ) {

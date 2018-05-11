@@ -3,7 +3,7 @@
 	All rights reserved.
 	Using the BSD 3-Clause license for the project,
 	main LICENSE file resides in project's root directory.
-	
+
 	Please read that file and understand the license terms
 	before using or altering the project.
 */
@@ -40,24 +40,15 @@ int Project::AddFiles( ProjectConfig & pconf, const std::vector< std::string > &
 	std::string file;
 	std::string ext;
 	if( args[ 3 ] == "src" ) {
-		if( pconf.GetData().lang == "c++" )
-			ext = ".cpp";
-		else
-			ext = ".c";
+		ext = pconf.GetData().lang == "c++" ? ".cpp" : ".c";
 		file = "src/";
 	}
 	else if( args[ 3 ] == "inc" ) {
-		if( pconf.GetData().lang == "c++" )
-			ext = ".hpp";
-		else
-			ext = ".h";
+		ext = pconf.GetData().lang == "c++" ? ".hpp" : ".h";
 		file = "include/";
 	}
 	else if( args[ 3 ] == "test" ) {
-		if( pconf.GetData().lang == "c++" )
-			ext = ".cpp";
-		else
-			ext = ".c";
+		ext = pconf.GetData().lang == "c++" ? ".cpp" : ".c";
 		file = "tests/";
 	}
 	file += args[ 4 ] + ext;
@@ -70,9 +61,8 @@ int Project::AddFiles( ProjectConfig & pconf, const std::vector< std::string > &
 
 	int which_build = -1;
 	if( args.size() > 5 ) {
-		for( int i = 0; i < pconf.GetData().builds.size(); ++i ) {
-			if( pconf.GetData().builds[ i ].name == args[ 5 ] )
-				which_build = i;
+		for( size_t i = 0; i < pconf.GetData().builds.size(); ++i ) {
+			if( pconf.GetData().builds[ i ].name == args[ 5 ] ) which_build = i;
 		}
 
 		if( which_build == -1 ) {
@@ -82,12 +72,8 @@ int Project::AddFiles( ProjectConfig & pconf, const std::vector< std::string > &
 		}
 	}
 
-	if( args[ 3 ] == "src" ) {
-		return Core::ReturnVar( Project::GenerateSourceFile( pconf, args[ 4 ] + ext, which_build ) );
-	}
-	else if( args[ 3 ] == "test" ) {
-		return Core::ReturnVar( Project::GenerateTestFile( pconf, args[ 4 ] + ext ) );
-	}
+	if( args[ 3 ] == "src" ) return Core::ReturnVar( Project::GenerateSourceFile( pconf, args[ 4 ] + ext, which_build ) );
+	if( args[ 3 ] == "test" ) return Core::ReturnVar( Project::GenerateTestFile( pconf, args[ 4 ] + ext ) );
 
 	return Core::ReturnVar( Project::GenerateIncludeFile( pconf, args[ 4 ] + ext ) );
 }
@@ -105,9 +91,7 @@ int Project::AddProjectInfo( ProjectConfig & pconf, const std::vector< std::stri
 
 	std::map< std::string, std::string > argmap;
 	int res = 0;
-	if( ( res = Str::FetchArgs( args, argmap, 5 ) ) != 0 ) {
-		return Core::ReturnVar( res );
-	}
+	if( ( res = Str::FetchArgs( args, argmap, 5 ) ) != 0 ) return Core::ReturnVar( res );
 
 	std::string name = args[ 4 ];
 
@@ -148,18 +132,14 @@ int Project::AddProjectInfo( ProjectConfig & pconf, const std::vector< std::stri
 		build.name = name;
 		build.type = argmap.find( "type" ) != argmap.end() ? argmap[ "type" ] : "bin";
 
-		if( build.type == "lib" )
-			build.build_type = argmap.find( "build_type" ) != argmap.end() ? argmap[ "build_type" ] : "static";
+		if( build.type == "lib" ) build.build_type = argmap.find( "build_type" ) != argmap.end() ? argmap[ "build_type" ] : "static";
 
 		std::string default_main = pconf.GetData().lang == "c++" ? "src/main.cpp" : "src/main.c";
 
 		build.main_src = argmap.find( "main_src" ) != argmap.end() ? argmap[ "main_src" ] : default_main;
 
-		if( argmap.find( "exclude" ) != argmap.end() )
-			build.exclude = Str::Delimit( argmap[ "exclude" ], ',' );
-
-		if( argmap.find( "srcs" ) != argmap.end() )
-			build.srcs = Str::Delimit( argmap[ "srcs" ], ',' );
+		if( argmap.find( "exclude" ) != argmap.end() ) build.exclude = Str::Delimit( argmap[ "exclude" ], ',' );
+		if( argmap.find( "srcs" ) != argmap.end() ) build.srcs = Str::Delimit( argmap[ "srcs" ], ',' );
 
 		pconf.AddBuild( build );
 	}

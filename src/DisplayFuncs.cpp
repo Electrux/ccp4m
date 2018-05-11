@@ -7,27 +7,24 @@
 
 void MoveBack( int chars )
 {
-	for( int i = 0; i < chars; ++i )
-		std::cout << "\b \b";
+	for( int i = 0; i < chars; ++i ) std::cout << "\b \b";
 
 	std::cout.flush();
 }
 
 void Display( std::string data )
 {
-	if( data.empty() )
-		return;
+	if( data.empty() ) return;
 
 	Vars::ReplaceVars( data );
 
-	for( auto it = data.begin(); it != data.end(); ++it )
-		LAST_LINE_SIZE = ( * it == '\n' ) ? 0 : LAST_LINE_SIZE + 1;
+	for( auto it = data.begin(); it != data.end(); ++it ) LAST_LINE_SIZE = ( * it == '\n' ) ? 0 : LAST_LINE_SIZE + 1;
 
 	std::cout << data;
 	std::cout.flush();
 }
 
-void DisplayOneLiner( std::string data, bool store_log )
+void DisplayOneLiner( std::string data )
 {
 	MoveBack( LAST_ONE_LINER_SIZE );
 

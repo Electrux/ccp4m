@@ -8,6 +8,6 @@ static int LAST_ONE_LINER_SIZE = 0;
 
 void Display( std::string data );
 
-void DisplayOneLiner( std::string data, bool store_log = true );
+void DisplayOneLiner( std::string data );
 
 #endif // DISPLAY_FUNCS_HPP

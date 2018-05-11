@@ -67,13 +67,13 @@ int Project::GenerateSourceFile( ProjectConfig & pconf, const std::string & file
 			bool found_regex = false;
 
 			for( auto & srcs : b.srcs ) {
-				if( std::regex_match( final_file, std::regex( srcs ) ) )
+				if( std::regex_match( final_file, std::regex( srcs ) ) ) {
 					found_regex = true;
 					break;
+				}
 			}
 
-			if( found_regex )
-				continue;
+			if( found_regex ) continue;
 
 			b.srcs.push_back( final_file );
 			Core::logger.AddLogString( LogLevels::ALL, "Added source file: " + final_file + " to build: " + b.name );
@@ -87,9 +87,10 @@ int Project::GenerateSourceFile( ProjectConfig & pconf, const std::string & file
 		Core::logger.AddLogString( LogLevels::ALL, "Adding source file: " + final_file + " to build: " + b.name );
 
 		for( auto & srcs : b.srcs ) {
-			if( std::regex_match( final_file, std::regex( srcs ) ) )
+			if( std::regex_match( final_file, std::regex( srcs ) ) ) {
 				found_regex = true;
 				break;
+			}
 		}
 
 		if( !found_regex ) {
