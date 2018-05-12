@@ -1,5 +1,4 @@
 #include <cstdio>
-#include <vector>
 #include <string>
 #include <atomic>
 

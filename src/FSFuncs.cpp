@@ -248,7 +248,7 @@ std::string FS::ReadFile( const std::string & filename, const std::string & pref
 	std::string res;
 	std::string temp;
 
-	while( std::getline( file, temp ) ) res += prefix_per_line + temp + "\n";
+	while( std::getline( file, temp ) ) res += ( temp.empty() ? "" : prefix_per_line ) + temp + "\n";
 
 	file.close();
 	return res;
