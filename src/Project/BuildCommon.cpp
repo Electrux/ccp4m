@@ -12,7 +12,7 @@
 
 #include "../../include/Project/BuildCommon.hpp"
 
-void Common::GetFlags( const Config::ProjectData & data, std::string & inc_flags, std::string & lib_flags )
+void Common::GetFlags( const Config::ProjectData & data, int data_i, std::string & inc_flags, std::string & lib_flags )
 {
 	inc_flags = "";
 	lib_flags = "";
@@ -20,6 +20,8 @@ void Common::GetFlags( const Config::ProjectData & data, std::string & inc_flags
 		if( !lib.inc_flags.empty() ) inc_flags += lib.inc_flags + " ";
 		if( !lib.lib_flags.empty() ) lib_flags += lib.lib_flags + " ";
 	}
+	if( !data.builds[ data_i ].inc_flags.empty() ) inc_flags += data.builds[ data_i ].inc_flags + " ";
+	if( !data.builds[ data_i ].lib_flags.empty() ) lib_flags += data.builds[ data_i ].lib_flags + " ";
 }
 
 bool Common::CreateSourceDirs( const std::vector< std::string > & srcs )
@@ -62,7 +64,7 @@ void Common::GetVars( const Config::ProjectData & data, int data_i, CompileVars 
 	if( data.lang == "c++" ) Core::SetVarArch( cvars.compiler, { "g++", "clang++", "clang++" } );
 	else Core::SetVarArch( cvars.compiler, { "gcc", "clang", "clang" } );
 
-	GetFlags( data, cvars.inc_flags, cvars.lib_flags );
+	GetFlags( data, data_i, cvars.inc_flags, cvars.lib_flags );
 }
 
 void Common::DisplayBuildCommands( const Config::ProjectData & data, const int data_i, const CompileVars & cvars, const BuildType & build_type )
@@ -120,20 +122,25 @@ int Common::CompileSources( const Config::ProjectData & data, const int data_i, 
 
 	Display( "{fc}Using cores{0}: {sc}" + std::to_string( cores ) + "{0}\n\n" );
 
+	std::string extra_conf;
+	if( build_type == BuildType::LIB && data.builds[ data_i ].build_type == "dynamic" ) extra_conf = "-fPIC";
+
 	for( auto src : cvars.files ) {
 		int percent = ( ctr * 100 / total_sources );
+		std::string build_type_extension = data.builds[ data_i ].build_type.empty() ? "" : ( "." + data.builds[ data_i ].build_type );
+		std::string destination_file = src + build_type_extension + ".o";
 
-		build_files_str += "buildfiles/" + src + ".o ";
+		build_files_str += "buildfiles/" + destination_file + " ";
 
 		// Remove files which are up to date
-		if( FS::IsFileLatest( "buildfiles/" + src + ".o", src ) ) {
-			Display( "{tc}[" + std::to_string( percent ) + "%]\t{g}Up to date " + cvars.caps_lang + " object{0}: {sc}buildfiles/" + src + ".o {0}\n" );
+		if( FS::IsFileLatest( "buildfiles/" + destination_file, src ) ) {
+			Display( "{tc}[" + std::to_string( percent ) + "%]\t{g}Up to date " + cvars.caps_lang + " object{0}: {sc}buildfiles/" + destination_file + "{0}\n" );
 			++ctr;
 			continue;
 		}
 
 		std::string compile_str = cvars.compiler + " " + data.compile_flags + " -std=" + data.lang + data.std + " "
-			+ cvars.inc_flags + " -c " + src + " -o buildfiles/" + src + ".o";
+			+ cvars.inc_flags + " " + extra_conf + " -c " + src + " -o buildfiles/" + destination_file;
 
 		if( Core::arch == Core::BSD ) compile_str += " -I/usr/local/include";
 
@@ -157,7 +164,7 @@ int Common::CompileSources( const Config::ProjectData & data, const int data_i, 
 			}
 		}
 
-		Display( "{tc}[" + std::to_string( percent ) + "%]\t{fc}Compiling " + cvars.caps_lang + " object{0}:  {sc}buildfiles/" + src + ".o {0}...\n" );
+		Display( "{tc}[" + std::to_string( percent ) + "%]\t{fc}Compiling " + cvars.caps_lang + " object{0}:  {sc}buildfiles/" + destination_file + " {0}...\n" );
 		++ctr;
 		++Exec::Internal::threadctr;
 		futures.push_back( std::async( std::launch::async, Exec::MultithreadedExecute, compile_str, src ) );

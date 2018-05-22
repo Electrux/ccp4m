@@ -29,7 +29,6 @@ int Project::BuildLibrary( const Config::ProjectData & data, const int data_i, c
 	bool is_any_single_file_compiled = false;
 	std::string build_files_str;
 
-	// zero is the build type code for binary
 	int ret = Common::CompileSources( data, data_i, cvars, build_files_str, Common::BuildType::LIB, disp_cmds_only, is_any_single_file_compiled, ctr );
 
 	// ret is less than zero when disp_cmds_only is true
@@ -50,49 +49,47 @@ int Project::BuildLibrary( const Config::ProjectData & data, const int data_i, c
 		if( Core::arch == Core::BSD ) compile_str += " -I/usr/local/include -L/usr/local/lib";
 	}
 
-	if( !cvars.main_src.empty() ) {
-		if( !FS::LocExists( cvars.main_src ) ) {
-			Display( "\n{fc}Main source{0}: {r}" + cvars.main_src + " {fc}is defined but the file does not exist{0}\n" );
-			Core::logger.AddLogString( LogLevels::ALL, "Main source: " + cvars.main_src + " is defined but the file does not exist" );
-			return Core::ReturnVar( 1 );
-		}
+	if( !cvars.main_src.empty() && !FS::LocExists( cvars.main_src ) ) {
+		Display( "\n{fc}Main source{0}: {r}" + cvars.main_src + " {fc}is defined but the file does not exist{0}\n" );
+		Core::logger.AddLogString( LogLevels::ALL, "Main source: " + cvars.main_src + " is defined but the file does not exist" );
+		return Core::ReturnVar( 1 );
+	}
 
-		int percent = ( ctr * 100 / total_sources );
+	int percent = ( ctr * 100 / total_sources );
 
-		bool are_all_latest = true;
+	bool are_all_latest = true;
 
-		if( FS::LocExists( "lib/lib" + data.builds[ data_i ].name + ext ) ) {
-			for( auto src : cvars.files ) {
-				if( !FS::IsFileLatest( "lib/lib" + data.builds[ data_i ].name + ext, src ) ) are_all_latest = false;
-			}
+	if( FS::LocExists( "lib/lib" + data.builds[ data_i ].name + ext ) ) {
+		for( auto src : cvars.files ) {
+			if( !FS::IsFileLatest( "lib/lib" + data.builds[ data_i ].name + ext, src ) ) are_all_latest = false;
 		}
-		else {
-			are_all_latest = false;
-		}
+	}
+	else {
+		are_all_latest = false;
+	}
 
-		// Check if there already exists a build whose modification time is newer than main source and / or
-		if( !is_any_single_file_compiled && are_all_latest && FS::IsFileLatest( "lib/lib" + data.builds[ data_i ].name + ext, cvars.main_src ) &&
-		    FS::IsFileLatest( "lib/lib" + data.builds[ data_i ].name + ext, "ccp4m.yaml" ) ) {
-			Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{bg}Project is already up to date{0}\n" );
-			return Core::ReturnVar( 0 );
-		}
-		Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{fc}Building " + cvars.caps_lang + " " + lib_type + " library{0}:   {sc}buildfiles/lib" +
-			 data.builds[ data_i ].name + ext + " {0}...\n" );
+	// Check if there already exists a build whose modification time is newer than main source and / or
+	if( !is_any_single_file_compiled && are_all_latest && FS::IsFileLatest( "lib/lib" + data.builds[ data_i ].name + ext, cvars.main_src ) &&
+	    FS::IsFileLatest( "lib/lib" + data.builds[ data_i ].name + ext, "ccp4m.yaml" ) ) {
+		Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{bg}Project is already up to date{0}\n" );
+		return Core::ReturnVar( 0 );
+	}
+	Display( "\n{tc}[" + std::to_string( percent ) + "%]\t{fc}Building " + cvars.caps_lang + " " + lib_type + " library{0}:   {sc}buildfiles/lib" +
+		 data.builds[ data_i ].name + ext + " {0}...\n" );
 
-		std::string err;
-		int ret_val = Exec::ExecuteCommand( compile_str, & err );
-		if( ret_val != 0 ) {
-			if( !err.empty() ) Display( "{fc}Error{0}:\n{r}" + err );
-			return Core::ReturnVar( ret_val );
-		}
+	std::string err;
+	int ret_val = Exec::ExecuteCommand( compile_str, & err );
+	if( ret_val != 0 ) {
+		if( !err.empty() ) Display( "{fc}Error{0}:\n{r}" + err );
+		return Core::ReturnVar( ret_val );
+	}
 
-		Display( "\n{fc}Moving {sc}buildfiles/lib" + data.builds[ data_i ].name + ext + "{fc} to {sc}lib/lib" + data.builds[ data_i ].name + ext + " {0}...\n" );
-		std::string cmd = "mv buildfiles/lib" + data.builds[ data_i ].name + ext + " lib/";
-		ret_val = Exec::ExecuteCommand( cmd, & err );
-		if( ret_val != 0 ) {
-			if( !err.empty() ) Display( "{fc}Error{0}: {r}" + err );
-			return Core::ReturnVar( ret_val );
-		}
+	Display( "\n{fc}Moving {sc}buildfiles/lib" + data.builds[ data_i ].name + ext + "{fc} to {sc}lib/lib" + data.builds[ data_i ].name + ext + " {0}...\n" );
+	std::string cmd = "mv buildfiles/lib" + data.builds[ data_i ].name + ext + " lib/";
+	ret_val = Exec::ExecuteCommand( cmd, & err );
+	if( ret_val != 0 ) {
+		if( !err.empty() ) Display( "{fc}Error{0}: {r}" + err );
+		return Core::ReturnVar( ret_val );
 	}
 
 	return Core::ReturnVar( 0 );

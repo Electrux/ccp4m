@@ -134,6 +134,9 @@ int Project::AddProjectInfo( ProjectConfig & pconf, const std::vector< std::stri
 
 		if( build.type == "lib" ) build.build_type = argmap.find( "build_type" ) != argmap.end() ? argmap[ "build_type" ] : "static";
 
+		build.inc_flags = argmap.find( "inc_flags" ) != argmap.end() ? argmap[ "inc_flags" ] : "";
+		build.lib_flags = argmap.find( "lib_flags" ) != argmap.end() ? argmap[ "lib_flags" ] : "";
+
 		std::string default_main = pconf.GetData().lang == "c++" ? "src/main.cpp" : "src/main.c";
 
 		build.main_src = argmap.find( "main_src" ) != argmap.end() ? argmap[ "main_src" ] : default_main;

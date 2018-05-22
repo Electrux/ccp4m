@@ -81,7 +81,7 @@ int Project::Build( const std::vector< std::string > & args )
 
 	ProjectConfig pconf;
 
-	pconf.LoadFile( Env::CCP4M_PROJECT_CONFIG_FILE, false );
+	pconf.LoadFile( Env::CCP4M_PROJECT_CONFIG_FILE, false, true );
 
 	if( pconf.GetData().name.empty() ) {
 		Core::logger.AddLogString( LogLevels::ALL, "No project name! Unable to continue." );
@@ -276,7 +276,7 @@ int Project::Run( const std::vector< std::string > & args )
 	}
 
 	ProjectConfig pconf;
-	pconf.LoadFile( "ccp4m.yaml", false );
+	pconf.LoadFile( "ccp4m.yaml", false, true );
 
 	int which = -1;
 
@@ -310,7 +310,9 @@ int Project::Run( const std::vector< std::string > & args )
 	std::string newargs;
 	for( size_t i = 4; i < args.size(); ++i ) newargs += args[ i ] + " ";
 
-	return Core::ReturnVar( std::system( ( "bin/" + build.name + " " + newargs ).c_str() ) );
+	std::string pre_exec = build.pre_exec.empty() ? "" : ( build.pre_exec + " " );
+
+	return Core::ReturnVar( std::system( ( pre_exec + "bin/" + build.name + " " + newargs ).c_str() ) );
 }
 
 int Project::Test( const std::vector< std::string > & args )
@@ -326,7 +328,7 @@ int Project::Test( const std::vector< std::string > & args )
 	}
 
 	ProjectConfig pconf;
-	pconf.LoadFile( "ccp4m.yaml", false );
+	pconf.LoadFile( "ccp4m.yaml", false, true );
 
 	Display( "{fc}\nPerforming tests{0} ...\n\n" );
 
@@ -343,8 +345,10 @@ int Project::Test( const std::vector< std::string > & args )
 		std::string newargs;
 		for( size_t i = 4; i < args.size(); ++i ) newargs += args[ i ] + " ";
 
+		std::string pre_exec = build.pre_exec.empty() ? "" : ( build.pre_exec + " " );
+
 		Display( "{fc}Testing case{0}: {sc}" + build.name + "{0} ... " );
-		int ret = std::system( ( "testbin/" + build.name + " " + newargs + " 2>&1 > /dev/null" ).c_str() );
+		int ret = std::system( ( pre_exec + "testbin/" + build.name + " " + newargs ).c_str() );
 		if( ret != 0 ) {
 			Display( "{r}ERR{0}\n" );
 			fail++;

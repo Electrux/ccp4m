@@ -25,7 +25,7 @@ namespace Common
 		TEST,
 	};
 
-	void GetFlags( const Config::ProjectData & data, std::string & inc_flags, std::string & lib_flags );
+	void GetFlags( const Config::ProjectData & data, int data_i, std::string & inc_flags, std::string & lib_flags );
 
 	bool CreateSourceDirs( const std::vector< std::string > & srcs );
 

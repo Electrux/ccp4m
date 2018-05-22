@@ -19,6 +19,9 @@ namespace Config
 		std::string name;
 		std::string type;
 		std::string build_type;
+		std::string inc_flags;
+		std::string lib_flags;
+		std::string pre_exec;
 		std::vector< std::string > srcs;
 		std::string main_src;
 		std::vector< std::string > exclude;
@@ -30,6 +33,12 @@ namespace Config
 		std::string email;
 	};
 
+	struct Vars
+	{
+		std::string name;
+		std::string val;
+	};
+
 	struct ProjectData
 	{
 		std::string name;
@@ -39,6 +48,8 @@ namespace Config
 		std::string lang;
 		std::string std;
 		std::string compile_flags;
+
+		std::vector< Vars > vars;
 
 		std::string license;
 
@@ -64,7 +75,7 @@ public:
 
 	bool GenerateDefaultConfig();
 
-	bool LoadFile( const std::string & file, bool update_license = true );
+	bool LoadFile( const std::string & file, bool update_license = true, bool alter_vars = false );
 
 	bool SaveFile( const std::string & file );
 

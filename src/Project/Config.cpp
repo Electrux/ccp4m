@@ -13,7 +13,7 @@
 
 #include "../../include/Project/Config.hpp"
 
-// Helper function to avoid crash for YAML-CPP
+// Helper function to avoid crash of YAML-CPP
 template< typename T > std::string GetString( T & t, const std::string & v )
 {
 	if( t[ v ] ) return t[ v ].template as< std::string >();
@@ -45,6 +45,20 @@ template< typename T > std::vector< std::string > GetStringVector( T & t, const 
 	}
 
 	return res;
+}
+
+static std::string VarReplace( std::string && str, bool really_replace )
+{
+	static auto v = Vars::GetSingleton();
+	if( really_replace ) v->Replace( str );
+	return str;
+}
+
+static std::vector< std::string > VarReplace( std::vector< std::string > && vec, bool really_replace )
+{
+	static auto v = Vars::GetSingleton();
+	if( really_replace ) v->Replace( vec );
+	return vec;
 }
 
 void ProjectConfig::AddLibrary( const Config::Library & lib )
@@ -123,7 +137,7 @@ bool ProjectConfig::GenerateDefaultConfig()
 	return Core::ReturnVar( true );
 }
 
-bool ProjectConfig::LoadFile( const std::string & file, bool update_license )
+bool ProjectConfig::LoadFile( const std::string & file, bool update_license, bool alter_vars )
 {
 	if( !FS::LocExists( file ) ) return false;
 
@@ -136,20 +150,30 @@ bool ProjectConfig::LoadFile( const std::string & file, bool update_license )
 
 	auto v = Vars::GetSingleton();
 
-	pdata.name = v->Replace( GetString( conf, "name" ) );
-	pdata.version = v->Replace( GetString( conf, "version" ) );
-	pdata.lang = v->Replace( GetString( conf, "lang" ) );
-	pdata.std = v->Replace( GetString( conf, "std" ) );
-	pdata.compile_flags = v->Replace( GetString( conf, "compile_flags" ) );
+	pdata.name = VarReplace( GetString( conf, "name" ), alter_vars );
+	pdata.version = VarReplace( GetString( conf, "version" ), alter_vars );
+	pdata.lang = VarReplace( GetString( conf, "lang" ), alter_vars );
+	pdata.std = VarReplace( GetString( conf, "std" ), alter_vars );
+	pdata.compile_flags = VarReplace( GetString( conf, "compile_flags" ), alter_vars );
 
-	pdata.license = v->Replace( GetString( conf, "license" ) );
+	for( auto vars : conf[ "vars" ] ) {
+		Config::Vars var;
+
+		var.name = VarReplace( GetString( vars, "name" ), alter_vars );
+		var.val = VarReplace( GetString( vars, "val" ), alter_vars );
+
+		pdata.vars.push_back( var );
+		v->AddVar( var.name, var.val );
+	}
+
+	pdata.license = VarReplace( GetString( conf, "license" ), alter_vars );
 
 	v->AddVar( "license", License::FetchLicenseFormalName( pdata.license ) );
 
 	if( !License::UpdateProjectLicenseFile( pdata.license, update_license ) ) return Core::ReturnVar( 1 );
 
-	pdata.author.name = v->Replace( GetString( conf, "author", "name" ) );
-	pdata.author.email = v->Replace( GetString( conf, "author", "email" ) );
+	pdata.author.name = VarReplace( GetString( conf, "author", "name" ), alter_vars );
+	pdata.author.email = VarReplace( GetString( conf, "author", "email" ), alter_vars );
 
 	if( ( pdata.author.name.empty() || pdata.author.email.empty() ) && !this->GetDefaultAuthor() ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Configuration load failed. No author information in this file or in system configuration" );
@@ -162,10 +186,10 @@ bool ProjectConfig::LoadFile( const std::string & file, bool update_license )
 	for( auto libdata : conf[ "libs" ] ) {
 		Config::Library lib;
 
-		lib.name = v->Replace( GetString( libdata, "name" ) );
-		lib.version = v->Replace( GetString( libdata, "version" ) );
-		lib.inc_flags = v->Replace( GetString( libdata, "inc_flags" ) );
-		lib.lib_flags = v->Replace( GetString( libdata, "lib_flags" ) );
+		lib.name = VarReplace( GetString( libdata, "name" ), alter_vars );
+		lib.version = VarReplace( GetString( libdata, "version" ), alter_vars );
+		lib.inc_flags = VarReplace( GetString( libdata, "inc_flags" ), alter_vars );
+		lib.lib_flags = VarReplace( GetString( libdata, "lib_flags" ), alter_vars );
 
 		pdata.libs.push_back( lib );
 	}
@@ -173,12 +197,15 @@ bool ProjectConfig::LoadFile( const std::string & file, bool update_license )
 	for( auto builddata : conf[ "builds" ] ) {
 		Config::Build build;
 
-		build.name = v->Replace( GetString( builddata, "name" ) );
-		build.type = v->Replace( GetString( builddata, "type" ) );
-		build.build_type = v->Replace( GetString( builddata, "build_type" ) );
-		build.main_src = v->Replace( GetString( builddata, "main_src" ) );
-		build.srcs = v->Replace( GetStringVector( builddata, "other_src" ) );
-		build.exclude = v->Replace( GetStringVector( builddata, "exclude" ) );
+		build.name = VarReplace( GetString( builddata, "name" ), alter_vars );
+		build.type = VarReplace( GetString( builddata, "type" ), alter_vars );
+		build.build_type = VarReplace( GetString( builddata, "build_type" ), alter_vars );
+		build.inc_flags = VarReplace( GetString( builddata, "inc_flags" ), alter_vars );
+		build.lib_flags = VarReplace( GetString( builddata, "lib_flags" ), alter_vars );
+		build.pre_exec = VarReplace( GetString( builddata, "pre_exec" ), alter_vars );
+		build.main_src = VarReplace( GetString( builddata, "main_src" ), alter_vars );
+		build.srcs = VarReplace( GetStringVector( builddata, "other_src" ), alter_vars );
+		build.exclude = VarReplace( GetStringVector( builddata, "exclude" ), alter_vars );
 
 		pdata.builds.push_back( build );
 	}
@@ -210,6 +237,18 @@ bool ProjectConfig::SaveFile( const std::string & file )
 	o << YAML::Key << "std" << YAML::Value << pdata.std;
 	o << YAML::Key << "compile_flags" << YAML::Value << pdata.compile_flags;
 
+	o << YAML::Key << "vars" << YAML::Value;
+	o << YAML::BeginSeq;
+	for( auto & var : pdata.vars ) {
+		o << YAML::BeginMap;
+
+		o << YAML::Key << "name" << YAML::Value << var.name;
+		o << YAML::Key << "val" << YAML::Value << var.val;
+
+		o << YAML::EndMap;
+	}
+	o << YAML::EndSeq;
+
 	o << YAML::Key << "license" << YAML::Value << pdata.license;
 
 	o << YAML::Key << "author" << YAML::Value;
@@ -220,7 +259,7 @@ bool ProjectConfig::SaveFile( const std::string & file )
 
 	o << YAML::Key << "libs" << YAML::Value;
 	o << YAML::BeginSeq;
-	for( auto lib : pdata.libs ) {
+	for( auto & lib : pdata.libs ) {
 		o << YAML::BeginMap;
 
 		o << YAML::Key << "name" << YAML::Value << lib.name;
@@ -234,12 +273,15 @@ bool ProjectConfig::SaveFile( const std::string & file )
 
 	o << YAML::Key << "builds" << YAML::Value;
 	o << YAML::BeginSeq;
-	for( auto build : pdata.builds ) {
+	for( auto & build : pdata.builds ) {
 		o << YAML::BeginMap;
 
 		o << YAML::Key << "name" << YAML::Value << build.name;
 		o << YAML::Key << "type" << YAML::Value << build.type;
 		if( build.type == "lib" ) o << YAML::Key << "build_type" << YAML::Value << build.build_type;
+		o << YAML::Key << "inc_flags" << YAML::Value << build.inc_flags;
+		o << YAML::Key << "lib_flags" << YAML::Value << build.lib_flags;
+		o << YAML::Key << "pre_exec" << YAML::Value << build.pre_exec;
 		o << YAML::Key << "main_src" << YAML::Value << build.main_src;
 		o << YAML::Key << "other_src" << YAML::Value;
 		o << YAML::BeginSeq;
@@ -277,6 +319,13 @@ void ProjectConfig::DisplayAll( const std::string & dir )
 	Display( "{sc}=> {bm}Lang{0}: {bg}" + pdata.lang + "\n" );
 	Display( "{sc}=> {bm}Std{0}: {bg}" + pdata.std + "\n" );
 	Display( "{sc}=> {bm}Compile_Flags{0}: {bg}" + pdata.compile_flags + "\n" );
+
+	Display( "{sc}=> {bm}Vars{0}:\n" );
+	for( auto v : pdata.vars ) {
+		Display( "{sc}===> {bm}Name{0}: {bg}" + v.name + "\n" );
+		Display( "{sc}===> {bm}Value{0}: {bg}" + v.val + "\n\n" );
+	}
+
 	Display( "{sc}=> {bm}License{0}: {bg}" + pdata.license + "\n\n" );
 
 	Display( "{sc}=> {bm}Libs{0}:\n" );
@@ -287,13 +336,14 @@ void ProjectConfig::DisplayAll( const std::string & dir )
 		Display( "{sc}===> {bm}Lib_Flags{0}: {bg}" + lib.lib_flags + "\n\n" );
 	}
 
-	Display( "\n" );
-
 	Display( "{sc}=> {bm}Builds{0}:\n" );
 	for( auto build : pdata.builds ) {
 		Display( "{sc}===> {bm}Name{0}: {bg}" + build.name + "\n" );
 		Display( "{sc}===> {bm}Type{0}: {bg}" + build.type + "\n" );
 		if( build.type == "lib" ) Display( "{sc}===> {bm}Build Type{0}: {bg}" + build.build_type + "\n" );
+		Display( "{sc}===> {bm}Inc_Flags: {bg}" + build.inc_flags + "\n" );
+		Display( "{sc}===> {bm}Lib_Flags: {bg}" + build.lib_flags + "\n" );
+		Display( "{sc}===> {bm}Pre_Exec: {bg}" + build.pre_exec + "\n" );
 		Display( "{sc}===> {bm}Main source{0}: {bg}" + build.main_src + "\n" );
 		Display( "{sc}===> {bm}Other sources{0}:\n" );
 		for( auto s : build.srcs ) Display( "{sc}=====> {bg}" + s + "\n" );

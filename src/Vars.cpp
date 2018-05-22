@@ -121,6 +121,13 @@ int Vars::Replace( std::string & str, bool colors )
 	return ctr;
 }
 
+int Vars::Replace( std::vector< std::string > & vec, bool colors )
+{
+	int total = 0;
+	for( auto & str : vec ) total += this->Replace( str, colors );
+	return total;
+}
+
 std::string Vars::Replace( std::string && str, bool colors )
 {
 	this->Replace( str, colors );

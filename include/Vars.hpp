@@ -30,6 +30,8 @@ public:
 
 	// To avoid using static replace function which will cause a lot of overhead if the function is called many times.
 	int Replace( std::string & str, bool colors = false );
+	int Replace( std::vector< std::string > & vec, bool colors = false );
+
 	// Colors are false because primarily used by project config loader
 	std::string Replace( std::string && str, bool colors = false );
 	std::vector< std::string > Replace( std::vector< std::string > && vec, bool colors = false );

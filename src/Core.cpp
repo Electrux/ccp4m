@@ -17,7 +17,7 @@
 #include "../include/Core.hpp"
 
 const int Core::VERSION_PRIMARY = 0;
-const int Core::VERSION_SECONDARY = 6;
+const int Core::VERSION_SECONDARY = 7;
 const int Core::VERSION_MINOR = 0;
 
 Core::Arch Core::arch =
@@ -62,7 +62,7 @@ std::map< std::string, std::string > Core::COLORS = {
 	{ "by", "\033[1;33m" },
 	{ "bb", "\033[1;34m" },
 	{ "bm", "\033[1;35m" },
-	{ "bc", "\033[1;36m" },
+
 	{ "bw", "\033[1;37m" },
 
 	{ "fc", "\033[0;35m" },
