@@ -237,7 +237,7 @@ int Core::AutoClean( const std::vector< std::string > & args )
 			Display( "{bg}Configuration file is clean{0}\n" );
 		}
 		else {
-			Display( "{fc}Removing {sc}ccp4m.yaml{fc} file {0}..." );
+			Display( "{fc}Removing {sc}config.yaml{fc} file {0}..." );
 			if( !FS::DeleteFile( cfgfile ) ) {
 				Display( "{r} Failed\n" );
 				Display( "{fc}Error in deleting configuration file: {r}" + cfgfile + "{0}\n" );
