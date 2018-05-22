@@ -125,3 +125,6 @@ ccp4m project add lib < library name > --version < version > --inc_flags < inclu
 By default, version is *0*, include flags and library flags are *empty*.
 
 [![asciicast](https://asciinema.org/a/176323.png)](https://asciinema.org/a/176323)
+
+For another example of ccp4m.yaml, check out:
+[Electrux/AsyncLoggingEngine](https://github.com/Electrux/AsyncLoggingEngine)
