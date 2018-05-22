@@ -27,7 +27,7 @@ If you have Ubuntu 18.04, use the following command ( just replaces libcurl3 wit
 sudo apt-get install libboost-all-dev libyaml-cpp-dev libcurl4 libcurl4-openssl-dev curl
 ```
 
-For Arch based distros, if you want to build from source, install the **curl** package and **yaml-cpp** package. That should be enough.
+For Arch based distros, if you want to build from source, install the **curl** and **yaml-cpp** package. That should be enough.
 
 ## Instructions
 
