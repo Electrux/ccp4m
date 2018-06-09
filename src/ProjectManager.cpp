@@ -6,6 +6,7 @@
 #include "../include/FSFuncs.hpp"
 #include "../include/Environment.hpp"
 #include "../include/DisplayFuncs.hpp"
+#include "../include/ExecuteCommand.hpp"
 #include "../include/UTFChars.hpp"
 
 #include "../include/Project/Config.hpp"
@@ -145,6 +146,7 @@ int Project::Add( const std::vector< std::string > & args )
 	if( !FS::LocExists( Env::CCP4M_PROJECT_CONFIG_FILE ) ) {
 		std::string currdir = Env::GetCurrentDir();
 		Core::logger.AddLogString( LogLevels::ALL, "No project configuration in directory: " + currdir );
+
 		Display( "{fc}Project configuration file: {sc}" + Env::CCP4M_PROJECT_CONFIG_FILE + "{fc} does not exist in this directory.{0}" );
 		return Core::ReturnVar( 1 );
 	}
@@ -289,14 +291,14 @@ int Project::Run( const std::vector< std::string > & args )
 
 	if( which == -1 ) {
 		Core::logger.AddLogString( LogLevels::ALL, "Used build name: " + args[ 3 ] + " but it does not exist in builds list in config" );
-		Display( "{fc}Unable to find build: {sc}" + args[ 3 ] + "{fc}. Exiting. {br}" + UTF::CROSS + "{0}\n" );
+		Display( "{fc}Unable to find build{0}: {sc}" + args[ 3 ] + "{0}. {fc}Exiting. {br}" + UTF::CROSS + "{0}\n" );
 		return Core::ReturnVar( 1 );
 	}
 
 	auto & build = pconf.GetData().builds[ which ];
 
 	if( build.type != "bin" ) {
-		Display( "{fc}The specified build {sc}" + build.name + "{fc} is not a binary, it is a {sc}" + build.type + "{0}\n" );
+		Display( "{fc}The specified build {sc}" + build.name + "{fc} is not a binary{0}, {fc}it is a {sc}" + build.type + "{0}\n" );
 		Core::logger.AddLogString( LogLevels::ALL, "Build: " + build.name + " is not binary, it is: " + build.type );
 		return Core::ReturnVar( 1 );
 	}
@@ -348,9 +350,14 @@ int Project::Test( const std::vector< std::string > & args )
 		std::string pre_exec = build.pre_exec.empty() ? "" : ( build.pre_exec + " " );
 
 		Display( "{fc}Testing case{0}: {sc}" + build.name + "{0} ... " );
-		int ret = std::system( ( pre_exec + "testbin/" + build.name + " " + newargs ).c_str() );
+		std::string output;
+		int ret = Exec::ExecuteCommand( pre_exec + "testbin/" + build.name + " " + newargs + " 1>/dev/null", & output );
 		if( ret != 0 ) {
 			Display( "{r}ERR{0}\n" );
+			if( !output.empty() ) {
+				Display( "{fc}Output{0}:\n" );
+				Display( output );
+			}
 			fail++;
 		}
 		else {
