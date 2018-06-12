@@ -18,7 +18,7 @@
 
 const int Core::VERSION_PRIMARY = 0;
 const int Core::VERSION_SECONDARY = 7;
-const int Core::VERSION_MINOR = 0;
+const int Core::VERSION_MINOR = 1;
 
 Core::Arch Core::arch =
 #ifdef __linux__
