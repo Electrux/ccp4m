@@ -202,11 +202,11 @@ std::vector< std::string > FS::GetFilesInDir( const std::string & loc, const std
 
 	if( fdir.size() > 0 && * ( fdir.end() - 1 ) != '/' ) fdir += "/";
 
-	DIR * dir;
-
 	std::string dir_to_open = fdir.empty() ? "." : fdir;
 
 	std::vector< std::string > res;
+
+	DIR * dir;
 
 	if( ( dir = opendir( dir_to_open.c_str() ) ) != NULL ) {
 		struct dirent * ent;
@@ -225,6 +225,7 @@ std::vector< std::string > FS::GetFilesInDir( const std::string & loc, const std
 		}
 	}
 
+	closedir( dir );
 	return res;
 }
 
