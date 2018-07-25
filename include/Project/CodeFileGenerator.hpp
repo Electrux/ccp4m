@@ -39,7 +39,7 @@ namespace Project
 	 *
 	 * return: 0 on success, non-zero on failure
 	 */
-	int GenerateTestFile( ProjectConfig & pconf, const std::string & file );
+	int GenerateTestFile( ProjectConfig & pconf, const std::string & file, const std::string & ext );
 }
 
 #endif // PROJECT_CODE_FILE_GENERATOR_HPP

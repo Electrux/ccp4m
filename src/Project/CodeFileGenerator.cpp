@@ -113,12 +113,12 @@ int Project::GenerateSourceFile( ProjectConfig & pconf, const std::string & file
 	return Core::ReturnVar( 0 );
 }
 
-int Project::GenerateTestFile( ProjectConfig & pconf, const std::string & file )
+int Project::GenerateTestFile( ProjectConfig & pconf, const std::string & file, const std::string & ext )
 {
 	Core::logger.AddLogSection( "Project" );
 	Core::logger.AddLogSection( "GenerateTestFile" );
 
-	std::string final_file = "tests/" + file;
+	std::string final_file = "tests/" + file + ext;
 
 	std::string && license_str = License::FetchLicenseForFile( pconf.GetData().license );
 
@@ -129,6 +129,17 @@ int Project::GenerateTestFile( ProjectConfig & pconf, const std::string & file )
 		return Core::ReturnVar( 1 );
 	}
 
-	Display( "\n{fc}Successfully created source file{0}: {g}" + final_file + "{0}\n" );
+	Config::Build b;
+	b.name = file;
+	b.inc_flags = "";
+	b.lib_flags = "";
+	b.main_src = final_file;
+	b.srcs.push_back( "src/(.*).cpp" );
+	b.exclude.push_back( "src/main.cpp" );
+	b.type = "test";
+	pconf.AddBuild( b );
+	pconf.SaveFile( Env::CCP4M_PROJECT_CONFIG_FILE );
+
+	Display( "\n{fc}Successfully created test file{0}: {g}" + final_file + "{0}\n" );
 	return Core::ReturnVar( 0 );
 }

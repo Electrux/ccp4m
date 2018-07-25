@@ -73,7 +73,7 @@ int Project::AddFiles( ProjectConfig & pconf, const std::vector< std::string > &
 	}
 
 	if( args[ 3 ] == "src" ) return Core::ReturnVar( Project::GenerateSourceFile( pconf, args[ 4 ] + ext, which_build ) );
-	if( args[ 3 ] == "test" ) return Core::ReturnVar( Project::GenerateTestFile( pconf, args[ 4 ] + ext ) );
+	if( args[ 3 ] == "test" ) return Core::ReturnVar( Project::GenerateTestFile( pconf, args[ 4 ], ext ) );
 
 	return Core::ReturnVar( Project::GenerateIncludeFile( pconf, args[ 4 ] + ext ) );
 }

@@ -1,8 +1,10 @@
 name: CCP4M
-version: 0.7.2
+version: 0.7.3
 lang: c++
 std: 14
 compile_flags: -O2
+vars:
+  []
 license: bsd3
 author:
   name: Electrux
@@ -23,6 +25,9 @@ libs:
 builds:
   - name: ccp4m
     type: bin
+    inc_flags: ""
+    lib_flags: ""
+    pre_exec: ""
     main_src: src/main.cpp
     other_src:
       - src/(.*).cpp
@@ -30,6 +35,9 @@ builds:
       - src/tests/(.*).cpp
   - name: ccp4m_test_licenses
     type: test
+    inc_flags: ""
+    lib_flags: ""
+    pre_exec: ""
     main_src: tests/licenses.cpp
     other_src:
       - src/(.*).cpp
