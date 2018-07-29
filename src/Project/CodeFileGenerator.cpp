@@ -22,13 +22,16 @@ int Project::GenerateIncludeFile( ProjectConfig & pconf, const std::string & fil
 	std::string && license_str = License::FetchLicenseForFile( pconf.GetData().license );
 
 	std::string file_w_uscore = file;
+	char first_letter = * file_w_uscore.begin();
 
-	bool is_prev_caps = false;
+	bool is_prev_caps = first_letter >= 'A' && first_letter <= 'Z';
 
 	for( auto it = file_w_uscore.begin() + 1; it != file_w_uscore.end(); ++it ) {
-		if( * it >= 'A' && * it <= 'Z' && !is_prev_caps && !std::ispunct( * ( it - 1 ) ) ) {
-			it = file_w_uscore.insert( it, '_' );
-			++it;
+		if( * it >= 'A' && * it <= 'Z' ) {
+			if( !is_prev_caps && !std::ispunct( * ( it - 1 ) ) ) {
+				it = file_w_uscore.insert( it, '_' );
+				++it;
+			}
 			is_prev_caps = true;
 			continue;
 		}
