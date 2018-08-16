@@ -134,7 +134,8 @@ int Common::CompileSources( const Config::ProjectData & data, const int data_i, 
 
 		// Remove files which are up to date
 		if( FS::IsFileLatest( "buildfiles/" + destination_file, src ) ) {
-			Display( "{tc}[" + std::to_string( percent ) + "%]\t{g}Up to date " + cvars.caps_lang + " object{0}: {sc}buildfiles/" + destination_file + "{0}\n" );
+			// Let's just not display them at all...
+			// Display( "{tc}[" + std::to_string( percent ) + "%]\t{g}Up to date " + cvars.caps_lang + " object{0}: {sc}buildfiles/" + destination_file + "{0}\n" );
 			++ctr;
 			continue;
 		}
