@@ -114,13 +114,13 @@ int Common::CompileSources( const Config::ProjectData & data, const int data_i, 
 
 	int total_sources = cvars.files.size() + ( int )!cvars.main_src.empty();
 
-	Core::logger.AddLogString( LogLevels::ALL, "Building target: " + data.builds[ data_i ].name );
-	Display( "\n{fc}Building target {sc}" + data.builds[ data_i ].name + " {fc}with {sc}" + std::to_string( total_sources ) + " {fc}sources {0}...\n\n" );
-
 	int cores = std::thread::hardware_concurrency();
-	std::vector< std::future< Exec::Internal::Result > > futures;
 
-	Display( "{fc}Using cores{0}: {sc}" + std::to_string( cores ) + "{0}\n\n" );
+	Core::logger.AddLogString( LogLevels::ALL, "Building target: " + data.builds[ data_i ].name );
+	Display( "\n{fc}Building target {sc}" + data.builds[ data_i ].name + " {fc}with {sc}" + std::to_string( total_sources ) +
+		 " {fc}sources and {sc}" + std::to_string( cores ) + " {fc}CPU cores {0}...\n\n" );
+
+	std::vector< std::future< Exec::Internal::Result > > futures;
 
 	std::string extra_conf;
 	if( build_type == BuildType::LIB && data.builds[ data_i ].build_type == "dynamic" ) extra_conf = "-fPIC";
