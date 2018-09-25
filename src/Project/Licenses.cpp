@@ -41,7 +41,7 @@ const std::vector< std::string > License::LICENSES_FORMAL = {
 };
 
 // This is used as LICENSES[ DEFAULT_LICENSE ]
-const License::ID License::DEFAULT_LICENSE = License::ID::gnugpl3_0;
+const License::ID License::DEFAULT_LICENSE = License::ID::bsd3;
 
 std::string License::FetchLicense( const License::ID & id )
 {

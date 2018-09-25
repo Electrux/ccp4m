@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+#include <cstdlib>
 
 #include <yaml-cpp/yaml.h>
 
@@ -210,6 +211,12 @@ bool ProjectConfig::LoadFile( const std::string & file, bool update_license, boo
 		pdata.builds.push_back( build );
 	}
 
+	// Update local environment
+	pdata.local_env = VarReplace( GetStringVector( conf, "env" ), alter_vars );
+	for( auto env : pdata.local_env ) {
+		putenv( &env[0] );
+	}
+
 	Core::logger.AddLogString( LogLevels::ALL, "Loaded configuration file successfully" );
 	return Core::ReturnVar( true );
 }
@@ -295,6 +302,11 @@ bool ProjectConfig::SaveFile( const std::string & file )
 
 		o << YAML::EndMap;
 	}
+	o << YAML::EndSeq;
+
+	o << YAML::Key << "env" << YAML::Value;
+	o << YAML::BeginSeq;
+	for( auto & env : pdata.local_env ) o << env;
 	o << YAML::EndSeq;
 
 	o << YAML::EndMap;

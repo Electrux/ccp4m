@@ -48,6 +48,7 @@ namespace Config
 		std::string lang;
 		std::string std;
 		std::string compile_flags;
+		std::vector< std::string > local_env;
 
 		std::vector< Vars > vars;
 
