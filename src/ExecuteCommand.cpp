@@ -22,6 +22,7 @@ int Exec::ExecuteCommand( const std::string & cmd, std::string * err )
 	Core::logger.AddLogString( LogLevels::ALL, "Executing: " + cmd );
 
 	int res = std::system( cmdfinal.c_str() );
+	res = WEXITSTATUS( res );
 
 	if( FS::LocExists( Core::TMP_FILE ) ) {
 		if( err != nullptr ) * err = FS::ReadFile( Core::TMP_FILE );
@@ -47,6 +48,7 @@ Exec::Internal::Result Exec::MultithreadedExecute( const std::string & cmd, cons
 	if( !pipe ) return { 1, "Pipe open failed", src };
 
 	res = pclose( pipe );
+	res = WEXITSTATUS( res );
 
 	if( FS::LocExists( tmp_file ) ) {
 		err = FS::ReadFile( tmp_file );
