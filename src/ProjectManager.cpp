@@ -313,8 +313,10 @@ int Project::Run( const std::vector< std::string > & args )
 	for( size_t i = 4; i < args.size(); ++i ) newargs += args[ i ] + " ";
 
 	std::string pre_exec = build.pre_exec.empty() ? "" : ( build.pre_exec + " " );
+	int res = std::system( ( pre_exec + "bin/" + build.name + " " + newargs ).c_str() );
+	res = WEXITSTATUS( res );
 
-	return Core::ReturnVar( std::system( ( pre_exec + "bin/" + build.name + " " + newargs ).c_str() ) );
+	return Core::ReturnVar( res );
 }
 
 int Project::Test( const std::vector< std::string > & args )
