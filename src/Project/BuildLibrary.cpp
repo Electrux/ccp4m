@@ -43,6 +43,7 @@ int Project::BuildLibrary( const Config::ProjectData & data, const int data_i, c
 		compile_str = "ar rcs buildfiles/lib" + data.builds[ data_i ].name + ext + " " + cvars.main_src + " " + build_files_str;
 	}
 	else {
+		if( lib_type == "" ) lib_type = "dynamic";
 		compile_str = cvars.compiler + " -shared " + data.compile_flags + " -std=" + data.lang + data.std + " "
 				+ cvars.inc_flags + " -o buildfiles/lib" + data.builds[ data_i ].name + ".so " + cvars.main_src + " " + build_files_str + " " + cvars.lib_flags;
 

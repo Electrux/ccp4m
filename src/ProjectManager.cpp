@@ -383,7 +383,6 @@ int Project::Clean()
 	Core::logger.AddLogSection( "Project" );
 	Core::logger.AddLogSection( "Clean" );
 
-	Display( "{fc}Cleaning project directory {0}...\n\n" );
 	Core::logger.AddLogString( LogLevels::ALL, "Cleaning project build directory" );
 
 	Display( "{sc}=> {fc}Removing binary directory {0}... " );
@@ -438,7 +437,6 @@ int Project::Clean()
 		return Core::ReturnVar( 1 );
 	}
 
-	Display( "\n{fc}Successfully cleaned directory{0}\n" );
 	Core::logger.AddLogString( LogLevels::ALL, "Successfully cleaned directory" );
 	return Core::ReturnVar( 0 );
 }
